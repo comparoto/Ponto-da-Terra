@@ -1,5 +1,5 @@
 # Ponto da Terra
-![logo](logo-pdt.jpg)
+<img src="logo-pdt-png.png" alt="logo" width="200">
 
 O projeto Ponto da Terra está sendo desenvolvido com o objetivo de criar uma aplicação web full stack voltada para o Artesanato Pernambucano, visando solucionar o seguinte problema:
 
