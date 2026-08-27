@@ -47,9 +47,9 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 - [Iza Malafaia](https://github.com/Iza-Malafaia) 
 - [Juliana Comparoto](https://github.com/comparoto) 
 - [Joanna Farias](https://github.com/Joanna-Farias) 
-- [Lucas Vinícius](link)
+- [Lucas Vinícius](https://github.com/Lucas-Viniicius)
 - [Maria Luiza](https://github.com/alumiria)
-- [Paulo Marrocos](link)
+- [Paulo Marrocos](https://github.com/paulosds2318)
 - [Pedro Marrocos](link)
 
 ## ⚙️ Guia 
