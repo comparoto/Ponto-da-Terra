@@ -33,6 +33,8 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
   
 ## Entrega 4
 
+### Backlog
+- [Trello](adicionar)
 
 ### Issues/Bug Tracker
 - [Issues](adicionar)
