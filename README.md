@@ -34,10 +34,10 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 ## Entrega 4
 
 ### Backlog
-- [Trello](adicionar)
+- [Trello](https://trello.com/invite/b/6a9053df607671878ec69c4f/ATTI657102efcfc9cd863f6c320d5a9b72fb43BB28D7/ponto-da-terra)
 
 ### Issues/Bug Tracker
-- [Issues](adicionar)
+- [Issues](https://github.com/comparoto/Ponto-da-Terra/issues)
 
 #### Relatório Evolutivo
 - [Relatório](adicionar)
