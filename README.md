@@ -50,7 +50,7 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 - [Lucas Vinícius](https://github.com/Lucas-Viniicius)
 - [Maria Luiza](https://github.com/alumiria)
 - [Paulo Marrocos](https://github.com/paulosds2318)
-- [Pedro Marrocos](link)
+- [Pedro Marrocos](https://github.com/Pedrinhosds16)
 
 ## ⚙️ Guia 
 Montando o ambiente corretamente para execução do projeto:
