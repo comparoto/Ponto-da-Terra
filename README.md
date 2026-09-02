@@ -25,15 +25,30 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 ### Requisitos detalhados
 - [Lista](https://app.notion.com/p/Projeto-Integrador-3c996fcfd27080df9bf3ef635f5bdf99?source=copy_link)
 
+  
+## 📋 Índice
 
-### Backlog
-- [Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
+* [Entrega 1](#entrega-1)
+* [Entrega 2](#entrega-2)
+* [Entrega 3](#entrega-3)
+* [Entrega 4](#entrega-4)
+---
+
+## Entrega 1
+
+- [Backlog - Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
+- [Diagrama de Casos de Uso](add)
+- [Diagrama de Classes](add)
+
+##  Entrega 2
+
+##  Entrega 3
+  
+##  Entrega 4
+
 
 ### Issues/Bug Tracker
 - [Issues](https://github.com/comparoto/Ponto-da-Terra/issues)
-
-#### Relatório Evolutivo
-- [Relatório](adicionar)
 
 
 ## 👩‍💻 Equipe 
