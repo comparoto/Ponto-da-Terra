@@ -19,33 +19,50 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 * **Fundamentos de Computação Concorrente, Paralela e Distribuída:** 
   Garantir o desempenho, a escalabilidade e a tolerância a falhas do sistema. Isso é feito aplicando conceitos de concorrência (como no checkout e na baixa de estoque), paralelismo e arquitetura distribuída, utilizando filas e processamento assíncrono.
 
-* **Projeto 4 (Disciplina de Projeto):** 
-  Atuar como ponto focal para acompanhar o processo, a organização do time, o planejamento, a evolução das sprints e a integração entre todas as disciplinas. O foco é metodológico e de gestão, não avaliando o mérito técnico das outras áreas.
 
 ### Requisitos detalhados
 - [Lista](https://app.notion.com/p/Projeto-Integrador-3c996fcfd27080df9bf3ef635f5bdf99?source=copy_link)
 
-  
-## 📋 Índice
 
-* [Entrega 1](#entrega-1)
-* [Entrega 2](#entrega-2)
-* [Entrega 3](#entrega-3)
-* [Entrega 4](#entrega-4)
+# 📋 Índice
+
+* [Primeira Unidade](#primeira-unidade)
+  * [Desenvolvimento Web](#desenvolvimento-web)
+  * [Requisitos, Projeto de Software e Validação](#requisitos-projeto-de-software-e-validação)
+  * [Fundamentos de Computação Concorrente, Paralela e Distribuída](#fundamentos-de-computação-concorrente-paralela-e-distribuída)
+* [Segunda Unidade](#segunda-unidade)
+  * [Desenvolvimento Web](#desenvolvimento-web-1)
+  * [Requisitos, Projeto de Software e Validação](#requisitos-projeto-de-software-e-validação-1)
+  * [Fundamentos de Computação Concorrente, Paralela e Distribuída](#fundamentos-de-computação-concorrente-paralela-e-distribuída-1)
+
 ---
 
-## Entrega 1
+## Primeira Unidade
 
+### Desenvolvimento Web
+* **Entregas:**
+
+### Requisitos, Projeto de Software e Validação
+* **Entregas:**
 - [Backlog - Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
-- [Diagrama de Casos de Uso](add)
-- [Diagrama de Classes](add)
+- ![Diagrama de Casos de Uso](Diagrama_casos_de_uso.png)
+- ![Diagrama de Classes](Diagrama_de_classes.png)
 
-##  Entrega 2
 
-##  Entrega 3
-  
-##  Entrega 4
+### Fundamentos de Computação Concorrente, Paralela e Distribuída
+* **Entregas:** 
+---
 
+## Segunda Unidade
+
+### Desenvolvimento Web
+* **Entregas:** 
+
+### Requisitos, Projeto de Software e Validação
+* **Entregas:** 
+
+### Fundamentos de Computação Concorrente, Paralela e Distribuída
+* **Entregas:** 
 
 ### Issues/Bug Tracker
 - [Issues](https://github.com/comparoto/Ponto-da-Terra/issues)
