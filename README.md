@@ -1,7 +1,7 @@
-# Ponto da Terra
+# Origem: Ponto da Terra
 <img src="logo-pdt-png.png" alt="logo" width="200">
 
-O projeto Ponto da Terra está sendo desenvolvido com o objetivo de criar uma aplicação web full stack voltada para o Artesanato Pernambucano, visando solucionar o seguinte problema:
+O projeto Origem: Ponto da Terra está sendo desenvolvido com o objetivo de criar uma aplicação web full stack voltada para o Artesanato Pernambucano, visando solucionar o seguinte problema:
 
 Artesãos e produtores criativos têm pouca visibilidade digital, dependem de intermediários e têm gestão precária de catálogo, pedidos e estoque. Falta um canal que conecte essa produção a compradores destacando origem, técnica e o impacto de comprar direto de quem faz.
 
