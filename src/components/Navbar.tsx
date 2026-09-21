@@ -8,12 +8,12 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="w-full sticky top-0 z-50 bg-[#FAF6EF]/95 backdrop-blur-md border-b border-stone-200">
-      {/* Linha colorida do topo - Referência cultural */}
+      {}
       <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-amber-400 via-green-500 to-blue-600" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
-        {/* Logo */}
+        {}
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-10 h-10 bg-[#3D180E] rounded-lg flex items-center justify-center text-amber-400 font-bold shadow-sm">
             <span className="text-xl">☀️</span>
@@ -28,7 +28,7 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Campo de Busca (Desktop) */}
+        {}
         <div className="hidden md:flex flex-1 max-w-xl mx-4">
           <div className="relative w-full">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />

@@ -1,0 +1,25 @@
+/* Custom Scrollbar em tom Marrom Pernambucano */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF6EF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7A2E1E;
+  border-radius: 5px;
+  border: 2px solid #FAF6EF;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3D180E;
+}
+
+/* Suporte para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #7A2E1E #FAF6EF;
+}

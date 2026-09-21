@@ -1,5 +1,10 @@
 import { Navbar } from './components/Navbar';
 import { ProductCard } from './components/ProductCard';
+import { CulturalRegions } from './components/CulturalRegions';
+import { CatalogSection } from './components/CatalogSection'; // 1. Import da nova seção
+import { ImpactCalculator } from './components/ImpactCalculator';
+import { MastersSection } from './components/MastersSection';
+import { Footer } from './components/Footer';
 import { LayoutGrid, Heart, Sparkles } from 'lucide-react';
 import type { FeaturedProduct, Stats } from './types';
 
@@ -20,38 +25,26 @@ const statsData: Stats[] = [
 ];
 
 export function App() {
+  const handleRegionChange = (regionId: string) => {
+    console.log('Região selecionada:', regionId);
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF6EF] text-[#3D180E] font-sans antialiased flex flex-col selection:bg-[#E09B31]/30">
-      {/* Navbar */}
+      {/* Header */}
       <Navbar />
 
-      {/* Conteúdo Principal / Hero Section */}
+      {/* Hero Section */}
       <main className="flex-1 relative overflow-hidden">
-        
-        {/* Arte Marcas d'água de Fundo (Pássaro/Sol Regional) */}
-        <div className="absolute top-12 left-6 opacity-5 pointer-events-none select-none">
-          <svg width="220" height="220" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1">
-            <path d="M10 50 Q 30 10, 50 50 T 90 50" />
-            <circle cx="50" cy="50" r="30" />
-          </svg>
-        </div>
-        <div className="absolute bottom-6 right-6 opacity-10 pointer-events-none select-none">
-          <Sparkles className="w-32 h-32 text-[#E09B31]" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10 lg:pt-6 lg:pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
-            {/* Coluna da Esquerda: Textos, CTA e Métricas */}
             <div className="lg:col-span-7 space-y-8">
-              
-              {/* Badge de Retorno Direto */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E09B31]/15 border border-[#E09B31]/40 text-[#3D180E] font-bold text-xs tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-[#E09B31] animate-pulse" />
                 100% RETORNO DIRETO AO MESTRE ARTESÃO
               </div>
 
-              {/* Título Principal */}
               <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-black text-[#3D180E] tracking-tight leading-[1.15]">
                 Do Barro de Caruaru às{' '}
                 <span className="relative inline-block underline decoration-[#E09B31] decoration-4 underline-offset-8">
@@ -60,12 +53,10 @@ export function App() {
                 do Sertão.
               </h2>
 
-              {/* Descrição */}
               <p className="text-stone-600 text-base sm:text-lg leading-relaxed max-w-2xl font-normal">
                 Conectamos você diretamente à alma criativa de Pernambuco. Sem intermediários exploradores, com origem certificada e impacto social garantido na vida de quem molda a nossa história.
               </p>
 
-              {/* Botões de Ação */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button className="flex items-center gap-2.5 px-6 py-3.5 bg-[#3D180E] hover:bg-[#4E2114] text-white font-bold text-sm rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5">
                   <LayoutGrid className="w-4 h-4 text-[#E09B31]" />
@@ -78,7 +69,6 @@ export function App() {
                 </button>
               </div>
 
-              {/* Seção de Métricas / Estatísticas */}
               <div className="pt-8 border-t border-stone-300/60 grid grid-cols-3 gap-4 max-w-xl">
                 {statsData.map((stat, idx) => (
                   <div key={idx} className="space-y-1">
@@ -88,16 +78,11 @@ export function App() {
                     <div className="text-xs sm:text-sm font-bold text-[#3D180E] leading-tight">
                       {stat.label}
                     </div>
-                    <div className="text-[11px] text-stone-500 font-medium hidden sm:block">
-                      {stat.description}
-                    </div>
                   </div>
                 ))}
               </div>
-
             </div>
 
-            {/* Coluna da Direita: Card do Produto em Destaque */}
             <div className="lg:col-span-5 flex justify-center lg:justify-end pb-8 lg:pb-0">
               <ProductCard product={featuredData} />
             </div>
@@ -105,6 +90,21 @@ export function App() {
           </div>
         </div>
       </main>
+
+      {/* 1. Filtro por Regiões Culturais */}
+      <CulturalRegions onSelectRegion={handleRegionChange} />
+
+      {/* 2. Catálogo Vivo: Obras & Obras-Primas (Nova Seção Inserida) */}
+      <CatalogSection />
+
+      {/* 3. Calculadora de Impacto Direto */}
+      <ImpactCalculator />
+
+      {/* 4. Grandes Mestres de Pernambuco */}
+      <MastersSection />
+
+      {/* Rodapé */}
+      <Footer />
     </div>
   );
 }
