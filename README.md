@@ -47,6 +47,7 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 - [Backlog - Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
 - [Diagrama de Casos de Uso](https://drive.google.com/file/d/1j8Ej2N5DjwcfHfw6MvURt_CsS5oYxgQL/view?usp=sharing)
 - [Diagrama de Classes](https://drive.google.com/file/d/1B3XJBb0NO-GSV3IqV8fT050-bVJqG5ad/view?usp=sharing)
+- [Plano de Testes - Versão 1](https://docs.google.com/document/d/1g6MABX9mCtVXfg0vxMLuS0kMjwttT4BClnToPovFeB8/edit?usp=sharing)
 
 
 ### Fundamentos de Computação Concorrente, Paralela e Distribuída
