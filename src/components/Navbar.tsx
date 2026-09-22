@@ -1,6 +1,46 @@
 import React, { useState } from 'react';
 import { Search, ShoppingBag, Store, Menu, X } from 'lucide-react';
 
+// Componente da Bandeira de Pernambuco (Somente a bandeira, sem fundo marrom)
+const PernambucoFlagIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 36 36"
+    width="32"
+    height="32"
+    style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }}
+    className={className}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g clipPath="url(#pe-flag-clip-nav)">
+      {/* Campo Superior Azul */}
+      <rect width="36" height="18" fill="#002B7F" />
+      {/* Campo Inferior Branco */}
+      <rect y="18" width="36" height="18" fill="#FFFFFF" />
+      
+      {/* Arco-íris (Vermelho, Amarelo, Verde) */}
+      <path d="M 3 18 A 15 15 0 0 1 33 18" stroke="#E31B23" strokeWidth="3" fill="none" />
+      <path d="M 6.5 18 A 11.5 11.5 0 0 1 29.5 18" stroke="#FFCC00" strokeWidth="2.5" fill="none" />
+      <path d="M 10 18 A 8 8 0 0 1 26 18" stroke="#009B3A" strokeWidth="2" fill="none" />
+      
+      {/* Sol Central */}
+      <circle cx="18" cy="18" r="2.5" fill="#FFCC00" />
+      
+      {/* Estrela Superior */}
+      <polygon points="18,3 18.9,5.8 21.8,5.8 19.4,7.5 20.3,10.2 18,8.5 15.7,10.2 16.6,7.5 14.2,5.8 17.1,5.8" fill="#FFCC00" />
+      
+      {/* Cruz Vermelha Inferior */}
+      <rect x="16.5" y="21" width="3" height="11" fill="#E31B23" stroke="#E31B23" strokeWidth="0.5" />
+      <rect x="12.5" y="24.5" width="11" height="3" fill="#E31B23" stroke="#E31B23" strokeWidth="0.5" />
+    </g>
+    <defs>
+      <clipPath id="pe-flag-clip-nav">
+        <rect width="36" height="36" rx="8" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
 export const Navbar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -8,19 +48,19 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="w-full sticky top-0 z-50 bg-[#FAF6EF]/95 backdrop-blur-md border-b border-stone-200">
-      {}
-      <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-amber-400 via-green-500 to-blue-600" />
+      {/* Barra superior com degradê suave contínuo com as cores da Bandeira de PE */}
+      <div className="h-1.5 w-full bg-[linear-gradient(to_right,#002B7F,#009B3A,#E31B23,#FFCC00,#FFFFFF)] shadow-sm" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
-        {}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 bg-[#3D180E] rounded-lg flex items-center justify-center text-amber-400 font-bold shadow-sm">
-            <span className="text-xl">☀️</span>
+        {/* Logo e Marca PONTO DA TERRA */}
+        <div className="flex items-center gap-3 shrink-0 cursor-pointer">
+          <div className="w-9 h-9 shrink-0 flex items-center justify-center hover:scale-105 transition-transform">
+            <PernambucoFlagIcon className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="font-serif font-black text-lg tracking-tight text-[#3D180E] leading-none">
-              MÃOS DE PE
+              PONTO DA TERRA
             </h1>
             <span className="text-[10px] uppercase tracking-widest text-[#D45B28] font-bold block mt-0.5">
               ORIGEM & TRADIÇÃO
@@ -28,7 +68,7 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {}
+        {/* Busca Desktop */}
         <div className="hidden md:flex flex-1 max-w-xl mx-4">
           <div className="relative w-full">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -81,7 +121,7 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Busca e Opções Mobile (Dropdown) */}
+      {/* Menu Mobile */}
       {isMenuOpen && (
         <div className="md:hidden border-t border-stone-200 bg-[#FAF6EF] px-4 pt-3 pb-6 space-y-3">
           <div className="relative w-full">
@@ -103,3 +143,5 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
+
+export default Navbar;

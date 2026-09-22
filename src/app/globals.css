@@ -1,4 +1,8 @@
 /* Custom Scrollbar em tom Marrom Pernambucano */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

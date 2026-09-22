@@ -1,11 +1,10 @@
-import type { Metadata } from 'next';
-import { Provider } from '../components/provider';
-import '../index.css';
-import '../App.css';
+import React from 'react';
+import './globals.css'; // <-- ESTA LINHA É OBRIGATÓRIA PARA O TAILWIND CARREGAR
+import Provider from './providers';
 
-export const metadata: Metadata = {
-  title: 'Ponto da Terra',
-  description: 'Aplicação Ponto da Terra',
+export const metadata = {
+  title: 'Mãos de PE - Origem & Tradição',
+  description: 'Artesanato e cultura pernambucana',
 };
 
 export default function RootLayout({
