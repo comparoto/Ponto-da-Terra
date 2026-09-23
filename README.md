@@ -51,7 +51,11 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 
 
 ### Fundamentos de Computação Concorrente, Paralela e Distribuída
-* **Entregas:** 
+* **Entregas:**
+- [Arquivo ZIP](https://drive.google.com/file/d/1ITK4Tarze59MlXn2-qVx2QE2MADOqIVR/view?usp=sharing)
+- [Slides](https://canva.link/yesnpw11bo8hgas)
+- [Log Uso de IA](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing)
+
 ---
 
 ## Segunda Unidade
