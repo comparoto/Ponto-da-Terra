@@ -1,14 +1,7 @@
-export interface Artesao {
-  id: string;
-  nome: string;
-  cidade: string;
-  estado: string;
-  imagemUrl: string;
-}
+export * from './artesao';
+export * from './produto';
 
-export interface Peca {
-  id: string;
-  nome: string;
-  preco: number;
-  imagemUrl: string;
+export interface ItemCarrinho {
+  peca: import('./produto').Peca;
+  quantidade: number;
 }

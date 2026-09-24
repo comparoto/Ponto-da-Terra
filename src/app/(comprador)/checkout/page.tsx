@@ -1,12 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { Box, Flex, Heading, Text, VStack, HStack, Button, Input, Divider, Radio, RadioGroup, useToast, Image } from '@chakra-ui/react';
-import { useCart } from '@/store/CartContext';
+import { useCart } from '@/store/cartStore'; // <-- Atualizado para a sua nova store
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 
 export default function CheckoutPage() {
-  const { items, total, clearCart } = useCart();
+  // Atualizado para usar os nomes das variáveis do seu código novo
+  const { items = [], valorTotal, limparCarrinho } = useCart();
   const router = useRouter();
   const toast = useToast();
   
@@ -15,12 +16,12 @@ export default function CheckoutPage() {
   const [metodoPagamento, setMetodoPagamento] = useState('pix');
   const [isCalculando, setIsCalculando] = useState(false);
 
-  const totalGeral = total + frete;
+  // Usa o novo valorTotal
+  const totalGeral = (valorTotal || 0) + frete;
 
   const simularFrete = () => {
     setIsCalculando(true);
     setTimeout(() => {
-      // Simulação: se o CEP estiver preenchido, cobra 15 reais
       setFrete(15.00);
       setIsCalculando(false);
       toast({
@@ -34,8 +35,7 @@ export default function CheckoutPage() {
   };
 
   const finalizarCompra = () => {
-    // Aqui no futuro será feita a chamada à API real (POST /pedidos)
-    clearCart();
+    limparCarrinho(); // Usa a sua nova função de limpar
     toast({
       title: 'Pedido realizado com sucesso!',
       description: 'Vamos redirecioná-lo para os seus pedidos.',
@@ -44,14 +44,23 @@ export default function CheckoutPage() {
       isClosable: true,
     });
     
-    // Redireciona para a home (ou futuramente para /meus-pedidos)
     setTimeout(() => {
       router.push('/meus-pedidos');
     }, 2000);
   };
+  
 
-  return (
-    <Box minH="100vh" bg="gray.900" color="white">
+return (
+    <Box 
+      minH="100vh" 
+      bgImage="url('/bg-pedidos.png')" 
+      bgSize="cover"
+      bgPosition="center"
+      bgAttachment="fixed"
+      color="white"
+      display="flex"
+      flexDirection="column"
+    >
       <Navbar />
       
       <Flex direction={['column', 'column', 'row']} maxW="1200px" mx="auto" p={8} gap={10} mt={8}>
@@ -69,7 +78,7 @@ export default function CheckoutPage() {
                     <Text fontSize="sm" color="whiteAlpha.600">Qtd: {item.quantidade}</Text>
                   </Box>
                 </HStack>
-                <Text color="terra.500">R$ {(item.peca.preco * item.quantidade).toFixed(2)}</Text>
+                <Text color="terra.500">R$ {(item.peca.preco * item.quantidade).toFixed(2).replace('.', ',')}</Text>
               </Flex>
             ))}
           </VStack>
@@ -114,15 +123,15 @@ export default function CheckoutPage() {
           <VStack spacing={2} align="stretch" mb={8} fontSize="lg">
             <Flex justify="space-between">
               <Text color="whiteAlpha.700">Subtotal:</Text>
-              <Text>R$ {total.toFixed(2)}</Text>
+              <Text>R$ {valorTotal.toFixed(2).replace('.', ',')}</Text>
             </Flex>
             <Flex justify="space-between">
               <Text color="whiteAlpha.700">Frete:</Text>
-              <Text>R$ {frete.toFixed(2)}</Text>
+              <Text>R$ {frete.toFixed(2).replace('.', ',')}</Text>
             </Flex>
             <Flex justify="space-between" fontWeight="bold" fontSize="xl" mt={2} color="terra.500">
               <Text>Total a Pagar:</Text>
-              <Text>R$ {totalGeral.toFixed(2)}</Text>
+              <Text>R$ {totalGeral.toFixed(2).replace('.', ',')}</Text>
             </Flex>
           </VStack>
 

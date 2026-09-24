@@ -1,9 +1,9 @@
 'use client';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { ReactNode } from 'react';
-import { CartProvider } from '@/store/CartContext';
+import { CartProvider } from '@/store/cartStore';
 
-const theme = extendTheme({
+export const theme = extendTheme({
   colors: {
     terra: {
       50: '#f5eee8',
@@ -16,6 +16,14 @@ const theme = extendTheme({
   fonts: {
     heading: `'Georgia', serif`, // Fonte serifada para os títulos
     body: `'Inter', sans-serif`,
+  },
+  styles: {
+    global: {
+      body: {
+        bg: '#171412',
+        color: 'white',
+      },
+    },
   },
 });
 

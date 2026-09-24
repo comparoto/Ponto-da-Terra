@@ -1,88 +1,211 @@
 'use client';
-import {
-  Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
-  Button, Flex, Text, Image, IconButton, VStack, Box
-} from '@chakra-ui/react';
-import { useCart } from '@/store/CartContext';
+
+import React from 'react';
 import { useRouter } from 'next/navigation';
 
-// Ícone de Lixo em SVG para remover itens
+
+import {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  Button,
+  Flex,
+  Text,
+  Image,
+  Box,
+  IconButton,
+  HStack,
+  VStack,
+  Divider,
+  Icon,
+} from '@chakra-ui/react';
+import { useCart } from '@/store/cartStore';
+
 const TrashIcon = (props: any) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" {...props}>
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-  </svg>
+  </Icon>
 );
 
-interface CartDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+const EmptyBagIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+  </Icon>
+);
 
-export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const { items, removeFromCart, total } = useCart();
+export function CartDrawer() {
   const router = useRouter();
+  
+  const {
+    items,
+    isCartOpen,
+    fecharCarrinho,
+    removerDoCarrinho,
+    atualizarQuantidade,
+    valorTotal,
+    totalItens,
+    limparCarrinho,
+  } = useCart();
 
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
-      <DrawerOverlay backdropFilter="blur(4px)" />
-      <DrawerContent bg="gray.900" color="white">
-        <DrawerCloseButton />
-        <DrawerHeader borderBottomWidth="1px" borderColor="whiteAlpha.200">
-          O seu Carrinho
+    <Drawer isOpen={isCartOpen} placement="right" onClose={fecharCarrinho} size="md">
+      <DrawerOverlay bg="blackAlpha.700" backdropFilter="blur(6px)" />
+      <DrawerContent bg="#1C1816" color="white" borderLeft="1px solid" borderColor="whiteAlpha.300">
+        <DrawerCloseButton color="white" />
+        <DrawerHeader borderBottomWidth="1px" borderColor="whiteAlpha.200" fontFamily="heading">
+          <Flex align="center" justify="space-between" pr={6}>
+            <Text fontSize="xl">Sua Sacola</Text>
+            {totalItens > 0 && (
+              <Text fontSize="sm" fontWeight="normal" color="terra.500">
+                {totalItens} {totalItens === 1 ? 'item' : 'itens'}
+              </Text>
+            )}
+          </Flex>
         </DrawerHeader>
 
-        <DrawerBody>
+        <DrawerBody px={4} py={6}>
           {items.length === 0 ? (
-            // Tratamento de Estado Vazio exigido na Avaliação
-            <Flex direction="column" align="center" justify="center" h="100%" color="whiteAlpha.600">
-              <Text fontSize="lg" mb={4}>O seu carrinho está vazio.</Text>
-              <Button onClick={onClose} variant="outline" colorScheme="orange">
-                Continuar a explorar
+            <Flex direction="column" align="center" justify="center" h="100%" gap={4} py={12}>
+              <EmptyBagIcon boxSize={16} color="whiteAlpha.400" />
+              <Text fontSize="lg" fontWeight="medium" color="whiteAlpha.800">
+                Sua sacola está vazia
+              </Text>
+              <Text fontSize="sm" color="whiteAlpha.500" textAlign="center" maxW="260px">
+                Explore os produtos de nossos mestres artesãos e adicione suas peças favoritas.
+              </Text>
+              <Button
+                mt={2}
+                size="sm"
+                bg="terra.500"
+                color="black"
+                _hover={{ bg: 'terra.600' }}
+                onClick={fecharCarrinho}
+              >
+                Continuar Comprando
               </Button>
             </Flex>
           ) : (
-            <VStack spacing={4} align="stretch" mt={4}>
-              {items.map((item) => (
-                <Flex key={item.peca.id} bg="whiteAlpha.100" p={3} borderRadius="md" align="center" justify="space-between">
-                  <Flex align="center" gap={4}>
-                    <Image src={item.peca.imagemUrl} boxSize="60px" objectFit="cover" borderRadius="sm" />
-                    <Box>
-                      <Text fontWeight="bold">{item.peca.nome}</Text>
-                      <Text fontSize="sm" color="whiteAlpha.700">Qtd: {item.quantidade}</Text>
-                      <Text color="terra.500">R$ {(item.peca.preco * item.quantidade).toFixed(2)}</Text>
-                    </Box>
-                  </Flex>
-                  <IconButton 
-                    aria-label="Remover item" 
-                    icon={<TrashIcon />} 
-                    colorScheme="red" 
-                    variant="ghost" 
-                    onClick={() => removeFromCart(item.peca.id)}
+            <VStack spacing={4} align="stretch">
+              {items.map(item => (
+                <Flex
+                  key={item.peca.id}
+                  bg="whiteAlpha.100"
+                  p={3}
+                  borderRadius="lg"
+                  gap={3}
+                  align="center"
+                >
+                  <Image
+                    src={item.peca.imagemUrl}
+                    alt={item.peca.nome}
+                    boxSize="70px"
+                    objectFit="cover"
+                    borderRadius="md"
                   />
+                  <Box flex="1">
+                    <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+                      {item.peca.nome}
+                    </Text>
+                    {item.peca.artesaoNome && (
+                      <Text fontSize="xs" color="terra.500">
+                        {item.peca.artesaoNome}
+                      </Text>
+                    )}
+                    <Text fontSize="sm" fontWeight="bold" color="whiteAlpha.900" mt={1}>
+                      R$ {item.peca.preco.toFixed(2).replace('.', ',')}
+                    </Text>
+                  </Box>
+
+                  <VStack align="flex-end" spacing={1}>
+                    <IconButton
+                      aria-label="Remover item"
+                      icon={<TrashIcon />}
+                      size="xs"
+                      variant="ghost"
+                      color="red.300"
+                      _hover={{ bg: 'red.900', color: 'red.100' }}
+                      onClick={() => removerDoCarrinho(item.peca.id)}
+                    />
+                    <HStack spacing={1}>
+                      <IconButton
+                        aria-label="Diminuir"
+                        size="xs"
+                        variant="outline"
+                        borderColor="terra.500" // Cor da borda alterada
+                        color="terra.500"       // Cor do ícone alterada
+                        _hover={{ bg: 'terra.500', color: 'black' }} // Efeito hover
+                        onClick={() => atualizarQuantidade(item.peca.id, item.quantidade - 1)}
+                      >
+                        -
+                      </IconButton>
+                      <Text fontSize="xs" fontWeight="bold" px={2}>
+                        {item.quantidade}
+                      </Text>
+                      <IconButton
+                        aria-label="Aumentar"
+                        size="xs"
+                        variant="outline"
+                        borderColor="terra.500" // Cor da borda alterada
+                        color="terra.500"       // Cor do ícone alterada
+                        _hover={{ bg: 'terra.500', color: 'black' }} // Efeito hover
+                        onClick={() => atualizarQuantidade(item.peca.id, item.quantidade + 1)}
+                      >
+                        +
+                      </IconButton>
+                    </HStack>
+                  </VStack>
                 </Flex>
               ))}
+
+              <Flex justify="flex-end" pt={2}>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  color="whiteAlpha.600"
+                  _hover={{ color: 'red.300', bg: 'transparent' }}
+                  onClick={limparCarrinho}
+                >
+                  Limpar sacola
+                </Button>
+              </Flex>
             </VStack>
           )}
         </DrawerBody>
 
         {items.length > 0 && (
-          <DrawerFooter borderTopWidth="1px" borderColor="whiteAlpha.200" display="flex" flexDirection="column" gap={4}>
-            <Flex w="100%" justify="space-between" fontWeight="bold" fontSize="lg">
-              <Text>Total:</Text>
-              <Text color="terra.500">R$ {total.toFixed(2)}</Text>
+          <DrawerFooter
+            borderTopWidth="1px"
+            borderColor="whiteAlpha.200"
+            flexDirection="column"
+            gap={3}
+            bg="blackAlpha.400"
+          >
+            <Flex justify="space-between" w="100%" align="center">
+              <Text fontSize="md" color="whiteAlpha.800">
+                Subtotal:
+              </Text>
+              <Text fontSize="xl" fontWeight="bold" color="terra.500">
+                R$ {valorTotal.toFixed(2).replace('.', ',')}
+              </Text>
             </Flex>
-                <Button 
-                  w="100%" 
-                  bg="terra.500" 
-                  color="black" 
-                  _hover={{ bg: 'terra.600' }}
-                   onClick={() => {
-                    onClose(); // Fecha a gaveta
-                    router.push('/checkout'); // Vai para a página de checkout
-                 }}
-              >
-                Finalizar Pedido
-                </Button>
+            <Button
+              w="100%"
+              bg="terra.500"
+              color="black"
+              _hover={{ bg: 'terra.600' }}
+              fontWeight="bold"
+              size="lg"
+              onClick={() => {
+                fecharCarrinho(); // 1. Fecha a gaveta lateral
+                router.push('/checkout'); // 2. Leva o utilizador para a página de checkout
+              }}
+            >
+              Finalizar Pedido
+            </Button>
           </DrawerFooter>
         )}
       </DrawerContent>

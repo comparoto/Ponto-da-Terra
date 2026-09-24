@@ -1,98 +1,183 @@
 'use client';
-import { Flex, HStack, Text, Input, InputGroup, InputLeftElement, Image, Icon, useDisclosure, Box } from '@chakra-ui/react';
-import { useCart } from '@/store/CartContext';
-import { CartDrawer } from './CartDrawer'; // Importamos o Drawer que criámos
-import NextLink from 'next/link';
 
-// Ícone de Lupa
+import React, { useState } from 'react';
+import {
+  Flex,
+  HStack,
+  Text,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Image,
+  Icon,
+  IconButton,
+  Badge,
+  Box,
+} from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/store/cartStore';
+import { CartDrawer } from './CartDrawer';
+
 const SearchIcon = (props: any) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
   </Icon>
 );
 
-// Ícone de Carrinho de Compras
-const CartIcon = (props: any) => (
+const ShoppingBagIcon = (props: any) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-    <circle cx="9" cy="21" r="1" />
-    <circle cx="20" cy="21" r="1" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
   </Icon>
 );
 
 export function Navbar() {
-  // Controle de abrir/fechar da gaveta
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  // Puxar os itens do contexto
-  const { items } = useCart();
-  
-  // Calcular a quantidade total de itens (somando a quantidade de cada um)
-  const cartCount = items.reduce((acc, item) => acc + item.quantidade, 0);
+  const router = useRouter();
+  const { totalItens, abrirCarrinho } = useCart();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim()) {
+      router.push(`/produtos?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
 
   return (
     <>
-      <Flex 
-        w="100%" 
-        px={8} 
-        py={4} 
-        align="center" 
-        justify="space-between" 
-        bg="blackAlpha.700" 
+      <Flex
+        w="100%"
+        px={{ base: 4, md: 8 }}
+        py={4}
+        align="center"
+        justify="space-between"
+        bg="blackAlpha.700"
         color="white"
         backdropFilter="blur(10px)"
+        position="sticky"
+        top={0}
+        zIndex={100}
+        borderBottom="1px solid"
+        borderColor="whiteAlpha.100"
       >
-        {/* Logótipo clicável que leva para a Home ("/") */}
-        <NextLink href="/vitrine">
-          <Image 
-            src="/logo.png" 
-            alt="Logo" 
-            h="40px" 
-            objectFit="contain" 
+        {/* Logo clicável */}
+        <Flex
+          align="center"
+          cursor="pointer"
+          onClick={() => router.push('/vitrine')}
+          transition="opacity 0.2s"
+          _hover={{ opacity: 0.85 }}
+        >
+          <Image src="/logo.png" alt="Logo Ponto da Terra" h="40px" objectFit="contain" />
+        </Flex>
+
+        {/* Links Principais */}
+        <HStack spacing={{ base: 4, lg: 8 }} fontSize="md" display={{ base: 'none', md: 'flex' }}>
+          <Text
             cursor="pointer"
-            transition="transform 0.2s"
-            _hover={{ transform: 'scale(1.05)' }} // Dá um pequeno efeito de zoom ao passar o rato
-          />
-        </NextLink>
-        
-        <HStack spacing={8} fontSize="md">
-          <Text cursor="pointer" _hover={{ color: 'terra.500' }}>Sobre</Text>
-          <Text cursor="pointer" _hover={{ color: 'terra.500' }}>Artistas</Text>
-          <Text cursor="pointer" _hover={{ color: 'terra.500' }}>Peças</Text>
+            transition="color 0.2s"
+            _hover={{ color: 'terra.500' }}
+            onClick={() => router.push('/vitrine')}
+          >
+            Vitrine
+          </Text>
+          <Text
+            cursor="pointer"
+            transition="color 0.2s"
+            _hover={{ color: 'terra.500' }}
+            onClick={() => router.push('/produtos')}
+          >
+            Peças & Catálogo
+          </Text>
+          <Text
+            cursor="pointer"
+            transition="color 0.2s"
+            _hover={{ color: 'terra.500' }}
+            onClick={() => {
+              router.push('/vitrine#artistas');
+            }}
+          >
+            Artesãos
+          </Text>
         </HStack>
 
-        <InputGroup w="250px" size="md">
+        {/* Campo de Busca */}
+        <InputGroup w={{ base: '160px', sm: '220px', md: '260px' }} size="md">
           <InputLeftElement pointerEvents="none">
             <SearchIcon color="whiteAlpha.600" />
           </InputLeftElement>
-          <Input 
-            placeholder="Pesquisar" 
-            bg="whiteAlpha.300" 
-            border="none" 
+          <Input
+            placeholder="Pesquisar peças..."
+            bg="whiteAlpha.300"
+            border="none"
             borderRadius="full"
             _placeholder={{ color: 'whiteAlpha.600' }}
+            _focus={{ bg: 'whiteAlpha.400', boxShadow: '0 0 0 1px #D9B596' }}
             color="white"
             px={10}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch}
           />
         </InputGroup>
 
-        <HStack spacing={6} fontSize="md">
-          <Text cursor="pointer" _hover={{ color: 'terra.500' }}>Contato</Text>
-          
-          {/* Botão do Carrinho */}
-          <Flex align="center" cursor="pointer" onClick={onOpen} _hover={{ color: 'terra.500' }} transition="0.2s">
-            <CartIcon boxSize={5} mr={2} />
-            <Text>Carrinho</Text>
-            {cartCount > 0 && (
-              <Box ml={2} bg="terra.500" color="black" px={2} py={0.5} borderRadius="full" fontSize="xs" fontWeight="bold">
-                {cartCount}
-              </Box>
+        {/* Links secundários + Botão do Carrinho */}
+        <HStack spacing={{ base: 2, md: 5 }}>
+          <HStack spacing={6} fontSize="md" display={{ base: 'none', lg: 'flex' }}>
+            <Text
+              cursor="pointer"
+              transition="color 0.2s"
+              _hover={{ color: 'terra.500' }}
+              onClick={() => alert('Em breve: página sobre a história do artesanato de Pernambuco!')}
+            >
+              Sobre
+            </Text>
+            <Text
+              cursor="pointer"
+              transition="color 0.2s"
+              _hover={{ color: 'terra.500' }}
+              onClick={() => alert('Dúvidas? Entre em contato pelo e-mail contato@pontodaterra.com.br')}
+            >
+              Contato
+            </Text>
+          </HStack>
+
+          {/* Botão de Sacola / Carrinho com Contador */}
+          <Box position="relative">
+            <IconButton
+              aria-label="Abrir sacola de compras"
+              icon={<ShoppingBagIcon />}
+              bg="whiteAlpha.200"
+              color="white"
+              _hover={{ bg: 'terra.500', color: 'black' }}
+              borderRadius="full"
+              size="md"
+              onClick={abrirCarrinho}
+            />
+            {totalItens > 0 && (
+              <Badge
+                position="absolute"
+                top="-4px"
+                right="-4px"
+                bg="terra.500"
+                color="black"
+                borderRadius="full"
+                boxSize="20px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                fontSize="xs"
+                fontWeight="bold"
+                border="2px solid"
+                borderColor="#1C1816"
+              >
+                {totalItens}
+              </Badge>
             )}
-          </Flex>
+          </Box>
         </HStack>
       </Flex>
 
-      {/* Renderizamos o Drawer fora do Flex para não quebrar o layout */}
-      <CartDrawer isOpen={isOpen} onClose={onClose} />
+      {/* Gaveta do Carrinho */}
+      <CartDrawer />
     </>
   );
 }
