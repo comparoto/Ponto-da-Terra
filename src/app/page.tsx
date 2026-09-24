@@ -1,69 +1,65 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import { Box, Heading, Text, Button, Flex, Stack, Image } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function WelcomePage() {
+  const router = useRouter();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Flex
+      minH="100vh"
+      align="center"
+      px={[4, 8, 16]}
+      bgImage="url('/bg-welcome.png')"
+      bgSize="cover"
+      bgPosition="center"
+      position="relative"
+    >
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} bg="blackAlpha.600" zIndex={0} />
+      
+      <Box zIndex={1} color="white" maxW="3xl" p={8}>
+        {/* Flex para colocar o Título e o Logótipo lado a lado */}
+        <Flex align="flex-end" gap={6} mb={4}>
+          <Heading as="h1" size="3xl" fontFamily="heading" lineHeight="1.2">
+            BEM-VINDO AO<br />PONTO DA TERRA
+          </Heading>
+          
+          {/* Adicione a imagem do logótipo na pasta public/ com o nome logo.png */}
+          <Image 
+            src="/logo.png" 
+            alt="Logótipo Ponto da Terra" 
+            boxSize="100px" // Ajuste este valor para o tamanho ideal (ex: 80px, 120px)
+            objectFit="contain" 
+            mb={2} // Margem inferior ligeira para alinhar bem com o texto
+          />
+        </Flex>
+        
+        {/* Tamanho da fonte aumentado de "lg" para "xl" */}
+        <Text fontSize="xl" mb={8} color="whiteAlpha.900" maxW="lg">
+          Encontre diversos artesãos, peças e histórias em um só lugar!
+        </Text>
+        
+        <Stack direction={["column", "row"]} spacing={4}>
+          <Button 
+            variant="outline" 
+            color="white" 
+            borderColor="whiteAlpha.600"
+            _hover={{ bg: 'whiteAlpha.200' }}
+            w="150px"
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Login
+          </Button>
+          <Button 
+            bg="terra.500" 
+            color="black"
+            _hover={{ bg: 'terra.600' }}
+            w="150px"
+            onClick={() => router.push('/vitrine')}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            Acesse o site
+          </Button>
+        </Stack>
+      </Box>
+    </Flex>
   );
 }
