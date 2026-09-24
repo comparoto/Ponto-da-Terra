@@ -1,28 +1,11 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
-
-
 import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Button,
-  Flex,
-  Text,
-  Image,
-  Box,
-  IconButton,
-  HStack,
-  VStack,
-  Divider,
-  Icon,
+  Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
+  Button, Flex, Text, Image, Box, IconButton, HStack, VStack, Icon
 } from '@chakra-ui/react';
+// IMPORTANTE: Usa o novo cartStore!
 import { useCart } from '@/store/cartStore';
 
 const TrashIcon = (props: any) => (
@@ -39,16 +22,9 @@ const EmptyBagIcon = (props: any) => (
 
 export function CartDrawer() {
   const router = useRouter();
-  
   const {
-    items,
-    isCartOpen,
-    fecharCarrinho,
-    removerDoCarrinho,
-    atualizarQuantidade,
-    valorTotal,
-    totalItens,
-    limparCarrinho,
+    items, isCartOpen, fecharCarrinho, removerDoCarrinho,
+    atualizarQuantidade, valorTotal, totalItens, limparCarrinho,
   } = useCart();
 
   return (
@@ -71,139 +47,58 @@ export function CartDrawer() {
           {items.length === 0 ? (
             <Flex direction="column" align="center" justify="center" h="100%" gap={4} py={12}>
               <EmptyBagIcon boxSize={16} color="whiteAlpha.400" />
-              <Text fontSize="lg" fontWeight="medium" color="whiteAlpha.800">
-                Sua sacola está vazia
-              </Text>
+              <Text fontSize="lg" fontWeight="medium" color="whiteAlpha.800">Sua sacola está vazia</Text>
               <Text fontSize="sm" color="whiteAlpha.500" textAlign="center" maxW="260px">
                 Explore os produtos de nossos mestres artesãos e adicione suas peças favoritas.
               </Text>
-              <Button
-                mt={2}
-                size="sm"
-                bg="terra.500"
-                color="black"
-                _hover={{ bg: 'terra.600' }}
-                onClick={fecharCarrinho}
-              >
+              <Button mt={2} size="sm" bg="terra.500" color="black" _hover={{ bg: 'terra.600' }} onClick={fecharCarrinho}>
                 Continuar Comprando
               </Button>
             </Flex>
           ) : (
             <VStack spacing={4} align="stretch">
               {items.map(item => (
-                <Flex
-                  key={item.peca.id}
-                  bg="whiteAlpha.100"
-                  p={3}
-                  borderRadius="lg"
-                  gap={3}
-                  align="center"
-                >
-                  <Image
-                    src={item.peca.imagemUrl}
-                    alt={item.peca.nome}
-                    boxSize="70px"
-                    objectFit="cover"
-                    borderRadius="md"
-                  />
+                <Flex key={item.peca.id} bg="whiteAlpha.100" p={3} borderRadius="lg" gap={3} align="center">
+                  <Image src={item.peca.imagemUrl} alt={item.peca.nome} boxSize="70px" objectFit="cover" borderRadius="md" />
                   <Box flex="1">
-                    <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
-                      {item.peca.nome}
-                    </Text>
-                    {item.peca.artesaoNome && (
-                      <Text fontSize="xs" color="terra.500">
-                        {item.peca.artesaoNome}
-                      </Text>
-                    )}
+                    <Text fontSize="sm" fontWeight="medium" noOfLines={1}>{item.peca.nome}</Text>
+                    {item.peca.artesaoNome && <Text fontSize="xs" color="terra.500">{item.peca.artesaoNome}</Text>}
                     <Text fontSize="sm" fontWeight="bold" color="whiteAlpha.900" mt={1}>
                       R$ {item.peca.preco.toFixed(2).replace('.', ',')}
                     </Text>
                   </Box>
-
                   <VStack align="flex-end" spacing={1}>
-                    <IconButton
-                      aria-label="Remover item"
-                      icon={<TrashIcon />}
-                      size="xs"
-                      variant="ghost"
-                      color="red.300"
-                      _hover={{ bg: 'red.900', color: 'red.100' }}
-                      onClick={() => removerDoCarrinho(item.peca.id)}
-                    />
+                    <IconButton aria-label="Remover" icon={<TrashIcon />} size="xs" variant="ghost" color="red.300" _hover={{ bg: 'red.900' }} onClick={() => removerDoCarrinho(item.peca.id)} />
                     <HStack spacing={1}>
-                      <IconButton
-                        aria-label="Diminuir"
-                        size="xs"
-                        variant="outline"
-                        borderColor="terra.500" // Cor da borda alterada
-                        color="terra.500"       // Cor do ícone alterada
-                        _hover={{ bg: 'terra.500', color: 'black' }} // Efeito hover
-                        onClick={() => atualizarQuantidade(item.peca.id, item.quantidade - 1)}
-                      >
-                        -
-                      </IconButton>
-                      <Text fontSize="xs" fontWeight="bold" px={2}>
-                        {item.quantidade}
-                      </Text>
-                      <IconButton
-                        aria-label="Aumentar"
-                        size="xs"
-                        variant="outline"
-                        borderColor="terra.500" // Cor da borda alterada
-                        color="terra.500"       // Cor do ícone alterada
-                        _hover={{ bg: 'terra.500', color: 'black' }} // Efeito hover
-                        onClick={() => atualizarQuantidade(item.peca.id, item.quantidade + 1)}
-                      >
-                        +
-                      </IconButton>
+                      
+                      {/* AQUI ESTÁ A CORREÇÃO: Button normal com cor laranja para os sinais aparecerem! */}
+                      <Button size="xs" variant="outline" borderColor="terra.500" color="terra.500" _hover={{ bg: 'terra.500', color: 'black' }} onClick={() => atualizarQuantidade(item.peca.id, item.quantidade - 1)}>-</Button>
+                      <Text fontSize="xs" fontWeight="bold" px={2} color="white">{item.quantidade}</Text>
+                      <Button size="xs" variant="outline" borderColor="terra.500" color="terra.500" _hover={{ bg: 'terra.500', color: 'black' }} onClick={() => atualizarQuantidade(item.peca.id, item.quantidade + 1)}>+</Button>
+                      
                     </HStack>
                   </VStack>
                 </Flex>
               ))}
-
               <Flex justify="flex-end" pt={2}>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  color="whiteAlpha.600"
-                  _hover={{ color: 'red.300', bg: 'transparent' }}
-                  onClick={limparCarrinho}
-                >
-                  Limpar sacola
-                </Button>
+                <Button variant="ghost" size="xs" color="whiteAlpha.600" _hover={{ color: 'red.300', bg: 'transparent' }} onClick={limparCarrinho}>Limpar sacola</Button>
               </Flex>
             </VStack>
           )}
         </DrawerBody>
 
         {items.length > 0 && (
-          <DrawerFooter
-            borderTopWidth="1px"
-            borderColor="whiteAlpha.200"
-            flexDirection="column"
-            gap={3}
-            bg="blackAlpha.400"
-          >
+          <DrawerFooter borderTopWidth="1px" borderColor="whiteAlpha.200" flexDirection="column" gap={3} bg="blackAlpha.400">
             <Flex justify="space-between" w="100%" align="center">
-              <Text fontSize="md" color="whiteAlpha.800">
-                Subtotal:
-              </Text>
+              <Text fontSize="md" color="whiteAlpha.800">Subtotal:</Text>
               <Text fontSize="xl" fontWeight="bold" color="terra.500">
                 R$ {valorTotal.toFixed(2).replace('.', ',')}
               </Text>
             </Flex>
-            <Button
-              w="100%"
-              bg="terra.500"
-              color="black"
-              _hover={{ bg: 'terra.600' }}
-              fontWeight="bold"
-              size="lg"
-              onClick={() => {
-                fecharCarrinho(); // 1. Fecha a gaveta lateral
-                router.push('/checkout'); // 2. Leva o utilizador para a página de checkout
-              }}
-            >
+            <Button w="100%" bg="terra.500" color="black" _hover={{ bg: 'terra.600' }} fontWeight="bold" size="lg" onClick={() => {
+              fecharCarrinho();
+              router.push('/checkout');
+            }}>
               Finalizar Pedido
             </Button>
           </DrawerFooter>
