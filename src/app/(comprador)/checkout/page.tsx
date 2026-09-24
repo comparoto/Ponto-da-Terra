@@ -46,21 +46,9 @@ export default function CheckoutPage() {
     
     // Redireciona para a home (ou futuramente para /meus-pedidos)
     setTimeout(() => {
-      router.push('/vitrine');
+      router.push('/meus-pedidos');
     }, 2000);
   };
-
-  if (items.length === 0) {
-    return (
-      <Box minH="100vh" bg="gray.900" color="white">
-        <Navbar />
-        <Flex direction="column" align="center" justify="center" mt={20}>
-          <Heading size="md" mb={4}>O seu carrinho está vazio</Heading>
-          <Button colorScheme="orange" onClick={() => router.push('/vitrine')}>Voltar para a Vitrine</Button>
-        </Flex>
-      </Box>
-    );
-  }
 
   return (
     <Box minH="100vh" bg="gray.900" color="white">

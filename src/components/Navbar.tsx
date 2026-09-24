@@ -2,6 +2,7 @@
 import { Flex, HStack, Text, Input, InputGroup, InputLeftElement, Image, Icon, useDisclosure, Box } from '@chakra-ui/react';
 import { useCart } from '@/store/CartContext';
 import { CartDrawer } from './CartDrawer'; // Importamos o Drawer que criámos
+import NextLink from 'next/link';
 
 // Ícone de Lupa
 const SearchIcon = (props: any) => (
@@ -40,7 +41,18 @@ export function Navbar() {
         color="white"
         backdropFilter="blur(10px)"
       >
-        <Image src="/logo.png" alt="Logo" h="40px" objectFit="contain" />
+        {/* Logótipo clicável que leva para a Home ("/") */}
+        <NextLink href="/vitrine">
+          <Image 
+            src="/logo.png" 
+            alt="Logo" 
+            h="40px" 
+            objectFit="contain" 
+            cursor="pointer"
+            transition="transform 0.2s"
+            _hover={{ transform: 'scale(1.05)' }} // Dá um pequeno efeito de zoom ao passar o rato
+          />
+        </NextLink>
         
         <HStack spacing={8} fontSize="md">
           <Text cursor="pointer" _hover={{ color: 'terra.500' }}>Sobre</Text>
