@@ -5,7 +5,6 @@ import {
   Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
   Button, Flex, Text, Image, Box, IconButton, HStack, VStack, Icon
 } from '@chakra-ui/react';
-// IMPORTANTE: Usa o novo cartStore!
 import { useCart } from '@/store/cartStore';
 
 const TrashIcon = (props: any) => (
@@ -70,12 +69,9 @@ export function CartDrawer() {
                   <VStack align="flex-end" spacing={1}>
                     <IconButton aria-label="Remover" icon={<TrashIcon />} size="xs" variant="ghost" color="red.300" _hover={{ bg: 'red.900' }} onClick={() => removerDoCarrinho(item.peca.id)} />
                     <HStack spacing={1}>
-                      
-                      {/* AQUI ESTÁ A CORREÇÃO: Button normal com cor laranja para os sinais aparecerem! */}
                       <Button size="xs" variant="outline" borderColor="terra.500" color="terra.500" _hover={{ bg: 'terra.500', color: 'black' }} onClick={() => atualizarQuantidade(item.peca.id, item.quantidade - 1)}>-</Button>
                       <Text fontSize="xs" fontWeight="bold" px={2} color="white">{item.quantidade}</Text>
                       <Button size="xs" variant="outline" borderColor="terra.500" color="terra.500" _hover={{ bg: 'terra.500', color: 'black' }} onClick={() => atualizarQuantidade(item.peca.id, item.quantidade + 1)}>+</Button>
-                      
                     </HStack>
                   </VStack>
                 </Flex>

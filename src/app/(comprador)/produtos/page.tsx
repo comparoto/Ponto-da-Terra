@@ -247,7 +247,7 @@ function CatalogoContent() {
               {/* Filtro por Artesão */}
               <Select
                 size="md"
-                bg="blackAlpha.700"
+                bg="#2C2724"
                 borderColor="whiteAlpha.300"
                 color="white"
                 borderRadius="lg"
@@ -268,7 +268,7 @@ function CatalogoContent() {
               {/* Filtro por Faixa de Preço */}
               <Select
                 size="md"
-                bg="blackAlpha.700"
+                bg="#2C2724"
                 borderColor="whiteAlpha.300"
                 color="white"
                 borderRadius="lg"
@@ -293,7 +293,7 @@ function CatalogoContent() {
               {/* Ordenação */}
               <Select
                 size="md"
-                bg="blackAlpha.700"
+                bg="#2C2724"
                 borderColor="whiteAlpha.300"
                 color="white"
                 borderRadius="lg"

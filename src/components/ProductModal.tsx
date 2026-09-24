@@ -154,29 +154,35 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                   <HStack spacing={2}>
                     <IconButton
                       aria-label="Diminuir"
-                      size="sm"
-                      variant="outline"
-                      borderColor="whiteAlpha.300"
-                      color="white"
-                      _hover={{ bg: 'whiteAlpha.200' }}
+                      icon={<Text as="span" fontSize="xl" fontWeight="bold" lineHeight="1">-</Text>}
+                      size="md"
+                      variant="solid"
+                      bg="terra.500"
+                      border="1px solid"
+                      borderColor="terra.500"
+                      color="black"
+                      fontSize="xl"
+                      fontWeight="bold"
+                      _hover={{ bg: 'terra.600', transform: 'scale(1.05)' }}
                       onClick={() => setQuantidade(prev => Math.max(1, prev - 1))}
-                    >
-                      -
-                    </IconButton>
+                    />
                     <Text fontWeight="bold" px={2} minW="24px" textAlign="center">
                       {quantidade}
                     </Text>
                     <IconButton
                       aria-label="Aumentar"
-                      size="sm"
-                      variant="outline"
-                      borderColor="whiteAlpha.300"
-                      color="white"
-                      _hover={{ bg: 'whiteAlpha.200' }}
+                      icon={<Text as="span" fontSize="xl" fontWeight="bold" lineHeight="1">+</Text>}
+                      size="md"
+                      variant="solid"
+                      bg="terra.500"
+                      border="1px solid"
+                      borderColor="terra.500"
+                      color="black"
+                      fontSize="xl"
+                      fontWeight="bold"
+                      _hover={{ bg: 'terra.600', transform: 'scale(1.05)' }}
                       onClick={() => setQuantidade(prev => prev + 1)}
-                    >
-                      +
-                    </IconButton>
+                    />
                   </HStack>
                 </Flex>
 
@@ -187,7 +193,11 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                   _hover={{ bg: adicionado ? 'green.600' : 'terra.600' }}
                   leftIcon={adicionado ? <CheckIcon /> : <CartAddIcon />}
                   fontWeight="bold"
-                  size="md"
+                  size="lg"
+                  minH="56px"
+                  borderRadius="lg"
+                  boxShadow="0 6px 18px rgba(217, 181, 150, 0.28)"
+                  _active={{ transform: 'scale(0.98)' }}
                   onClick={handleAddToCart}
                 >
                   {adicionado ? 'Adicionado com sucesso!' : `Adicionar à Sacola • R$ ${(peca.preco * quantidade).toFixed(2).replace('.', ',')}`}

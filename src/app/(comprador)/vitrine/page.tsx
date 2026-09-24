@@ -15,12 +15,8 @@ import {
   Badge,
   HStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
+  Input,
+  Select,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
@@ -55,6 +51,15 @@ export default function VitrinePage() {
   const [artesaos, setArtesaos] = useState<Artesao[]>([]);
   const [pecas, setPecas] = useState<Peca[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [mostrarTelaArtesaos, setMostrarTelaArtesaos] = useState(false);
+  const [buscaPeca, setBuscaPeca] = useState('');
+  const [categoriaPeca, setCategoriaPeca] = useState('Todas');
+  const [regiaoPeca, setRegiaoPeca] = useState('Todas');
+  const [faixaPrecoPeca, setFaixaPrecoPeca] = useState('Todas');
+  const [artesaoPeca, setArtesaoPeca] = useState('Todos');
+  const [buscaArtesao, setBuscaArtesao] = useState('');
+  const [regiaoArtesao, setRegiaoArtesao] = useState('Todas');
+  const [especialidadeArtesao, setEspecialidadeArtesao] = useState('Todas');
 
   // Artesão selecionado para filtro rápido
   const [artesaoSelecionado, setArtesaoSelecionado] = useState<string | null>(null);
@@ -64,12 +69,6 @@ export default function VitrinePage() {
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
 
   // Modal com todos os artesãos
-  const {
-    isOpen: isArtesaosModalOpen,
-    onOpen: openArtesaosModal,
-    onClose: closeArtesaosModal,
-  } = useDisclosure();
-
   useEffect(() => {
     Promise.all([artesaoService.getArtesaos(), produtoService.getProdutos()]).then(
       ([artesaosData, pecasData]) => {
@@ -94,9 +93,79 @@ export default function VitrinePage() {
   };
 
   // Peças filtradas ou limitadas para a exibição na Vitrine
-  const pecasExibidas = artesaoSelecionado
-    ? pecas.filter(p => p.artesaoId === artesaoSelecionado)
-    : pecas.slice(0, 6);
+  const regiaoPorCidade: Record<string, string> = {
+    Caruaru: 'Agreste', Bezerros: 'Agreste', Pesqueira: 'Agreste',
+    Petrolina: 'Sert\u00e3o', Tracunhaem: 'Zona da Mata', Goiana: 'Zona da Mata',
+  };
+  const obterRegiao = (cidade: string) => regiaoPorCidade[cidade.normalize('NFD').replace(/[\u0300-\u036f]/g, '')] || 'Outras';
+  const regioesArtesaos = [...new Set(artesaos.map(a => obterRegiao(a.cidade)))];
+  const especialidadesArtesaos = [...new Set(artesaos.map(a => a.especialidade).filter((e): e is string => Boolean(e)))];
+  const termoArtesao = buscaArtesao.trim().toLocaleLowerCase('pt-BR');
+  const artesaosFiltrados = artesaos.filter(art => {
+    const correspondeBusca = !termoArtesao || [art.nome, art.cidade, art.especialidade || '']
+      .some(valor => valor.toLocaleLowerCase('pt-BR').includes(termoArtesao));
+    const correspondeRegiao = regiaoArtesao === 'Todas' || obterRegiao(art.cidade) === regiaoArtesao;
+    const correspondeEspecialidade = especialidadeArtesao === 'Todas' || art.especialidade === especialidadeArtesao;
+    return correspondeBusca && correspondeRegiao && correspondeEspecialidade;
+  });
+
+  const pecasFiltradas = pecas.filter(peca => {
+    const artesao = artesaos.find(a => a.id === peca.artesaoId);
+    const nomeArtesao = artesao?.nome || peca.artesaoNome || '';
+    const cidade = (artesao?.cidade || peca.artesaoCidade || '').split(' - ')[0];
+    const regiao = obterRegiao(cidade);
+    const termo = buscaPeca.trim().toLocaleLowerCase('pt-BR');
+    const correspondeBusca = !termo || [peca.nome, peca.material || '', nomeArtesao].some(v => v.toLocaleLowerCase('pt-BR').includes(termo));
+    const correspondeCategoria = categoriaPeca === 'Todas' || peca.categoria === categoriaPeca;
+    const correspondeRegiao = regiaoPeca === 'Todas' || regiao === regiaoPeca;
+    const correspondeArtesao = artesaoPeca === 'Todos' || peca.artesaoId === artesaoPeca;
+    const correspondePreco = faixaPrecoPeca === 'Todas' || (faixaPrecoPeca === 'ate100' ? peca.preco <= 100 : faixaPrecoPeca === '100a200' ? peca.preco > 100 && peca.preco <= 200 : peca.preco > 200);
+    const correspondeSelecaoRapida = !artesaoSelecionado || peca.artesaoId === artesaoSelecionado;
+    return correspondeBusca && correspondeCategoria && correspondeRegiao && correspondeArtesao && correspondePreco && correspondeSelecaoRapida;
+  });
+  const temFiltroPeca = Boolean(buscaPeca || categoriaPeca !== 'Todas' || regiaoPeca !== 'Todas' || faixaPrecoPeca !== 'Todas' || artesaoPeca !== 'Todos' || artesaoSelecionado);
+  const pecasExibidas = temFiltroPeca ? pecasFiltradas : pecasFiltradas.slice(0, 6);
+
+  const telaArtesaos = (
+    <Box maxW="1280px" w="100%" mx="auto" px={{ base: 4, md: 8 }} py={8} flex="1">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={4} mb={6}>
+        <Box>
+          <Badge bg="terra.500" color="black" px={3} py={1} borderRadius="full" fontSize="xs" mb={2}>ARTESANATO PERNAMBUCANO</Badge>
+          <Heading color="white" fontFamily="heading" fontWeight="normal">Artes&atilde;os e Artes&atilde;s</Heading>
+          <Text color="whiteAlpha.700" mt={2}>Conhe&ccedil;a os mestres e mestras por tr&aacute;s de cada cria&ccedil;&atilde;o.</Text>
+        </Box>
+        <Button variant="outline" borderColor="terra.500" color="terra.500" _hover={{ bg: 'terra.500', color: 'black' }} onClick={() => setMostrarTelaArtesaos(false)}>Voltar &agrave; Vitrine</Button>
+      </Flex>
+      <Flex direction={{ base: 'column', md: 'row' }} gap={3} mb={6} p={4} bg="blackAlpha.700" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.200">
+        <Input placeholder="Buscar por nome, cidade ou especialidade" value={buscaArtesao} onChange={e => setBuscaArtesao(e.target.value)} bg="whiteAlpha.100" borderColor="whiteAlpha.300" color="white" _placeholder={{ color: 'whiteAlpha.600' }} aria-label="Buscar artes&#227;os" />
+        <Select value={regiaoArtesao} onChange={e => setRegiaoArtesao(e.target.value)} bg="#2C2724" borderColor="whiteAlpha.300" color="white" aria-label="Filtrar artes&#227;os por regi&#227;o" sx={{ '& option': { backgroundColor: '#2C2724', color: '#fff' } }}>
+          <option value="Todas">Todas as regi&#245;es</option>
+          {regioesArtesaos.map(regiao => <option key={regiao} value={regiao}>{regiao}</option>)}
+        </Select>
+        <Select value={especialidadeArtesao} onChange={e => setEspecialidadeArtesao(e.target.value)} bg="#2C2724" borderColor="whiteAlpha.300" color="white" aria-label="Filtrar artes&#227;os por especialidade" sx={{ '& option': { backgroundColor: '#2C2724', color: '#fff' } }}>
+          <option value="Todas">Todas as especialidades</option>
+          {especialidadesArtesaos.map(especialidade => <option key={especialidade} value={especialidade}>{especialidade}</option>)}
+        </Select>
+      </Flex>
+      {artesaosFiltrados.length === 0 ? (
+        <Text color="whiteAlpha.700" textAlign="center" py={12}>Nenhum artes&#227;o encontrado com esses filtros.</Text>
+      ) : (
+        <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+          {artesaosFiltrados.map(art => (
+            <Flex key={art.id} direction={{ base: 'column', sm: 'row' }} gap={4} p={5} bg="blackAlpha.700" color="white" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.200" align="center">
+              <Image src={art.imagemUrl} alt={art.nome} boxSize="96px" borderRadius="full" objectFit="cover" fallbackSrc="https://cdn-icons-png.flaticon.com/512/12225/12225881.png" />
+              <Box flex="1" textAlign={{ base: 'center', sm: 'left' }}>
+                <Heading size="sm" color="terra.500" mb={1}>{art.nome}</Heading>
+                <Text fontSize="sm" color="whiteAlpha.800">{art.cidade} - {art.estado} &middot; {obterRegiao(art.cidade)}</Text>
+                {art.especialidade && <Badge mt={2} color="terra.500" bg="whiteAlpha.100">{art.especialidade}</Badge>}
+                {art.biografia && <Text fontSize="sm" color="whiteAlpha.700" mt={2}>{art.biografia}</Text>}
+              </Box>
+            </Flex>
+          ))}
+        </SimpleGrid>
+      )}
+    </Box>
+  );
 
   return (
     <Box
@@ -108,9 +177,9 @@ export default function VitrinePage() {
       display="flex"
       flexDirection="column"
     >
-      <Navbar />
+      <Navbar onArtisansClick={() => setMostrarTelaArtesaos(true)} onLogoClick={() => setMostrarTelaArtesaos(false)} />
 
-      {isLoading ? (
+      {mostrarTelaArtesaos ? telaArtesaos : isLoading ? (
         <Flex justify="center" align="center" flex="1" minH="60vh">
           <Spinner size="xl" color="terra.500" thickness="4px" />
         </Flex>
@@ -178,6 +247,27 @@ export default function VitrinePage() {
               </Flex>
 
               {/* Categorias Rápidas */}
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 5 }} spacing={3} mt={6}>
+                <Input placeholder="Buscar pe&#231;as, material ou artes&#227;o" value={buscaPeca} onChange={e => setBuscaPeca(e.target.value)} bg="whiteAlpha.100" borderColor="whiteAlpha.300" color="white" _placeholder={{ color: 'whiteAlpha.600' }} aria-label="Buscar pe&#231;as" />
+                <Select value={categoriaPeca} onChange={e => setCategoriaPeca(e.target.value)} bg="#2C2724" borderColor="whiteAlpha.300" color="white" aria-label="Filtrar pe&#231;as por categoria" sx={{ '& option': { backgroundColor: '#2C2724', color: '#fff' } }}>
+                  {CATEGORIAS.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </Select>
+                <Select value={regiaoPeca} onChange={e => setRegiaoPeca(e.target.value)} bg="#2C2724" borderColor="whiteAlpha.300" color="white" aria-label="Filtrar pe&#231;as por regi&#227;o" sx={{ '& option': { backgroundColor: '#2C2724', color: '#fff' } }}>
+                  <option value="Todas">Todas as regi&#245;es</option>
+                  {regioesArtesaos.map(regiao => <option key={regiao} value={regiao}>{regiao}</option>)}
+                </Select>
+                <Select value={artesaoPeca} onChange={e => setArtesaoPeca(e.target.value)} bg="#2C2724" borderColor="whiteAlpha.300" color="white" aria-label="Filtrar pe&#231;as por artes&#227;o" sx={{ '& option': { backgroundColor: '#2C2724', color: '#fff' } }}>
+                  <option value="Todos">Todos os artes&#227;os</option>
+                  {artesaos.map(art => <option key={art.id} value={art.id}>{art.nome}</option>)}
+                </Select>
+                <Select value={faixaPrecoPeca} onChange={e => setFaixaPrecoPeca(e.target.value)} bg="#2C2724" borderColor="whiteAlpha.300" color="white" aria-label="Filtrar pe&#231;as por faixa de pre&#231;o" sx={{ '& option': { backgroundColor: '#2C2724', color: '#fff' } }}>
+                  <option value="Todas">Todas as faixas de pre&#231;o</option>
+                  <option value="ate100">At&#233; R$ 100</option>
+                  <option value="100a200">R$ 100 a R$ 200</option>
+                  <option value="acima200">Acima de R$ 200</option>
+                </Select>
+              </SimpleGrid>
+
               <Flex wrap="wrap" gap={2} mt={6} pt={4} borderTop="1px solid" borderColor="whiteAlpha.200">
                 <Text fontSize="sm" color="whiteAlpha.600" alignSelf="center" mr={2}>
                   Categorias em alta:
@@ -191,7 +281,7 @@ export default function VitrinePage() {
                     color="white"
                     borderRadius="full"
                     _hover={{ bg: 'terra.500', color: 'black', borderColor: 'terra.500' }}
-                    onClick={() => router.push(`/produtos?categoria=${encodeURIComponent(cat)}`)}
+                    onClick={() => setCategoriaPeca(cat)}
                   >
                     {cat}
                   </Button>
@@ -230,7 +320,7 @@ export default function VitrinePage() {
                       bg="whiteAlpha.200"
                       _hover={{ bg: 'whiteAlpha.400' }}
                       color="white"
-                      onClick={openArtesaosModal}
+                      onClick={() => setMostrarTelaArtesaos(true)}
                     />
                     <Heading size="xl" fontFamily="heading" fontWeight="normal">
                       Artesãos e Artesãs
@@ -241,7 +331,7 @@ export default function VitrinePage() {
                     color="whiteAlpha.800"
                     cursor="pointer"
                     _hover={{ color: 'terra.500', textDecoration: 'underline' }}
-                    onClick={openArtesaosModal}
+                    onClick={() => setMostrarTelaArtesaos(true)}
                   >
                     Ver todos ({artesaos.length})
                   </Text>
@@ -551,55 +641,6 @@ export default function VitrinePage() {
       <ProductModal peca={pecaDetalhe} isOpen={isModalOpen} onClose={closeModal} />
 
       {/* Modal de Todos os Artesãos */}
-      <Modal isOpen={isArtesaosModalOpen} onClose={closeArtesaosModal} size="xl" isCentered>
-        <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(8px)" />
-        <ModalContent bg="#1C1816" color="white" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.300">
-          <ModalHeader fontFamily="heading" borderBottomWidth="1px" borderColor="whiteAlpha.200">
-            Nossos Artesãos e Artesãs
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody py={6}>
-            <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={6}>
-              {artesaos.map(art => (
-                <Flex
-                  key={art.id}
-                  gap={4}
-                  p={3}
-                  bg="whiteAlpha.100"
-                  borderRadius="lg"
-                  cursor="pointer"
-                  _hover={{ bg: 'whiteAlpha.200' }}
-                  onClick={() => {
-                    setArtesaoSelecionado(art.id);
-                    closeArtesaosModal();
-                  }}
-                >
-                  <Box p={0.5} borderRadius="full" border="2px solid" borderColor="terra.500" alignSelf="center">
-                    <Image
-                      src={art.imagemUrl}
-                      boxSize="60px"
-                      borderRadius="full"
-                      objectFit="cover"
-                      fallbackSrc="https://cdn-icons-png.flaticon.com/512/12225/12225881.png"
-                    />
-                  </Box>
-                  <Box flex="1">
-                    <Text fontWeight="semibold" fontSize="sm" color="terra.500">
-                      {art.nome}
-                    </Text>
-                    <Text fontSize="xs" color="whiteAlpha.700" mb={1}>
-                      {art.cidade} - {art.estado}
-                    </Text>
-                    <Text fontSize="xs" color="whiteAlpha.600" noOfLines={2}>
-                      {art.biografia}
-                    </Text>
-                  </Box>
-                </Flex>
-              ))}
-            </SimpleGrid>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </Box>
   );
 }
