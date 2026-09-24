@@ -52,6 +52,9 @@ Uma aplicação web full stack com vitrine do comprador (busca, filtros, perfil 
 
 ### Fundamentos de Computação Concorrente, Paralela e Distribuída
 * **Entregas:**
+#### Script de Simulação de Carga e Concorrência (`TesteDeStress`)
+
+Este módulo consiste num código executável à parte da aplicação principal, desenvolvido especificamente para simular acessos simultâneos ao sistema de *checkout*[cite: 1]. O script submete múltiplas requisições paralelas (20 *threads*) de forma sincronizada — utilizando a classe `CountDownLatch` para garantir a largada simultânea e o controlo de conclusão[cite: 1] — com o objetivo de validar a consistência do *stock* e comprovar a ausência de condições de corrida (*race conditions*) sob alta pressão[cite: 1].
 - [Arquivo ZIP](https://drive.google.com/file/d/1ITK4Tarze59MlXn2-qVx2QE2MADOqIVR/view?usp=sharing)
 - [Slides](https://canva.link/yesnpw11bo8hgas)
 - [Log Uso de IA](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing)
