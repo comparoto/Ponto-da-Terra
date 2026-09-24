@@ -30,7 +30,7 @@ const ShoppingBagIcon = (props: any) => (
   </Icon>
 );
 
-export function Navbar() {
+export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () => void; onLogoClick?: () => void }) {
   const router = useRouter();
   const { totalItens, abrirCarrinho } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +62,7 @@ export function Navbar() {
         <Flex
           align="center"
           cursor="pointer"
-          onClick={() => router.push('/vitrine')}
+          onClick={() => onLogoClick ? onLogoClick() : router.push('/vitrine')}
           transition="opacity 0.2s"
           _hover={{ opacity: 0.85 }}
         >
@@ -92,7 +92,8 @@ export function Navbar() {
             transition="color 0.2s"
             _hover={{ color: 'terra.500' }}
             onClick={() => {
-              router.push('/vitrine#artistas');
+              if (onArtisansClick) onArtisansClick();
+              else router.push('/vitrine#artistas');
             }}
           >
             Artesãos

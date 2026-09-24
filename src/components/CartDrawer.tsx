@@ -133,29 +133,35 @@ export function CartDrawer() {
                     <HStack spacing={1}>
                       <IconButton
                         aria-label="Diminuir"
-                        size="xs"
-                        variant="outline"
-                        borderColor="terra.500" // Cor da borda alterada
-                        color="terra.500"       // Cor do ícone alterada
-                        _hover={{ bg: 'terra.500', color: 'black' }} // Efeito hover
+                        icon={<Text as="span" fontSize="xl" fontWeight="bold" lineHeight="1">-</Text>}
+                        size="md"
+                        variant="solid"
+                        bg="terra.500"
+                        border="1px solid"
+                        borderColor="terra.500"
+                        color="black"
+                        fontSize="xl"
+                        fontWeight="bold"
+                        _hover={{ bg: 'terra.600', transform: 'scale(1.05)' }}
                         onClick={() => atualizarQuantidade(item.peca.id, item.quantidade - 1)}
-                      >
-                        -
-                      </IconButton>
+                      />
                       <Text fontSize="xs" fontWeight="bold" px={2}>
                         {item.quantidade}
                       </Text>
                       <IconButton
                         aria-label="Aumentar"
-                        size="xs"
-                        variant="outline"
-                        borderColor="terra.500" // Cor da borda alterada
-                        color="terra.500"       // Cor do ícone alterada
-                        _hover={{ bg: 'terra.500', color: 'black' }} // Efeito hover
+                        icon={<Text as="span" fontSize="xl" fontWeight="bold" lineHeight="1">+</Text>}
+                        size="md"
+                        variant="solid"
+                        bg="terra.500"
+                        border="1px solid"
+                        borderColor="terra.500"
+                        color="black"
+                        fontSize="xl"
+                        fontWeight="bold"
+                        _hover={{ bg: 'terra.600', transform: 'scale(1.05)' }}
                         onClick={() => atualizarQuantidade(item.peca.id, item.quantidade + 1)}
-                      >
-                        +
-                      </IconButton>
+                      />
                     </HStack>
                   </VStack>
                 </Flex>
