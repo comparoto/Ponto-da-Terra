@@ -1,17 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Image,
-  Text,
-  Badge,
-  Flex,
-  Button,
-  IconButton,
-  Icon,
-  Tooltip,
-} from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { Box,Image,Text,Badge,Flex,Button,IconButton,Icon,Tooltip,} from '@chakra-ui/react';
 import { Peca } from '@/types';
 import { useCart } from '@/store/cartStore';
 import { readSession } from '@/services/demoAuth';
@@ -59,7 +49,7 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
       position="relative"
       role="group"
     >
-      {/* Contêiner da Imagem */}
+     
       <Box position="relative" h="160px" w="100%" overflow="hidden" bg="blackAlpha.400">
         <Image
           src={peca.imagemUrl}
@@ -72,7 +62,6 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
           fallbackSrc="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=600&q=80"
         />
 
-        {/* Badge da Categoria */}
         {peca.categoria && (
           <Badge
             position="absolute"
@@ -93,7 +82,6 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
           </Badge>
         )}
 
-        {/* Botão de Ver Detalhes Rápido */}
         {onSelect && (
           <Tooltip label="Ver detalhes rápidos" placement="top" hasArrow>
             <IconButton
@@ -116,7 +104,6 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
         )}
       </Box>
 
-      {/* Conteúdo do Card */}
       <Flex direction="column" p={3} flex="1" justify="space-between" gap={2}>
         <Box>
           {peca.artesaoNome && (
@@ -141,7 +128,6 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
           </Text>
         </Box>
 
-        {/* Preço e Ações */}
         <Flex align="center" justify="space-between" pt={2} borderTop="1px solid" borderColor="whiteAlpha.100">
           <Box>
             <Text fontSize="xs" color="whiteAlpha.600">

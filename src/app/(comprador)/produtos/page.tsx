@@ -1,30 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, useMemo, Suspense } from 'react';
-import {
-  Box,
-  Flex,
-  SimpleGrid,
-  Text,
-  Heading,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Select,
-  Button,
-  HStack,
-  VStack,
-  Spinner,
-  Icon,
-  Badge,
-  useDisclosure,
-  Divider,
-} from '@chakra-ui/react';
+import { useEffect, useState, useMemo, Suspense } from 'react';
+import { Box,Flex,SimpleGrid,Text,Heading,Input,InputGroup,InputLeftElement,Select,Button,Spinner,Icon,Badge,useDisclosure,Divider,} from '@chakra-ui/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductModal } from '@/components/ProductModal';
-import { Peca, Artesao, FiltrosProduto } from '@/types';
+import { Peca, Artesao } from '@/types';
 import { produtoService, CATEGORIAS } from '@/services/produtoService';
 import { artesaoService } from '@/services/artesaoService';
 
@@ -54,18 +36,16 @@ function CatalogoContent() {
   const [artesaos, setArtesaos] = useState<Artesao[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Estados dos Filtros
   const [busca, setBusca] = useState(searchParams.get('q') || '');
   const [categoria, setCategoria] = useState(searchParams.get('categoria') || 'Todas');
   const [artesaoId, setArtesaoId] = useState('');
   const [faixaPreco, setFaixaPreco] = useState('todas');
   const [ordenacao, setOrdenacao] = useState<'recentes' | 'preco-asc' | 'preco-desc' | 'nome'>('recentes');
 
-  // Modal de Detalhes
   const [pecaSelecionada, setPecaSelecionada] = useState<Peca | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Sincronizar parâmetro de busca da URL quando mudar
+
   useEffect(() => {
     const q = searchParams.get('q');
     if (q !== null) setBusca(q);
@@ -73,7 +53,6 @@ function CatalogoContent() {
     if (cat !== null) setCategoria(cat);
   }, [searchParams]);
 
-  // Carregamento inicial de dados
   useEffect(() => {
     Promise.all([produtoService.getProdutos(), artesaoService.getArtesaos()]).then(
       ([pecasData, artesaosData]) => {
@@ -84,11 +63,9 @@ function CatalogoContent() {
     );
   }, []);
 
-  // Filtragem e ordenação computada
   const pecasFiltradas = useMemo(() => {
     let filtradas = [...pecas];
 
-    // Busca textual
     if (busca.trim()) {
       const termo = busca.toLowerCase().trim();
       filtradas = filtradas.filter(
@@ -101,17 +78,14 @@ function CatalogoContent() {
       );
     }
 
-    // Categoria
     if (categoria && categoria !== 'Todas') {
       filtradas = filtradas.filter(p => p.categoria === categoria);
     }
 
-    // Artesão
     if (artesaoId) {
       filtradas = filtradas.filter(p => p.artesaoId === artesaoId);
     }
 
-    // Faixa de preço
     if (faixaPreco === 'ate-100') {
       filtradas = filtradas.filter(p => p.preco <= 100);
     } else if (faixaPreco === '100-200') {
@@ -120,7 +94,6 @@ function CatalogoContent() {
       filtradas = filtradas.filter(p => p.preco > 200);
     }
 
-    // Ordenação
     switch (ordenacao) {
       case 'preco-asc':
         filtradas.sort((a, b) => a.preco - b.preco);
@@ -162,7 +135,7 @@ function CatalogoContent() {
   return (
     <Box
       minH="100vh"
-      bgImage="url('/bg-vitrine.png')"
+      bgImage="linear-gradient(rgba(23, 20, 18, 0.72), rgba(23, 20, 18, 0.47)), url('/bg-vitrine.png')"
       bgSize="cover"
       bgPosition="center"
       bgAttachment="fixed"
@@ -172,7 +145,6 @@ function CatalogoContent() {
       <Navbar />
 
       <Flex direction="column" flex="1" maxW="1320px" w="100%" mx="auto" px={{ base: 4, md: 8 }} py={8}>
-        {/* Cabeçalho da Página */}
         <Box
           bg="blackAlpha.700"
           backdropFilter="blur(14px)"
@@ -223,10 +195,8 @@ function CatalogoContent() {
 
           <Divider borderColor="whiteAlpha.200" my={6} />
 
-          {/* Barra de Filtros e Busca */}
           <Flex direction="column" gap={4}>
             <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={4}>
-              {/* Campo de Pesquisa */}
               <InputGroup size="md">
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon color="whiteAlpha.600" />
@@ -244,7 +214,6 @@ function CatalogoContent() {
                 />
               </InputGroup>
 
-              {/* Filtro por Artesão */}
               <Select
                 size="md"
                 bg="#2C2724"
@@ -265,7 +234,6 @@ function CatalogoContent() {
                 ))}
               </Select>
 
-              {/* Filtro por Faixa de Preço */}
               <Select
                 size="md"
                 bg="#2C2724"
@@ -290,7 +258,6 @@ function CatalogoContent() {
                 </option>
               </Select>
 
-              {/* Ordenação */}
               <Select
                 size="md"
                 bg="#2C2724"
@@ -316,7 +283,6 @@ function CatalogoContent() {
               </Select>
             </SimpleGrid>
 
-            {/* Filtros em Pílulas de Categorias */}
             <Flex wrap="wrap" gap={2} align="center" pt={2}>
               <Text fontSize="xs" color="whiteAlpha.600" mr={1}>
                 Categorias:
@@ -355,7 +321,6 @@ function CatalogoContent() {
           </Flex>
         </Box>
 
-        {/* Informações da Listagem (Contador) */}
         <Flex justify="space-between" align="center" mb={6} color="whiteAlpha.800">
           <Text fontSize="sm">
             Exibindo <Text as="span" fontWeight="bold" color="terra.500">{pecasFiltradas.length}</Text>{' '}
@@ -365,7 +330,6 @@ function CatalogoContent() {
           </Text>
         </Flex>
 
-        {/* Conteúdo / Grid de Produtos */}
         {isLoading ? (
           <Flex justify="center" align="center" py={20}>
             <Spinner size="xl" color="terra.500" thickness="4px" />
@@ -411,10 +375,8 @@ function CatalogoContent() {
         )}
       </Flex>
 
-      {/* Modal de Detalhes do Produto */}
       <ProductModal peca={pecaSelecionada} isOpen={isOpen} onClose={onClose} />
 
-      {/* Rodapé */}
       <Box borderTop="1px solid" borderColor="whiteAlpha.200" bg="blackAlpha.800" py={6} mt={16}>
         <Flex
           direction={{ base: 'column', md: 'row' }}

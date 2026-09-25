@@ -1,28 +1,11 @@
 ﻿'use client';
 
 import React, { useState } from 'react';
-import {
-  Flex,
-  HStack,
-  Text,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Image,
-  Icon,
-  IconButton,
-  Badge,
-  Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Box,
-} from '@chakra-ui/react';
+import {Flex,HStack,Text,Input,InputGroup,InputLeftElement,Image,Icon,IconButton,Badge,Button,Menu,MenuButton,MenuList,MenuItem,Box,} from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/store/cartStore';
 import { CartDrawer } from './CartDrawer';
-import { DemoSession, readSession, signOut } from '@/services/demoAuth';
+import { DemoSession, readSession, signOut } from '@/services/demoAuth';// rever isso
 
 const SearchIcon = (props: any) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
@@ -71,7 +54,6 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
         borderBottom="1px solid"
         borderColor="whiteAlpha.100"
       >
-        {/* Logo clicável */}
         <Flex
           align="center"
           cursor="pointer"
@@ -82,7 +64,6 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
           <Image src="/logo.png" alt="Logo Ponto da Terra" h="40px" objectFit="contain" />
         </Flex>
 
-        {/* Links Principais */}
         <HStack spacing={{ base: 4, lg: 8 }} fontSize="md" display={{ base: 'none', md: 'flex' }}>
           <Text
             cursor="pointer"
@@ -119,9 +100,16 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
           >
             Artesãos
           </Text>
+               <Text
+              cursor="pointer"
+              transition="color 0.2s"
+              _hover={{ color: 'terra.500' }}
+              onClick={() => alert('Dúvidas? Entre em contato pelo e-mail contato@pontodaterra.com.br')}
+            >
+              Contato
+            </Text>
         </HStack>
 
-        {/* Campo de Busca */}
         <InputGroup w={{ base: '160px', sm: '220px', md: '260px' }} size="md">
           <InputLeftElement pointerEvents="none">
             <SearchIcon color="whiteAlpha.600" />
@@ -141,28 +129,8 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
           />
         </InputGroup>
 
-        {/* Links secundários + Botão do Carrinho */}
         <HStack spacing={{ base: 2, md: 5 }}>
-          <HStack spacing={6} fontSize="md" display={{ base: 'none', lg: 'flex' }}>
-            <Text
-              cursor="pointer"
-              transition="color 0.2s"
-              _hover={{ color: 'terra.500' }}
-              onClick={() => alert('Em breve: página sobre a história do artesanato de Pernambuco!')}
-            >
-              Sobre
-            </Text>
-            <Text
-              cursor="pointer"
-              transition="color 0.2s"
-              _hover={{ color: 'terra.500' }}
-              onClick={() => alert('Dúvidas? Entre em contato pelo e-mail contato@pontodaterra.com.br')}
-            >
-              Contato
-            </Text>
-          </HStack>
 
-          {/* Botão de Sacola / Carrinho com Contador */}
           {account ? (
             <Menu>
               <MenuButton as={Button} size="sm" variant="outline" borderColor="terra.500" color="terra.500">
@@ -176,7 +144,7 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
               </MenuList>
             </Menu>
           ) : (
-            <Button size="sm" variant="outline" borderColor="terra.500" color="terra.500" onClick={() => router.push('/login')}>Entrar</Button>
+            <Button size="sm" variant="outline" borderColor="terra.500" color="terra.500" onClick={() => router.push('/login')}>Fazer login</Button>
           )}
           {(!account || account.role === 'comprador') && (
           <Box position="relative">
@@ -215,7 +183,6 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
         </HStack>
       </Flex>
 
-      {/* Gaveta do Carrinho */}
       {(!account || account.role === 'comprador') && <CartDrawer />}
     </>
   );

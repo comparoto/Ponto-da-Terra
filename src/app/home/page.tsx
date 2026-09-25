@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <Box
       minH="100vh"
-      bgImage="linear-gradient(rgba(23, 20, 18, 0.72), rgba(23, 20, 18, 0.82)), url('/bg-vitrine.png')"
+      bgImage="linear-gradient(rgba(23, 20, 18, 0.72), rgba(23, 20, 18, 0.47)), url('/bg-vitrine.png')"
       bgSize="cover"
       bgPosition="center"
       bgAttachment="fixed"

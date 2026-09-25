@@ -1,5 +1,3 @@
-import { Artesao } from './artesao';
-
 export interface Peca {
   id: string;
   nome: string;

@@ -1,8 +1,11 @@
-﻿'use client';
+﻿//verifica perfil para finalizar a compra
+
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import { DemoSession, readSession, UserRole } from '@/services/demoAuth';
+                                                                                                     
 export function RoleGate({ role, children }: { role: UserRole; children: React.ReactNode }) {
  const router = useRouter(); const [session, setSession] = useState<DemoSession | null>(null); const [ready, setReady] = useState(false);
  useEffect(() => { setSession(readSession()); setReady(true); }, []);

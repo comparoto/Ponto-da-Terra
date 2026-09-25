@@ -1,25 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  Image,
-  Box,
-  Flex,
-  Heading,
-  Text,
-  Badge,
-  Button,
-  HStack,
-  IconButton,
-  Divider,
-  Icon,
-} from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { Modal,ModalOverlay,ModalContent,ModalBody,ModalCloseButton,Image,Box,Flex,Heading,Text,Badge,Button,HStack,IconButton, Divider,Icon,} from '@chakra-ui/react';
 import { Peca } from '@/types';
 import { useCart } from '@/store/cartStore';
 import { readSession } from '@/services/demoAuth';
@@ -76,7 +58,6 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
 
         <ModalBody p={0}>
           <Flex direction={{ base: 'column', md: 'row' }}>
-            {/* Foto da Peça */}
             <Box w={{ base: '100%', md: '50%' }} h={{ base: '260px', md: '440px' }} position="relative">
               <Image
                 src={peca.imagemUrl}
@@ -104,7 +85,6 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
               )}
             </Box>
 
-            {/* Informações da Peça */}
             <Flex
               direction="column"
               w={{ base: '100%', md: '50%' }}

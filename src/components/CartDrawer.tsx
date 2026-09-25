@@ -1,10 +1,7 @@
 'use client';
-import React from 'react';
+
 import { useRouter } from 'next/navigation';
-import {
-  Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
-  Button, Flex, Text, Image, Box, IconButton, HStack, VStack, Icon
-} from '@chakra-ui/react';
+import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Flex, Text, Image, Box, IconButton, HStack, VStack, Icon } from '@chakra-ui/react';
 import { useCart } from '@/store/cartStore';
 
 const TrashIcon = (props: any) => (
@@ -21,10 +18,7 @@ const EmptyBagIcon = (props: any) => (
 
 export function CartDrawer() {
   const router = useRouter();
-  const {
-    items, isCartOpen, fecharCarrinho, removerDoCarrinho,
-    atualizarQuantidade, valorTotal, totalItens, limparCarrinho,
-  } = useCart();
+  const {items, isCartOpen, fecharCarrinho, removerDoCarrinho, atualizarQuantidade, valorTotal, totalItens, limparCarrinho,} = useCart();
 
   return (
     <Drawer isOpen={isCartOpen} placement="right" onClose={fecharCarrinho} size="md">

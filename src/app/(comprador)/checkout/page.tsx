@@ -1,14 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { Box, Flex, Heading, Text, VStack, HStack, Button, Input, Divider, Radio, RadioGroup, useToast, Image } from '@chakra-ui/react';
-import { useCart } from '@/store/cartStore'; // <-- Atualizado para a sua nova store
+import { useCart } from '@/store/cartStore'; 
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { readOrders, readSession, saveOrders } from '@/services/demoAuth';
 import { RoleGate } from '@/components/Portal';
 
 function CheckoutContent() {
-  // Atualizado para usar os nomes das variáveis do seu código novo
   const { items = [], valorTotal, limparCarrinho } = useCart();
   const router = useRouter();
   const toast = useToast();
@@ -18,7 +17,6 @@ function CheckoutContent() {
   const [metodoPagamento, setMetodoPagamento] = useState('pix');
   const [isCalculando, setIsCalculando] = useState(false);
 
-  // Usa o novo valorTotal
   const totalGeral = (valorTotal || 0) + frete;
 
   const simularFrete = () => {
@@ -67,7 +65,6 @@ return (
       
       <Flex direction={['column', 'column', 'row']} maxW="1200px" mx="auto" p={8} gap={10} mt={8}>
         
-        {/* COLUNA ESQUERDA: Resumo dos Itens */}
         <Box flex="1" bg="blackAlpha.500" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.200">
           <Heading size="lg" mb={6} fontFamily="heading">Resumo do Pedido</Heading>
           <VStack spacing={4} align="stretch">
@@ -86,7 +83,7 @@ return (
           </VStack>
         </Box>
 
-        {/* COLUNA DIREITA: Entrega, Pagamento e Totais */}
+        {/*coluna da direita*/}
         <Box flex="1" bg="blackAlpha.500" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.200">
           
           <Heading size="md" mb={4}>Cálculo de Frete</Heading>
