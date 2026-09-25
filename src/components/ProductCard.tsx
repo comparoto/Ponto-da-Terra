@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Image,
@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { Peca } from '@/types';
 import { useCart } from '@/store/cartStore';
+import { readSession } from '@/services/demoAuth';
 
 interface ProductCardProps {
   peca: Peca;
@@ -35,6 +36,8 @@ const EyeIcon = (props: any) => (
 
 export function ProductCard({ peca, onSelect }: ProductCardProps) {
   const { adicionarAoCarrinho } = useCart();
+  const [canBuy, setCanBuy] = useState(true);
+  useEffect(() => { const session = readSession(); setCanBuy(!session || session.role === 'comprador'); }, []);
 
   return (
     <Box
@@ -57,7 +60,7 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
       role="group"
     >
       {/* Contêiner da Imagem */}
-      <Box position="relative" h="200px" w="100%" overflow="hidden" bg="blackAlpha.400">
+      <Box position="relative" h="160px" w="100%" overflow="hidden" bg="blackAlpha.400">
         <Image
           src={peca.imagemUrl}
           alt={peca.nome}
@@ -114,7 +117,7 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
       </Box>
 
       {/* Conteúdo do Card */}
-      <Flex direction="column" p={4} flex="1" justify="space-between" gap={3}>
+      <Flex direction="column" p={3} flex="1" justify="space-between" gap={2}>
         <Box>
           {peca.artesaoNome && (
             <Text fontSize="xs" color="terra.500" fontWeight="medium" mb={1} noOfLines={1}>
@@ -149,21 +152,13 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
             </Text>
           </Box>
 
-          <Button
-            size="sm"
-            bg="terra.500"
-            color="black"
-            leftIcon={<CartAddIcon />}
-            _hover={{ bg: 'terra.600', transform: 'scale(1.02)' }}
-            _active={{ bg: 'terra.600' }}
-            fontSize="xs"
-            fontWeight="bold"
-            borderRadius="md"
-            px={3}
-            onClick={() => adicionarAoCarrinho(peca, 1)}
-          >
-            Comprar
-          </Button>
+          {canBuy ? (
+            <Button size="sm" bg="terra.500" color="black" leftIcon={<CartAddIcon />} _hover={{ bg: 'terra.600', transform: 'scale(1.02)' }} _active={{ bg: 'terra.600' }} fontSize="xs" fontWeight="bold" borderRadius="md" px={3} onClick={() => adicionarAoCarrinho(peca, 1)}>
+              Comprar
+            </Button>
+          ) : (
+            <Text color="whiteAlpha.700" fontSize="xs" textAlign="right" maxW="100px">Compra exclusiva para compradores</Text>
+          )}
         </Flex>
       </Flex>
     </Box>

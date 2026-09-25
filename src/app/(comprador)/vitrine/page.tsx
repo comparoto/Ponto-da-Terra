@@ -242,7 +242,7 @@ export default function VitrinePage() {
                   whiteSpace="normal"
                   textAlign="center"
                 >
-                  Catálogo de Peças
+                  Ver Catálogo Completo
                 </Button>
               </Flex>
 
@@ -492,7 +492,7 @@ export default function VitrinePage() {
                     </Button>
                   </Flex>
                 ) : (
-                  <SimpleGrid columns={{ base: 1, sm: 2, md: 2, xl: 3 }} spacing={5} flex="1">
+                  <SimpleGrid columns={{ base: 1, sm: 2, md: 2, xl: 3 }} spacing={5}>
                     {pecasExibidas.map(peca => (
                       <Flex
                         key={peca.id}
@@ -507,6 +507,7 @@ export default function VitrinePage() {
                           boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
                         }}
                         position="relative"
+                        alignSelf="start"
                         role="group"
                       >
                         <Box
@@ -569,7 +570,7 @@ export default function VitrinePage() {
                         </Text>
 
                         {/* Ações rápidas */}
-                        <HStack spacing={2} mt="auto">
+                        <HStack spacing={2}>
                           <Button
                             size="xs"
                             variant="outline"

@@ -181,10 +181,25 @@ export const PECAS_DATA: Peca[] = [
 ];
 
 export const produtoService = {
+  listarProdutosSincrono: (): Peca[] => {
+    if (typeof window !== 'undefined') {
+      try { const saved = localStorage.getItem('ponto_da_terra_products_v1'); if (saved) return JSON.parse(saved) as Peca[]; } catch { /* usa catálogo inicial */ }
+    }
+    return [...PECAS_DATA];
+  },
+  salvarProduto: (produto: Peca): void => {
+    if (typeof window === 'undefined') return;
+    const atual = produtoService.listarProdutosSincrono();
+    localStorage.setItem('ponto_da_terra_products_v1', JSON.stringify([...atual.filter(p => p.id !== produto.id), produto]));
+  },
+  excluirProduto: (id: string): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('ponto_da_terra_products_v1', JSON.stringify(produtoService.listarProdutosSincrono().filter(p => p.id !== id)));
+  },
   getProdutos: async (filtros?: FiltrosProduto): Promise<Peca[]> => {
     return new Promise(resolve => {
       setTimeout(() => {
-        let resultado = [...PECAS_DATA];
+        let resultado = produtoService.listarProdutosSincrono();
 
         if (filtros?.termoBusca) {
           const termo = filtros.termoBusca.toLowerCase().trim();
@@ -238,7 +253,7 @@ export const produtoService = {
   getProdutoById: async (id: string): Promise<Peca | undefined> => {
     return new Promise(resolve => {
       setTimeout(() => {
-        resolve(PECAS_DATA.find(p => p.id === id));
+        resolve(produtoService.listarProdutosSincrono().find(p => p.id === id));
       }, 150);
     });
   },
@@ -247,3 +262,5 @@ export const produtoService = {
     return CATEGORIAS;
   },
 };
+
+

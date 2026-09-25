@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 import { CartProvider } from '@/store/cartStore';
@@ -8,14 +8,36 @@ export const theme = extendTheme({
     terra: {
       50: '#f5eee8',
       100: '#e6d3c3',
-      500: '#D9B596', // Cor principal dos botões e textos de destaque
+      500: '#D9B596',
       600: '#c29f82',
-      900: '#2C2724', // Fundo escuro
+      900: '#2C2724',
     },
   },
   fonts: {
-    heading: `'Georgia', serif`, // Fonte serifada para os títulos
+    heading: `'Georgia', serif`,
     body: `'Inter', sans-serif`,
+  },
+  components: {
+    Button: {
+      baseStyle: {
+        fontWeight: 600,
+        _focusVisible: { boxShadow: '0 0 0 3px rgba(217, 181, 150, 0.65)' },
+      },
+      variants: {
+        outline: {
+          color: '#F7F2EE',
+          borderColor: '#B9AAA0',
+          bg: 'transparent',
+          _hover: { bg: 'whiteAlpha.200', borderColor: 'terra.500', color: 'terra.500' },
+          _active: { bg: 'whiteAlpha.300' },
+        },
+        ghost: {
+          color: '#F7F2EE',
+          _hover: { bg: 'whiteAlpha.200' },
+          _active: { bg: 'whiteAlpha.300' },
+        },
+      },
+    },
   },
   styles: {
     global: {
@@ -30,9 +52,7 @@ export const theme = extendTheme({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ChakraProvider theme={theme}>
-      <CartProvider>
-        {children}
-      </CartProvider>
+      <CartProvider>{children}</CartProvider>
     </ChakraProvider>
   );
 }

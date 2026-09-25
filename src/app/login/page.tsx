@@ -1,182 +1,42 @@
-'use client';
-
-import { useState } from 'react';
+﻿'use client';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Box, Flex, Heading, Text, Input, Button, VStack,
-  FormControl, FormLabel, Image, Tabs, TabList, Tab,
-  useToast, InputGroup, InputRightElement, IconButton, Icon
-} from '@chakra-ui/react';
+import { Box, Button, Checkbox, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
+import { signIn, UserRole } from '@/services/demoAuth';
 
-// Ícones personalizados para ver/ocultar a palavra-passe
-const EyeIcon = (props: any) => (
-  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-  </Icon>
-);
-
-const EyeOffIcon = (props: any) => (
-  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.528-3.321M15 12a3 3 0 00-3-3m-4.5 4.5a3 3 0 00-3-3M3 3l18 18" />
-  </Icon>
-);
-
+const profileEmailExample: Record<UserRole, string> = {
+  comprador: 'comprador@pontodaterra.com',
+  artesao: 'artesao@pontodaterra.com',
+  administrador: 'admin@pontodaterra.com',
+};
 export default function LoginPage() {
   const router = useRouter();
-  const toast = useToast();
-  
-  const [mostrarSenha, setMostrarSenha] = useState(false);
-  const [tipoPerfil, setTipoPerfil] = useState(0); // 0 = Comprador, 1 = Artesão, 2 = Admin
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    // Simula um tempo de carregamento para a API
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      toast({
-        title: 'Bem-vindo(a) de volta!',
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-        position: 'top',
-      });
-
-      // Redirecionamento com base na aba escolhida
-      if (tipoPerfil === 0) {
-        router.push('/vitrine');
-      } else if (tipoPerfil === 1) {
-        router.push('/artesao');
-      } else if (tipoPerfil === 2) {
-        router.push('/admin');
-      }
-    }, 1500);
-  };
-
-  return (
-    <Box 
-      minH="100vh" 
-      bgImage="url('/bg-vitrine.png')" // Reutilizamos o fundo para manter a identidade visual
-      bgSize="cover"
-      bgPosition="center"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      p={4}
-    >
-      <Box 
-        w="100%" 
-        maxW="450px" 
-        bg="blackAlpha.800" 
-        backdropFilter="blur(16px)" 
-        p={8} 
-        borderRadius="2xl" 
-        border="1px solid" 
-        borderColor="whiteAlpha.200"
-        boxShadow="2xl"
-      >
-        <Flex direction="column" align="center" mb={8}>
-          <Image src="/logo.png" alt="Ponto da Terra Logo" h="60px" mb={4} />
-          <Heading size="md" color="white" fontFamily="heading" textAlign="center">
-            Acesse sua conta
-          </Heading>
-          <Text color="whiteAlpha.600" fontSize="sm" mt={2}>
-            Escolha o seu perfil para continuar
-          </Text>
-        </Flex>
-
-        {/* Sistema de Abas para escolher o tipo de Login */}
-        <Tabs isFitted variant="enclosed" onChange={(index) => setTipoPerfil(index)} mb={8}>
-          <TabList mb="1em" borderColor="whiteAlpha.200">
-            <Tab _selected={{ color: 'terra.500', borderColor: 'terra.500', borderBottomColor: 'transparent' }} color="whiteAlpha.600" fontWeight="medium">
-              Comprador
-            </Tab>
-            <Tab _selected={{ color: 'terra.500', borderColor: 'terra.500', borderBottomColor: 'transparent' }} color="whiteAlpha.600" fontWeight="medium">
-              Artesão
-            </Tab>
-            <Tab _selected={{ color: 'terra.500', borderColor: 'terra.500', borderBottomColor: 'transparent' }} color="whiteAlpha.600" fontWeight="medium">
-              Admin
-            </Tab>
-          </TabList>
-        </Tabs>
-
-        <form onSubmit={handleLogin}>
-          <VStack spacing={5} align="stretch">
-            <FormControl isRequired>
-              <FormLabel color="whiteAlpha.900" fontSize="sm">E-mail</FormLabel>
-              <Input 
-                type="email" 
-                placeholder="Introduza o seu e-mail" 
-                bg="whiteAlpha.100" 
-                border="1px solid"
-                borderColor="whiteAlpha.300"
-                color="white"
-                _hover={{ borderColor: 'terra.500' }}
-                _focus={{ borderColor: 'terra.500', boxShadow: '0 0 0 1px #D97742' }}
-              />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel color="whiteAlpha.900" fontSize="sm">Senha</FormLabel>
-              <InputGroup>
-                <Input 
-                  type={mostrarSenha ? 'text' : 'password'} 
-                  placeholder="Introduza a sua palavra-passe" 
-                  bg="whiteAlpha.100" 
-                  border="1px solid"
-                  borderColor="whiteAlpha.300"
-                  color="white"
-                  _hover={{ borderColor: 'terra.500' }}
-                  _focus={{ borderColor: 'terra.500', boxShadow: '0 0 0 1px #D97742' }}
-                />
-                <InputRightElement>
-                  <IconButton
-                    aria-label={mostrarSenha ? "Ocultar palavra-passe" : "Mostrar palavra-passe"}
-                    icon={mostrarSenha ? <EyeOffIcon /> : <EyeIcon />}
-                    variant="ghost"
-                    color="whiteAlpha.600"
-                    _hover={{ bg: 'transparent', color: 'terra.500' }}
-                    onClick={() => setMostrarSenha(!mostrarSenha)}
-                  />
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
-
-            <Flex justify="flex-end">
-              <Text fontSize="xs" color="terra.500" cursor="pointer" _hover={{ textDecoration: 'underline' }}>
-                Esqueceu da senha?
-              </Text>
-            </Flex>
-
-            <Button 
-              type="submit" 
-              w="100%" 
-              size="lg" 
-              bg="terra.500" 
-              color="black" 
-              _hover={{ bg: 'terra.600' }}
-              isLoading={isLoading}
-              loadingText="Fazendo login..."
-              mt={4}
-            >
-              Entrar
-            </Button>
-          </VStack>
-        </form>
-
-        <Flex justify="center" mt={8}>
-          <Text fontSize="sm" color="whiteAlpha.600">
-            Ainda não tem conta?{' '}
-            <Text as="span" color="terra.500" cursor="pointer" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
-              Registre-se
-            </Text>
-          </Text>
-        </Flex>
-      </Box>
-    </Box>
-  );
+  const [role, setRole] = useState<UserRole>('comprador');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => { const selectedRole = new URLSearchParams(window.location.search).get('perfil') as UserRole | null; if (selectedRole === 'comprador' || selectedRole === 'artesao' || selectedRole === 'administrador') setRole(selectedRole); }, []);
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!acceptedTerms) {
+      setError('Você precisa aceitar os Termos de Uso e a Política de Privacidade para continuar.');
+      return;
+    }
+    const session = signIn(role, email, password)
+      ?? signIn('comprador', email, password)
+      ?? signIn('artesao', email, password)
+      ?? signIn('administrador', email, password);
+    if (!session) {
+      setError('Não encontrei uma conta com esse e-mail e senha. Confira os dados ou crie uma conta.');
+      return;
+    }
+    localStorage.setItem('ponto_da_terra_terms_accepted_v1', new Date().toISOString());
+    router.push(session.role === 'comprador' ? '/home' : session.role === 'artesao' ? '/artesao' : '/admin');
+  }
+  return <Box minH="100vh" display="grid" placeItems="center" bg="#171412" px={4}><Box as="form" onSubmit={submit} w="full" maxW="460px" p={8} bg="#2C2724" borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.200"><Button type="button" variant="link" color="whiteAlpha.800" mb={4} alignSelf="flex-start" onClick={() => router.push('/home')}>← Voltar para Home</Button><Heading color="terra.500" mb={2}>Entrar no Ponto da Terra</Heading><Text color="#E8DFD7" mb={6}>Acesse sua área de comprador, artesão ou administrador.</Text><Stack spacing={4}><Select color="white" bg="whiteAlpha.100" borderColor="whiteAlpha.300" sx={{ "& option": { color: "#fff", backgroundColor: "#2C2724" } }} value={role} onChange={e => setRole(e.target.value as UserRole)} aria-label="Perfil de acesso"><option value="comprador">Comprador</option><option value="artesao">Artesão</option><option value="administrador">Administrador</option></Select><Input color="white" bg="whiteAlpha.100" borderColor="whiteAlpha.300" _placeholder={{ color: 'whiteAlpha.600' }} _focus={{ borderColor: 'terra.500', boxShadow: '0 0 0 1px #D9B596' }} type="email" placeholder={profileEmailExample[role]} value={email} onChange={e => setEmail(e.target.value)} required/><Input color="white" bg="whiteAlpha.100" borderColor="whiteAlpha.300" _placeholder={{ color: 'whiteAlpha.600' }} _focus={{ borderColor: 'terra.500', boxShadow: '0 0 0 1px #D9B596' }} type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required/>{error && <Text color="red.300">{error}</Text>}<Checkbox color="white" colorScheme="orange" alignItems="flex-start" isChecked={acceptedTerms} onChange={event => { setAcceptedTerms(event.target.checked); if (event.target.checked) setError(''); }}>
+            <Text fontSize="sm" color="#E8DFD7">Li e aceito os <Link href="/termos" color="terra.500" textDecoration="underline">Termos de Uso</Link> e a <Link href="/termos#privacidade" color="terra.500" textDecoration="underline">Política de Privacidade</Link>.</Text>
+          </Checkbox><Button type="submit" bg="terra.500" color="black">Entrar</Button><Link href="/cadastro" color="terra.500">Criar conta</Link><Link href="/vitrine" color="whiteAlpha.700">Continuar como visitante</Link></Stack></Box></Box>;
 }
+
+

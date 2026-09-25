@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { Peca } from '@/types';
 import { useCart } from '@/store/cartStore';
+import { readSession } from '@/services/demoAuth';
 
 interface ProductModalProps {
   peca: Peca | null;
@@ -45,6 +46,8 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
   const [quantidade, setQuantidade] = useState(1);
   const [adicionado, setAdicionado] = useState(false);
   const { adicionarAoCarrinho } = useCart();
+  const [canBuy, setCanBuy] = useState(true);
+  useEffect(() => { const session = readSession(); setCanBuy(!session || session.role === 'comprador'); }, []);
 
   if (!peca) return null;
 
@@ -145,7 +148,7 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                 )}
               </Box>
 
-              {/* Controles de Quantidade e Compra */}
+              {canBuy ? (
               <Box mt={4} pt={4} borderTop="1px solid" borderColor="whiteAlpha.200">
                 <Flex align="center" justify="space-between" mb={4}>
                   <Text fontSize="sm" color="whiteAlpha.800">
@@ -203,6 +206,11 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                   {adicionado ? 'Adicionado com sucesso!' : `Adicionar à Sacola • R$ ${(peca.preco * quantidade).toFixed(2).replace('.', ',')}`}
                 </Button>
               </Box>
+              ) : (
+                <Text mt={4} pt={4} borderTop="1px solid" borderColor="whiteAlpha.200" color="whiteAlpha.700" fontSize="sm">
+                  Compras disponíveis apenas para contas de comprador.
+                </Text>
+              )}
             </Flex>
           </Flex>
         </ModalBody>

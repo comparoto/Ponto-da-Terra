@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Peca, ItemCarrinho } from '@/types';
+import { readSession } from '@/services/demoAuth';
 
 interface CartContextType {
   items: ItemCarrinho[];
@@ -45,6 +46,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items, isLoaded]);
 
   const adicionarAoCarrinho = (peca: Peca, quantidade = 1) => {
+    const session = readSession();
+    if (session && session.role !== 'comprador') return;
+
     setItems(prev => {
       const index = prev.findIndex(item => item.peca.id === peca.id);
       if (index >= 0) {
