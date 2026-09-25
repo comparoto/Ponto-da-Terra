@@ -14,9 +14,16 @@ const destaques = [
 export default function HomePage() {
   const router = useRouter();
   return (
-    <Box minH="100vh" bg="#171412" color="white">
+    <Box
+      minH="100vh"
+      bgImage="linear-gradient(rgba(23, 20, 18, 0.72), rgba(23, 20, 18, 0.82)), url('/bg-vitrine.png')"
+      bgSize="cover"
+      bgPosition="center"
+      bgAttachment="fixed"
+      color="white"
+    >
       <Navbar />
-      <Box as="main" bgGradient="linear(to-br, #30231C, #171412 65%)" px={{ base: 4, md: 8 }} pt={{ base: 12, md: 20 }} pb={16}>
+      <Box as="main" px={{ base: 4, md: 8 }} pt={{ base: 12, md: 20 }} pb={16}>
         <Box maxW="1200px" mx="auto">
           <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" gap={10}>
             <VStack align="flex-start" spacing={5} maxW="650px">
