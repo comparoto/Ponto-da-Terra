@@ -268,7 +268,8 @@ type ApiResult<T> = {
 
 - Documentação sobre o uso de IA: [Uso_de_IA_documentacao.pdf](https://github.com/user-attachments/files/32670671/Uso_de_IA_documentacao.pdf)
 - Documentação sobre a Fake API: [Documentacao_Fake_API.pdf](https://github.com/user-attachments/files/32670674/Documentacao_Fake_API.pdf)
-- Migração futura da FakeAPI para Back-end:
+- Migração futura da FakeAPI para Back-end: [Documento_Substituicao_Fake_API_Backend_Real.pdf](https://github.com/user-attachments/files/32671712/Documento_Substituicao_Fake_API_Backend_Real.pdf)
+
 
 ---
 
