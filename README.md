@@ -244,9 +244,7 @@ type ApiResult<T> = {
 
 ## 🚀 Deploy
 
-`[LINK]`
-- Frontend: `[link]`
-- (Backend/API real ainda não existe nesta versão — a aplicação em produção também depende da Fake API)
+- [Clique aqui](https://ponto-da-terra.vercel.app/)
 
 ---
 
