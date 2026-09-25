@@ -20,20 +20,20 @@
 
 ## Índice
 
-- [📖 Descrição](#Descrição)
-- [👩‍💻 Integrantes](#integrantes)
-- [🧱 Arquitetura](#arquitetura)
-  - [Concorrência, paralelismo e distribuição](#concorrência-paralelismo-e-distribuição)
-- [🔄 Fluxos implementados](#fluxos-implementados)
-- [🛠️ Tecnologias utilizadas](#tecnologias-utilizadas)
-- [⚙️ Como executar localmente](#como-executar-localmente)
-- [🔐 Variáveis de ambiente](#variáveis-de-ambiente)
-- [✅ Funcionalidades implementadas](#funcionalidades-implementadas)
-- [🔌 "Rotas" da Fake API](#rotas-da-fake-api)
-- [🚀 Deploy](#deploy)
-- [🧪 Evidências](#evidências)
-- [📃 Documentações exigidas](#documentações-exigidas)
-- [📋 Índice de entregas por unidade](#índice-de-entregas-por-unidade)
+- 📖 Descrição
+- 👩‍💻 Integrantes
+- 🧱 Arquitetura
+  - Concorrência, paralelismo e distribuição
+- 🔄 Fluxos implementados
+- 🛠️ Tecnologias utilizadas
+- ⚙️ Como executar localmente
+- 🔐 Variáveis de ambiente
+- ✅ Funcionalidades implementadas
+- 🔌 "Rotas" da Fake API
+- 🚀 Deploy
+- 🧪 Evidências
+- 📃 Documentações exigidas
+- 📋 Índice de entregas por unidade
 
 ---
 
