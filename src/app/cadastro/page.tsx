@@ -85,7 +85,17 @@ export default function CadastroPage() {
   ];
 
   return (
-    <Box minH="100vh" display="grid" placeItems="center" bg="#171412" px={4}>
+    <Box 
+      minH="100vh" 
+      bgImage="linear-gradient(rgba(23, 20, 18, 0.72), rgba(23, 20, 18, 0.47)), url('/bg-pedidos.png')"
+      bgSize="cover"
+      bgPosition="center"
+      bgAttachment="fixed"
+      color="white"
+      display="grid"
+      flexDirection="column"
+      placeItems="center" 
+    >
       <Box
         as="form"
         onSubmit={submit}
