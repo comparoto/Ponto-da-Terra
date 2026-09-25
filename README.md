@@ -27,7 +27,6 @@
 - 🔄 Fluxos implementados
 - 🛠️ Tecnologias utilizadas
 - ⚙️ Como executar localmente
-- 🔐 Variáveis de ambiente
 - ✅ Funcionalidades implementadas
 - 🔌 "Rotas" da Fake API
 - 🚀 Deploy
@@ -156,11 +155,10 @@ Com base no progresso registrado no repositório, os seguintes fluxos já estão
 | Camada | Tecnologia |
 |---|---|
 | **Frontend** | Next.js + TypeScript |
-| **Gerenciamento de estado** |  |
 | **Estilização** | Chakra UI |
 | **Fake API** | Dados mockados em código (`data/`) consumidos via camada de serviços (`services/`) |
 | **Backend real** | Ainda não implementado nesta versão |
-| **Banco de dados** | Ainda não implementado nesta versão |
+| **Banco de dados** | Ainda não implementado nesta versão pois ninguém da equipe está na disciplina de Bando de Dados |
 | **Autenticação** | Autenticação simulada (`services/demoAuth.ts`), sem backend/token real |
 | **Testes de concorrência** | Java (`CountDownLatch`, simulação de 20 threads paralelas) — módulo `TesteDeStress`, independente da aplicação |
 | **Controle de versão** | Git / GitHub |
@@ -191,12 +189,6 @@ npm install
 npm run dev
 ```
 A aplicação ficará disponível em `http://localhost:3000`. Não é necessário subir nenhum serviço adicional — a Fake API roda junto com o frontend.
-
----
-
-## 🔐 Variáveis de ambiente
-
-Nesta versão, **não há variáveis de ambiente obrigatórias**, já que não existe integração com backend, banco de dados ou serviços externos — todos os dados vêm da Fake API embutida no código.
 
 ---
 
@@ -258,7 +250,7 @@ type ApiResult<T> = {
 - [Slides do teste de concorrência](https://canva.link/yesnpw11bo8hgas)
 - [Log de Uso de IA](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing)
 - [Issues / Bug Tracker](https://github.com/comparoto/Ponto-da-Terra/issues)
-- [Screencast]().
+- [Screencast]()
 
 ---
 
@@ -275,9 +267,6 @@ type ApiResult<T> = {
 
 <details>
 <summary><b>Primeira Unidade</b></summary>
-
-**Desenvolvimento Web**
-- Entregas:
 
 **Requisitos, Projeto de Software e Validação**
 - [Backlog - Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
