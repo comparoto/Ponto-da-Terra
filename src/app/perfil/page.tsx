@@ -6,10 +6,7 @@ import { Avatar, Box, Button, Divider, Flex, Heading, HStack, Input, Select, Sta
 import { deleteAccount, DemoSession, readSession, updateAccountProfile } from '@/services/demoAuth';
 import { artesaoService } from '@/services/artesaoService';
 import { Navbar } from '@/components/Navbar';
-
-
-const estados = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-const areasArtesanato = ['Cerâmica e barro','Escultura e madeira','Renda e têxtil','Cestaria e palha','Xilogravura','Joalheria e acessórios','Pintura e artes visuais','Outro'];
+import { AREAS_ARTESANATO, ESTADOS_BRASILEIROS } from '@/data';
 
 // cntralização de estilos para reaproveitamento nos inputs
 const fieldStyles = { 
@@ -52,7 +49,7 @@ export default function PerfilPage() {
 
 
     const currentSpecialty = current.specialty || '';
-    const isStandardSpecialty = areasArtesanato.includes(currentSpecialty);
+    const isStandardSpecialty = AREAS_ARTESANATO.includes(currentSpecialty as typeof AREAS_ARTESANATO[number]);
     setSpecialty(isStandardSpecialty ? currentSpecialty : currentSpecialty ? 'Outro' : '');
     setCustomSpecialty(!isStandardSpecialty && currentSpecialty ? currentSpecialty : '');
     
@@ -65,7 +62,7 @@ export default function PerfilPage() {
         setImageUrl(current.imageUrl || artisan.imagemUrl);
         
         const artisanSpecialty = current.specialty || artisan.especialidade || '';
-        const isStandardArtisanSpecialty = areasArtesanato.includes(artisanSpecialty);
+        const isStandardArtisanSpecialty = AREAS_ARTESANATO.includes(artisanSpecialty as typeof AREAS_ARTESANATO[number]);
         setSpecialty(isStandardArtisanSpecialty ? artisanSpecialty : artisanSpecialty ? 'Outro' : '');
         setCustomSpecialty(!isStandardArtisanSpecialty && artisanSpecialty ? artisanSpecialty : '');
       }
@@ -172,13 +169,13 @@ export default function PerfilPage() {
                 <Box>
                   <Text mb={1} fontWeight="semibold">Estado</Text>
                   <Select value={state} onChange={event => setState(event.target.value)} placeholder="Selecione seu estado" {...fieldStyles}>
-                    {estados.map(uf => <option key={uf} value={uf}>{uf}</option>)}
+                    {ESTADOS_BRASILEIROS.map(uf => <option key={uf} value={uf}>{uf}</option>)}
                   </Select>
                 </Box>
                 <Box>
                   <Text mb={1} fontWeight="semibold">Área de atuação</Text>
                   <Select value={specialty} onChange={event => setSpecialty(event.target.value)} placeholder="Selecione sua área" {...fieldStyles}>
-                    {areasArtesanato.map(area => <option key={area} value={area}>{area}</option>)}
+                    {AREAS_ARTESANATO.map(area => <option key={area} value={area}>{area}</option>)}
                   </Select>
                 </Box>
             

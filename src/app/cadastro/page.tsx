@@ -4,10 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Button, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
 import { registerAccount, signIn } from '@/services/demoAuth';
+import { AREAS_ARTESANATO, ESTADOS_BRASILEIROS } from '@/data';
 
 type AccountRole = 'comprador' | 'artesao';
-const estados = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-const areasArtesanato = ['Cerâmica e barro','Escultura e madeira','Renda e têxtil','Cestaria e palha','Xilogravura','Joalheria e acessórios','Pintura e artes visuais','Outro'];
 
 const fieldStyles = {
   color: "#FFFFFF",
@@ -89,11 +88,11 @@ export default function CadastroPage() {
               <Input placeholder="Cidade onde você trabalha" value={city} onChange={event => setCity(event.target.value)} autoComplete="address-level2" required {...fieldStyles} />
               
               <Select sx={{ "& option": { color: "#FFFFFF", backgroundColor: "#332C28" } }} placeholder="Selecione seu estado" value={state} onChange={event => setState(event.target.value)} aria-label="Estado" required {...fieldStyles}>
-                {estados.map(uf => <option key={uf} value={uf}>{uf}</option>)}
+                {ESTADOS_BRASILEIROS.map(uf => <option key={uf} value={uf}>{uf}</option>)}
               </Select>
               
               <Select sx={{ "& option": { color: "#FFFFFF", backgroundColor: "#332C28" } }} placeholder="Área do artesanato" value={specialty} onChange={event => setSpecialty(event.target.value)} aria-label="Área de atuação" required {...fieldStyles}>
-                {areasArtesanato.map(area => <option key={area} value={area}>{area}</option>)}
+                {AREAS_ARTESANATO.map(area => <option key={area} value={area}>{area}</option>)}
               </Select>
               
               {specialty === 'Outro' && (

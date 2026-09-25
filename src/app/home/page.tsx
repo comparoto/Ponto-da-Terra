@@ -4,12 +4,7 @@ import { Badge, Box, Button, Flex, Heading, SimpleGrid, Text, VStack } from '@ch
 import { Navbar } from '@/components/Navbar';
 import { ProductCard } from '@/components/ProductCard';
 import { PECAS_DATA } from '@/services/produtoService';
-
-const destaques = [
-  { titulo: 'Feito à mão', texto: 'Peças criadas por artesãos que mantêm vivas técnicas e saberes tradicionais.' },
-  { titulo: 'De Pernambuco', texto: 'Conheça histórias e trabalhos de diferentes regiões do nosso estado.' },
-  { titulo: 'Compra consciente', texto: 'Descubra criações autorais e encontre uma peça com significado.' },
-];
+import { DESTAQUES } from '@/data';
 
 export default function HomePage() {
   const router = useRouter();
@@ -42,7 +37,7 @@ export default function HomePage() {
             </Box>
           </Flex>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mt={{ base: 12, md: 20 }}>
-            {destaques.map(item => <Box key={item.titulo} p={5} borderRadius="xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200"><Heading size="sm" color="terra.500" mb={2}>{item.titulo}</Heading><Text color="#E8DFD7">{item.texto}</Text></Box>)}
+            {DESTAQUES.map(item => <Box key={item.titulo} p={5} borderRadius="xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200"><Heading size="sm" color="terra.500" mb={2}>{item.titulo}</Heading><Text color="#E8DFD7">{item.texto}</Text></Box>)}
           </SimpleGrid>
         </Box>
       </Box>

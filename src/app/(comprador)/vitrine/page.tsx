@@ -6,8 +6,8 @@ import { Box, Flex, SimpleGrid, Text, Image, Heading, Spinner,IconButton, Icon, 
 import { Navbar } from '@/components/Navbar';
 import { ProductModal } from '@/components/ProductModal';
 import { Artesao, Peca } from '@/types';
-import { artesaoService } from '@/services/artesaoService';
-import { produtoService, CATEGORIAS } from '@/services/produtoService';
+import { fakeApi } from '@/services/api';
+import { CATEGORIAS } from '@/services/produtoService';
 import { useCart } from '@/store/cartStore';
 
 
@@ -52,6 +52,7 @@ export default function VitrinePage() {
   const [artesaos, setArtesaos] = useState<Artesao[]>([]);
   const [pecas, setPecas] = useState<Peca[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [mostrarTelaArtesaos, setMostrarTelaArtesaos] = useState(false);
   const [artesaoSelecionado, setArtesaoSelecionado] = useState<string | null>(null);
@@ -71,13 +72,35 @@ export default function VitrinePage() {
   const [especialidadeArtesao, setEspecialidadeArtesao] = useState('Todas');
 
   useEffect(() => {
-    Promise.all([artesaoService.getArtesaos(), produtoService.getProdutos()]).then(
-      ([artesaosData, pecasData]) => {
-        setArtesaos(artesaosData);
-        setPecas(pecasData);
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const [artesaosResult, pecasResult] = await Promise.all([
+          fakeApi.getArtesaos(),
+          fakeApi.getPecas(),
+        ]);
+
+        if (!artesaosResult.success || !pecasResult.success) {
+          setError(artesaosResult.error || pecasResult.error || 'Não foi possível carregar os dados desta vitrine.');
+          setArtesaos([]);
+          setPecas([]);
+          return;
+        }
+
+        setArtesaos(artesaosResult.data ?? []);
+        setPecas(pecasResult.data ?? []);
+      } catch {
+        setError('Não foi possível carregar a vitrine. Tente novamente em instantes.');
+        setArtesaos([]);
+        setPecas([]);
+      } finally {
         setIsLoading(false);
       }
-    );
+    };
+
+    void loadData();
   }, []);
   
   const handleSelectPeca = (peca: Peca) => {
@@ -186,6 +209,13 @@ export default function VitrinePage() {
       {mostrarTelaArtesaos ? telaArtesaos : isLoading ? (
         <Flex justify="center" align="center" flex="1" minH="60vh">
           <Spinner size="xl" color="terra.500" thickness="4px" />
+        </Flex>
+      ) : error ? (
+        <Flex justify="center" align="center" flex="1" minH="60vh" px={4}>
+          <Box bg="blackAlpha.700" borderRadius="xl" p={8} textAlign="center" border="1px solid" borderColor="whiteAlpha.200">
+            <Text color="terra.500" fontWeight="bold" mb={2}>Não foi possível carregar a vitrine</Text>
+            <Text color="whiteAlpha.800">{error}</Text>
+          </Box>
         </Flex>
       ) : (
         <Flex direction="column" flex="1" justify="space-between">

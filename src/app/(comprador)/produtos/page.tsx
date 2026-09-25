@@ -7,8 +7,8 @@ import { Navbar } from '@/components/Navbar';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductModal } from '@/components/ProductModal';
 import { Peca, Artesao } from '@/types';
-import { produtoService, CATEGORIAS } from '@/services/produtoService';
-import { artesaoService } from '@/services/artesaoService';
+import { fakeApi } from '@/services/api';
+import { CATEGORIAS } from '@/services/produtoService';
 
 const SearchIcon = (props: any) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
@@ -35,6 +35,7 @@ function CatalogoContent() {
   const [pecas, setPecas] = useState<Peca[]>([]);
   const [artesaos, setArtesaos] = useState<Artesao[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [busca, setBusca] = useState(searchParams.get('q') || '');
   const [categoria, setCategoria] = useState(searchParams.get('categoria') || 'Todas');
@@ -54,13 +55,35 @@ function CatalogoContent() {
   }, [searchParams]);
 
   useEffect(() => {
-    Promise.all([produtoService.getProdutos(), artesaoService.getArtesaos()]).then(
-      ([pecasData, artesaosData]) => {
-        setPecas(pecasData);
-        setArtesaos(artesaosData);
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const [pecasResult, artesaosResult] = await Promise.all([
+          fakeApi.getPecas(),
+          fakeApi.getArtesaos(),
+        ]);
+
+        if (!pecasResult.success || !artesaosResult.success) {
+          setError(pecasResult.error || artesaosResult.error || 'Não foi possível carregar o catálogo.');
+          setPecas([]);
+          setArtesaos([]);
+          return;
+        }
+
+        setPecas(pecasResult.data ?? []);
+        setArtesaos(artesaosResult.data ?? []);
+      } catch {
+        setError('Não foi possível carregar o catálogo. Tente novamente em instantes.');
+        setPecas([]);
+        setArtesaos([]);
+      } finally {
         setIsLoading(false);
       }
-    );
+    };
+
+    void loadData();
   }, []);
 
   const pecasFiltradas = useMemo(() => {
@@ -333,6 +356,13 @@ function CatalogoContent() {
         {isLoading ? (
           <Flex justify="center" align="center" py={20}>
             <Spinner size="xl" color="terra.500" thickness="4px" />
+          </Flex>
+        ) : error ? (
+          <Flex justify="center" align="center" py={20}>
+            <Box bg="blackAlpha.700" borderRadius="xl" p={8} textAlign="center" border="1px solid" borderColor="whiteAlpha.200">
+              <Text color="terra.500" fontWeight="bold" mb={2}>Não foi possível carregar o catálogo</Text>
+              <Text color="whiteAlpha.800">{error}</Text>
+            </Box>
           </Flex>
         ) : pecasFiltradas.length === 0 ? (
           <Flex
