@@ -157,7 +157,7 @@ Com base no progresso registrado no repositório, os seguintes fluxos já estão
 |---|---|
 | **Frontend** | Next.js + TypeScript |
 | **Gerenciamento de estado** |  |
-| **Estilização** | Tailwind CSS |
+| **Estilização** | Chakra UI |
 | **Fake API** | Dados mockados em código (`data/`) consumidos via camada de serviços (`services/`) |
 | **Backend real** | Ainda não implementado nesta versão |
 | **Banco de dados** | Ainda não implementado nesta versão |
