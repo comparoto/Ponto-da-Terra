@@ -242,7 +242,7 @@ export default function VitrinePage() {
                   whiteSpace="normal"
                   textAlign="center"
                 >
-                  Ver Catálogo Completo
+                  Catálogo de Peças
                 </Button>
               </Flex>
 

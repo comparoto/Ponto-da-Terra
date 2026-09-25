@@ -46,6 +46,7 @@ export default function WelcomePage() {
             borderColor="whiteAlpha.600"
             _hover={{ bg: 'whiteAlpha.200' }}
             w="150px"
+            onClick={() => router.push('/login')}
           >
             Login
           </Button>

@@ -1,12 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { Box, Flex, Heading, Text, VStack, HStack, Button, Input, Divider, Radio, RadioGroup, useToast, Image } from '@chakra-ui/react';
-import { useCart } from '@/store/cartStore'; // <-- Atualizado para a sua nova store
+import { useCart } from '@/store/cartStore'; 
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 
 export default function CheckoutPage() {
-  // Atualizado para usar os nomes das variáveis do seu código novo
   const { items = [], valorTotal, limparCarrinho } = useCart();
   const router = useRouter();
   const toast = useToast();
@@ -16,7 +15,6 @@ export default function CheckoutPage() {
   const [metodoPagamento, setMetodoPagamento] = useState('pix');
   const [isCalculando, setIsCalculando] = useState(false);
 
-  // Usa o novo valorTotal
   const totalGeral = (valorTotal || 0) + frete;
 
   const simularFrete = () => {
@@ -35,7 +33,7 @@ export default function CheckoutPage() {
   };
 
   const finalizarCompra = () => {
-    limparCarrinho(); // Usa a sua nova função de limpar
+    limparCarrinho(); 
     toast({
       title: 'Pedido realizado com sucesso!',
       description: 'Vamos redirecioná-lo para os seus pedidos.',
@@ -94,13 +92,25 @@ return (
               value={cep} 
               onChange={(e) => setCep(e.target.value)}
               bg="whiteAlpha.200" 
-              border="none"
+              border="1px solid"
+              borderColor="whiteAlpha.300"
+              color="white"
+              _hover={{ borderColor: 'terra.500' }}
+              _focus={{ borderColor: 'terra.500', boxShadow: '0 0 0 1px #D97742' }}
             />
             <Button 
               onClick={simularFrete} 
               isLoading={isCalculando} 
-              colorScheme="gray" 
-              variant="outline"
+              bg="terra.500" 
+              color="black"
+              px={8}
+              _hover={{ bg: 'terra.600' }}
+              _disabled={{ 
+                bg: 'whiteAlpha.200', 
+                color: 'whiteAlpha.400', 
+                cursor: 'not-allowed',
+                borderColor: 'transparent'
+              }}
               isDisabled={!cep}
             >
               Calcular
