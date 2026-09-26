@@ -59,11 +59,9 @@ O projeto integra três frentes acadêmicas complementares:
 
 📄 [Lista de requisitos detalhada (Notion)](https://app.notion.com/p/Projeto-Integrador-3c996fcfd27080df9bf3ef635f5bdf99?source=copy_link)
 
-## 🎥 Screencast
+ ## 🎥 Screencast
 
-Link do drive: ## 🎥 Screencast
-
-Link do drive: https://drive.google.com/file/d/1999YI4QNbKR8MZMIZ7G1yzh6EuD229pB/view?usp=sharing
+Link do vídeo: https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2
 ---
 
 ## 👩‍💻 Integrantes
