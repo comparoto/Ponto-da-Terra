@@ -59,11 +59,6 @@ O projeto integra três frentes acadêmicas complementares:
 
 📄 [Lista de requisitos detalhada (Notion)](https://app.notion.com/p/Projeto-Integrador-3c996fcfd27080df9bf3ef635f5bdf99?source=copy_link)
 
- ## 🎥 Screencast
-
-Link do vídeo: https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2
----
-
 ## 👩‍💻 Integrantes
 
 | Nome | GitHub |
@@ -254,7 +249,7 @@ type ApiResult<T> = {
 - [Slides do teste de concorrência](https://canva.link/yesnpw11bo8hgas)
 - [Log de Uso de IA](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing)
 - [Issues / Bug Tracker](https://github.com/comparoto/Ponto-da-Terra/issues)
-- [Screencast]()
+- [Screencast](https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2)
 
 ---
 
