@@ -1,10 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Modal,ModalOverlay,ModalContent,ModalBody,ModalCloseButton,Image,Box,Flex,Heading,Text,Badge,Button,HStack,IconButton, Divider,Icon,} from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
+import { Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, Image, Box, Flex, Heading, Text, Badge, Button, HStack, IconButton, Divider, Textarea, VStack } from '@chakra-ui/react';
 import { Peca } from '@/types';
-import { useCart } from '@/store/cartStore';
-import { readSession } from '@/services/demoAuth';
+import { MSG_LIMITE_ESTOQUE, useCart } from '@/store/cartStore';
+import { CheckIcon, Estrelas, ShoppingBagIcon as CartAddIcon, dataBr } from '@/components/ui';
+import { useSession } from '@/hooks/useSession';
+import { mensagemDeErro } from '@/services/http';
+import { avaliacaoService, mensagemService, type ResumoAvaliacoes } from '@/services/interacaoService';
 
 interface ProductModalProps {
   peca: Peca | null;
@@ -12,29 +16,116 @@ interface ProductModalProps {
   onClose: () => void;
 }
 
-const CartAddIcon = (props: any) => (
-  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-  </Icon>
-);
+/** HU17: média e últimas avaliações da peça. */
+function Avaliacoes({ produtoId }: { produtoId: string }) {
+  const [resumo, setResumo] = useState<ResumoAvaliacoes | null>(null);
+  useEffect(() => {
+    let ativo = true;
+    void avaliacaoService.doProduto(produtoId).then(r => {
+      if (ativo && r.success) setResumo(r.data);
+    });
+    return () => {
+      ativo = false;
+    };
+  }, [produtoId]);
 
-const CheckIcon = (props: any) => (
-  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-  </Icon>
-);
+  if (!resumo) return null;
+  if (!resumo.total) return <Text fontSize="xs" color="whiteAlpha.600">Esta peça ainda não tem avaliações.</Text>;
+  return (
+    <Box>
+      <HStack mb={2}>
+        <Estrelas nota={resumo.media} tamanho="sm" />
+        <Text fontSize="sm" color="whiteAlpha.800">
+          {resumo.media.toFixed(1)} · {resumo.total} avaliação(ões) de compradores verificados
+        </Text>
+      </HStack>
+      <VStack align="stretch" spacing={2} maxH="120px" overflowY="auto">
+        {resumo.avaliacoes.slice(0, 5).map(a => (
+          <Box key={a.id} fontSize="xs" bg="whiteAlpha.100" p={2} borderRadius="md">
+            <Text>
+              <Estrelas nota={a.nota} tamanho="sm" /> · {a.autor} · {dataBr(a.data)}
+            </Text>
+            {a.comentario && <Text color="whiteAlpha.800">{a.comentario}</Text>}
+          </Box>
+        ))}
+      </VStack>
+    </Box>
+  );
+}
+
+/** HU14: dúvida enviada direto ao artesão. */
+function ContatarProdutor({ produtoId }: { produtoId: string }) {
+  const router = useRouter();
+  const session = useSession();
+  const [aberto, setAberto] = useState(false);
+  const [mensagem, setMensagem] = useState('');
+  const [retorno, setRetorno] = useState<{ ok: boolean; texto: string } | null>(null);
+  const [enviando, setEnviando] = useState(false);
+
+  async function enviar() {
+    if (!mensagem.trim()) {
+      setRetorno({ ok: false, texto: 'O campo de mensagem não pode ficar vazio' });
+      return;
+    }
+    setEnviando(true);
+    const res = await mensagemService.enviar(produtoId, mensagem);
+    setEnviando(false);
+    if (!res.success) {
+      setRetorno({ ok: false, texto: mensagemDeErro(res) });
+      return;
+    }
+    setMensagem('');
+    setRetorno({ ok: true, texto: 'Mensagem enviada! O artesão foi avisado no painel dele.' });
+  }
+
+  if (session && session.role !== 'comprador') return null;
+  if (!aberto) {
+    return (
+      <Button size="sm" variant="outline" mt={3} w="100%" onClick={() => (session ? setAberto(true) : router.push('/login?perfil=comprador'))}>
+        Contatar produtor
+      </Button>
+    );
+  }
+  return (
+    <Box mt={3}>
+      <Textarea size="sm" rows={3} placeholder="Ex.: Vocês fazem essa peça em outro tamanho? Qual o prazo de confecção?" value={mensagem} onChange={e => setMensagem(e.target.value)} bg="whiteAlpha.100" aria-label="Mensagem para o artesão" />
+      {retorno && (
+        <Text fontSize="sm" mt={1} color={retorno.ok ? 'green.300' : 'red.300'} role={retorno.ok ? 'status' : 'alert'}>
+          {retorno.texto}
+        </Text>
+      )}
+      <HStack mt={2}>
+        <Button size="sm" bg="terra.500" color="black" isLoading={enviando} onClick={enviar}>
+          Enviar
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setAberto(false)}>
+          Fechar
+        </Button>
+      </HStack>
+    </Box>
+  );
+}
 
 export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
   const [quantidade, setQuantidade] = useState(1);
   const [adicionado, setAdicionado] = useState(false);
-  const { adicionarAoCarrinho } = useCart();
-  const [canBuy, setCanBuy] = useState(true);
-  useEffect(() => { const session = readSession(); setCanBuy(!session || session.role === 'comprador'); }, []);
+  const { adicionarAoCarrinho, quantidadeNoCarrinho } = useCart();
+  const session = useSession();
+  const canBuy = !session || session.role === 'comprador';
+  // Ao trocar de peça, a quantidade volta para 1 (ajuste de estado durante a renderização, sem efeito)
+  const [pecaAtualId, setPecaAtualId] = useState(peca?.id);
+  if (peca?.id !== pecaAtualId) {
+    setPecaAtualId(peca?.id);
+    setQuantidade(1);
+  }
 
   if (!peca) return null;
 
+  // Quanto ainda pode ser adicionado, considerando o que já está na sacola (HU4 / TC14)
+  const disponivel = Math.max(0, (peca.estoque ?? Infinity) - quantidadeNoCarrinho(peca.id));
+
   const handleAddToCart = () => {
-    adicionarAoCarrinho(peca, quantidade);
+    if (!adicionarAoCarrinho(peca, quantidade)) return;
     setAdicionado(true);
     setTimeout(() => {
       setAdicionado(false);
@@ -121,12 +212,35 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                 )}
 
                 {peca.material && (
-                  <Flex justify="space-between" fontSize="xs" color="whiteAlpha.700" mb={3}>
+                  <Flex justify="space-between" fontSize="xs" color="whiteAlpha.700" mb={1.5}>
                     <Text fontWeight="semibold">Material:</Text>
                     <Text>{peca.material}</Text>
                   </Flex>
                 )}
+
+                {peca.tecnica && (
+                  <Flex justify="space-between" fontSize="xs" color="whiteAlpha.700" mb={1.5}>
+                    <Text fontWeight="semibold">Técnica:</Text>
+                    <Text>{peca.tecnica}</Text>
+                  </Flex>
+                )}
+
+                {peca.poloOrigem && (
+                  <Flex justify="space-between" fontSize="xs" color="whiteAlpha.700" mb={1.5}>
+                    <Text fontWeight="semibold">Polo de origem:</Text>
+                    <Text>{peca.poloOrigem}</Text>
+                  </Flex>
+                )}
+
+                {typeof peca.estoque === 'number' && (
+                  <Flex justify="space-between" fontSize="xs" color="whiteAlpha.700" mb={3}>
+                    <Text fontWeight="semibold">Disponível:</Text>
+                    <Text>{peca.estoque > 0 ? `${peca.estoque} unidade${peca.estoque > 1 ? 's' : ''}` : 'Esgotada'}</Text>
+                  </Flex>
+                )}
               </Box>
+
+              <Avaliacoes produtoId={peca.id} />
 
               {canBuy ? (
               <Box mt={4} pt={4} borderTop="1px solid" borderColor="whiteAlpha.200">
@@ -164,11 +278,21 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                       fontSize="xl"
                       fontWeight="bold"
                       _hover={{ bg: 'terra.600', transform: 'scale(1.05)' }}
-                      onClick={() => setQuantidade(prev => prev + 1)}
+                      isDisabled={quantidade >= disponivel}
+                      onClick={() => setQuantidade(prev => Math.min(prev + 1, disponivel))}
                     />
                   </HStack>
                 </Flex>
 
+                {disponivel > 0 && quantidade >= disponivel && (
+                  <Text fontSize="sm" color="orange.200" mb={3} role="status">{MSG_LIMITE_ESTOQUE}</Text>
+                )}
+
+                {disponivel <= 0 ? (
+                  <Button w="100%" size="lg" minH="56px" isDisabled>
+                    {peca.emEstoque === false ? 'Peça esgotada' : MSG_LIMITE_ESTOQUE}
+                  </Button>
+                ) : (
                 <Button
                   w="100%"
                   bg={adicionado ? 'green.500' : 'terra.500'}
@@ -185,6 +309,8 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
                 >
                   {adicionado ? 'Adicionado com sucesso!' : `Adicionar à Sacola • R$ ${(peca.preco * quantidade).toFixed(2).replace('.', ',')}`}
                 </Button>
+                )}
+                <ContatarProdutor produtoId={peca.id} />
               </Box>
               ) : (
                 <Text mt={4} pt={4} borderTop="1px solid" borderColor="whiteAlpha.200" color="whiteAlpha.700" fontSize="sm">

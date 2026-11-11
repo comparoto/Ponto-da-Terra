@@ -1,9 +1,10 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Box, Button, Checkbox, Flex, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
-import { signIn, UserRole } from '@/services/demoAuth';
+import { signIn, UserRole } from '@/services/authService';
+import { mensagemDeErro } from '@/services/http';
 
 const profileEmailExample: Record<UserRole, string> = {
   comprador: 'comprador@pontodaterra.com',
@@ -19,41 +20,44 @@ const fieldStyles = {
   _focus: { borderColor: 'terra.500', boxShadow: '0 0 0 1px #D9B596' }
 };
 
-export default function LoginPage() {
-  const router = useRouter();
+const PERFIS: UserRole[] = ['comprador', 'artesao', 'administrador'];
 
-  const [role, setRole] = useState<UserRole>('comprador');
+function LoginContent() {
+  const router = useRouter();
+  // permite que a página de login receba o perfil pretendido (?perfil=artesao)
+  const perfilUrl = useSearchParams().get('perfil') as UserRole | null;
+  const [role, setRole] = useState<UserRole>(perfilUrl && PERFIS.includes(perfilUrl) ? perfilUrl : 'comprador');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // permite que a página de login receba o perfil pretendido 
-    const selectedRole = new URLSearchParams(window.location.search).get('perfil') as UserRole | null; 
-    if (selectedRole === 'comprador' || selectedRole === 'artesao' || selectedRole === 'administrador') {
-      setRole(selectedRole);
-    }
-  }, []);
 
-  function submit(event: React.SyntheticEvent) {
+  async function submit(event: React.SyntheticEvent) {
     event.preventDefault();
-    
+
     if (!acceptedTerms) {
       setError('Você precisa aceitar os Termos de Uso e a Política de Privacidade para continuar.');
       return;
     }
-    
-    const session = signIn(role, email, password)
-      ?? signIn('comprador', email, password)
-      ?? signIn('artesao', email, password)
-      ?? signIn('administrador', email, password);
-      
-    if (!session) {
-      setError('Não encontrei uma conta com esse e-mail e senha. Confira os dados ou crie uma conta.');
+
+    setError('');
+    setLoading(true);
+    // O perfil (comprador/artesão/admin) é definido pela conta no servidor, não pela opção escolhida
+    const resultado = await signIn(email, password);
+    setLoading(false);
+
+    if (!resultado.success || !resultado.data) {
+      setError(
+        resultado.status === 401
+          ? 'Não encontrei uma conta com esse e-mail e senha. Confira os dados ou crie uma conta.'
+          : mensagemDeErro(resultado),
+      );
       return;
     }
 
+    const session = resultado.data;
     localStorage.setItem('ponto_da_terra_terms_accepted_v1', new Date().toISOString());
     router.push(session.role === 'comprador' ? '/home' : session.role === 'artesao' ? '/artesao' : '/admin');
   }
@@ -136,7 +140,7 @@ export default function LoginPage() {
             </Text>
           </Checkbox>
         
-          <Button type="submit" bg="terra.500" color="black" mt={2} _hover={{ bg: 'terra.600' }}>
+          <Button type="submit" bg="terra.500" color="black" mt={2} isLoading={loading} _hover={{ bg: 'terra.600' }}>
             Entrar
           </Button>
           
@@ -147,5 +151,13 @@ export default function LoginPage() {
         </Stack>
       </Box>
     </Box>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 }

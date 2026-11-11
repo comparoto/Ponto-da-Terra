@@ -1,45 +1,16 @@
-import { Artesao, Peca } from '../types';
+/**
+ * Fachada (Facade) consumida pelas páginas — antes `fakeApi`, agora sobre a API real.
+ * O contrato ApiResult<T> = { success, data, error } foi preservado.
+ */
+import type { Artesao, Peca } from '../types';
 import { artesaoService } from './artesaoService';
 import { produtoService } from './produtoService';
 
-export type ApiResult<T> = {
-  success: boolean;
-  data: T | null;
-  error: string | null;
-};
+export type { ApiResult } from './http';
 
-const normalizeApiResult = <T>(data: T, error?: unknown): ApiResult<T> => {
-  if (error) {
-    return {
-      success: false,
-      data: null,
-      error: error instanceof Error ? error.message : 'Erro ao carregar os dados.',
-    };
-  }
-
-  return {
-    success: true,
-    data,
-    error: null,
-  };
-};
-
-export const fakeApi = {
-  getArtesaos: async (): Promise<ApiResult<Artesao[]>> => {
-    try {
-      return normalizeApiResult(await artesaoService.getArtesaos());
-    } catch (error) {
-      return normalizeApiResult([], error);
-    }
-  },
-
-  getPecas: async (): Promise<ApiResult<Peca[]>> => {
-    try {
-      return normalizeApiResult(await produtoService.getProdutos());
-    } catch (error) {
-      return normalizeApiResult([], error);
-    }
-  },
+export const api = {
+  getArtesaos: (): Promise<import('./http').ApiResult<Artesao[]>> => artesaoService.getArtesaos(),
+  getPecas: (): Promise<import('./http').ApiResult<Peca[]>> => produtoService.getProdutos(),
 };
 
 export { artesaoService, produtoService };

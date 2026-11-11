@@ -1,23 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Box,Image,Text,Badge,Flex,Button,IconButton,Icon,Tooltip,} from '@chakra-ui/react';
+import { Box,Image,Text,Badge,Flex,Button,IconButton,Icon,Tooltip, type IconProps } from '@chakra-ui/react';
 import { Peca } from '@/types';
 import { useCart } from '@/store/cartStore';
-import { readSession } from '@/services/demoAuth';
+import { useSession } from '@/hooks/useSession';
 
 interface ProductCardProps {
   peca: Peca;
   onSelect?: (peca: Peca) => void;
 }
 
-const CartAddIcon = (props: any) => (
+const CartAddIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
   </Icon>
 );
 
-const EyeIcon = (props: any) => (
+const EyeIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -25,9 +24,11 @@ const EyeIcon = (props: any) => (
 );
 
 export function ProductCard({ peca, onSelect }: ProductCardProps) {
-  const { adicionarAoCarrinho } = useCart();
-  const [canBuy, setCanBuy] = useState(true);
-  useEffect(() => { const session = readSession(); setCanBuy(!session || session.role === 'comprador'); }, []);
+  const { adicionarAoCarrinho, limiteAtingido } = useCart();
+  const esgotada = peca.emEstoque === false;
+  const noLimite = !esgotada && limiteAtingido(peca);
+  const session = useSession();
+  const canBuy = !session || session.role === 'comprador';
 
   return (
     <Box
@@ -139,8 +140,8 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
           </Box>
 
           {canBuy ? (
-            <Button size="sm" bg="terra.500" color="black" leftIcon={<CartAddIcon />} _hover={{ bg: 'terra.600', transform: 'scale(1.02)' }} _active={{ bg: 'terra.600' }} fontSize="xs" fontWeight="bold" borderRadius="md" px={3} onClick={() => adicionarAoCarrinho(peca, 1)}>
-              Comprar
+            <Button size="sm" bg="terra.500" color="black" leftIcon={<CartAddIcon />} _hover={{ bg: 'terra.600', transform: 'scale(1.02)' }} _active={{ bg: 'terra.600' }} fontSize="xs" fontWeight="bold" borderRadius="md" px={3} isDisabled={esgotada || noLimite} title={noLimite ? 'Limite de estoque atingido para esta peça' : undefined} onClick={() => adicionarAoCarrinho(peca, 1)}>
+              {esgotada ? 'Esgotada' : noLimite ? 'No limite' : 'Comprar'}
             </Button>
           ) : (
             <Text color="whiteAlpha.700" fontSize="xs" textAlign="right" maxW="100px">Compra exclusiva para compradores</Text>

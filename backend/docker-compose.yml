@@ -1,0 +1,36 @@
+name: ponto-da-terra
+
+# Infra local de desenvolvimento: PostgreSQL + Redis
+# Uso: npm run db:up  (portas 5434 e 6380 para não colidir com instalações locais)
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ponto-da-terra-postgres
+    environment:
+      POSTGRES_USER: pdt
+      POSTGRES_PASSWORD: pdt
+      POSTGRES_DB: pontodaterra
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pdt -d pontodaterra"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ponto-da-terra-redis
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

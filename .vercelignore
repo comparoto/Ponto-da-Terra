@@ -1,0 +1,8 @@
+# Este projeto da Vercel é só o site (Next.js). A API é outro projeto da Vercel, com Root Directory = backend.
+backend
+e2e
+.github
+RELATORIO_TESTES.md
+REQUISITOS_BACKEND.md
+.env.local
+.vercel

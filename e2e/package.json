@@ -1,0 +1,16 @@
+{
+  "name": "ponto-da-terra-e2e",
+  "private": true,
+  "description": "Testes ponta a ponta no navegador (Playwright) — fluxos dos casos de teste TC01–TC16",
+  "scripts": {
+    "test": "node seguranca.mjs && node integracao.cjs && node fase2.cjs && node responsivo-acessibilidade.cjs",
+    "test:integracao": "node integracao.cjs",
+    "test:fase2": "node fase2.cjs",
+    "test:responsivo": "node responsivo-acessibilidade.cjs",
+    "test:seguranca": "node seguranca.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.14.0",
+    "playwright-core": "1.65.0"
+  }
+}

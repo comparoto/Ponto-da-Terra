@@ -1,13 +1,21 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Box, Button, Flex, Heading, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Navbar } from '@/components/Navbar';
 import { ProductCard } from '@/components/ProductCard';
-import { PECAS_DATA } from '@/services/produtoService';
+import { produtoService } from '@/services/produtoService';
+import type { Peca } from '@/types';
 import { DESTAQUES } from '@/data';
 
 export default function HomePage() {
   const router = useRouter();
+  const [destaques, setDestaques] = useState<Peca[] | null>(null);
+
+  useEffect(() => {
+    void produtoService.getProdutos().then(res => setDestaques(res.success ? (res.data ?? []).slice(0, 4) : []));
+  }, []);
+
   return (
     <Box
       minH="100vh"
@@ -46,9 +54,15 @@ export default function HomePage() {
           <Box><Heading size="lg">Peças em destaque</Heading><Text color="#E8DFD7" mt={2}>Uma amostra do que você encontra na vitrine.</Text></Box>
           <Button variant="outline" color="white" onClick={() => router.push('/vitrine')}>Ver todas</Button>
         </Flex>
-        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
-          {PECAS_DATA.slice(0, 4).map(peca => <ProductCard key={peca.id} peca={peca} />)}
-        </SimpleGrid>
+        {destaques === null ? (
+          <Flex justify="center" py={10}><Spinner color="terra.500" /></Flex>
+        ) : destaques.length ? (
+          <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
+            {destaques.map(peca => <ProductCard key={peca.id} peca={peca} />)}
+          </SimpleGrid>
+        ) : (
+          <Text color="#E8DFD7">Não foi possível carregar as peças agora. Tente novamente em instantes.</Text>
+        )}
       </Box>
     </Box>
   );

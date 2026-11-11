@@ -1,0 +1,445 @@
+// Schema do Ponto da Terra — baseado no Diagrama de Classes da equipe.
+// Ajustes em relação ao diagrama estão documentados em REQUISITOS_BACKEND.md §5 e marcados com "AJUSTE".
+
+generator client {
+  provider      = "prisma-client-js"
+  // "rhel-openssl-3.0.x" é o Linux das funções da Vercel
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Conexão usada pela aplicação (na Vercel/Neon: a URL com pooler)
+  url       = env("DATABASE_URL")
+  // Conexão direta, usada pelas migrations (no Neon: DATABASE_URL_UNPOOLED; localmente, a mesma URL)
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// ───────────── Enums ─────────────
+
+enum TipoUsuario {
+  ADMIN
+  ARTESAO
+  CONSUMIDOR
+}
+
+/// AJUSTE C8: + INATIVO (HU16)
+enum StatusUsuario {
+  ATIVO
+  INATIVO
+  SUSPENSO
+}
+
+enum StatusProduto {
+  PENDENTE
+  ATIVO
+  REJEITADO
+}
+
+/// AJUSTE C2: + CANCELADO (TC16)
+enum StatusPedido {
+  CRIADO
+  AGUARDANDO_PAGAMENTO
+  PAGO
+  EM_PRODUCAO
+  DESPACHADO
+  ENTREGUE
+  CANCELADO
+}
+
+enum MetodoPagamento {
+  PIX
+  CARTAO
+  BOLETO
+}
+
+/// AJUSTE: status da compra (checkout) — agrupa os pedidos de vários artesãos com um único pagamento
+enum StatusCompra {
+  AGUARDANDO_PAGAMENTO
+  PAGA
+  CANCELADA
+}
+
+/// AJUSTE: + EXPIRADO (TC16)
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  RECUSADO
+  EXPIRADO
+}
+
+enum TipoEvento {
+  NOVO_PEDIDO
+  PRODUTO_APROVADO
+  PRODUTO_REJEITADO
+  NOVA_MENSAGEM
+  PEDIDO_ATUALIZADO
+}
+
+// ───────────── Usuários ─────────────
+
+model Usuario {
+  id              String        @id @default(uuid())
+  nome            String
+  email           String        @unique
+  senhaHash       String
+  telefone        String?
+  tipo            TipoUsuario
+  status          StatusUsuario @default(ATIVO)
+  motivoSuspensao String?
+  /// AJUSTE: incrementado no logout/suspensão para invalidar tokens emitidos (HU16)
+  tokenVersion    Int           @default(0)
+  dataCadastro    DateTime      @default(now())
+
+  consumidor    Consumidor?
+  artesao       Artesao?
+  administrador Administrador?
+}
+
+model Consumidor {
+  id               String   @id @default(uuid())
+  usuarioId        String   @unique
+  usuario          Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  enderecoPadraoId String?
+  dataCadastro     DateTime @default(now())
+
+  enderecos  Endereco[]
+  carrinho   Carrinho?
+  compras    Compra[]
+  pedidos    Pedido[]
+  avaliacoes Avaliacao[]
+  favoritos  Favorito[]
+  mensagens  MensagemContato[]
+}
+
+model Administrador {
+  id          String  @id @default(uuid())
+  usuarioId   String  @unique
+  usuario     Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  nivelAcesso String  @default("PADRAO")
+}
+
+model Artesao {
+  id                 String   @id @default(uuid())
+  usuarioId          String   @unique
+  usuario            Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  nomeAtelie         String?
+  biografia          String?
+  tecnicasPrincipais String[]
+  /// AJUSTE: usado pelo frontend atual
+  especialidade      String?
+  /// AJUSTE: polo regional de atuação (ex.: "Alto do Moura", "Agreste") — HU7
+  poloRegional       String?
+  cidade             String
+  estado             String   @default("PE")
+  cepOrigem          String?
+  fotoPerfilUrl      String?
+  fotoAtelieUrl      String?
+  aceitaEncomenda    Boolean  @default(false)
+  avaliacaoMedia     Float    @default(0)
+  dataCadastro       DateTime @default(now())
+
+  produtos      Produto[]
+  itensVendidos ItemPedido[]
+  pedidos       Pedido[]
+  notificacoes  NotificacaoLog[]
+  mensagens     MensagemContato[]
+  checklist     ChecklistFormalizacao?
+}
+
+model Endereco {
+  id           String     @id @default(uuid())
+  consumidorId String
+  consumidor   Consumidor @relation(fields: [consumidorId], references: [id], onDelete: Cascade)
+  cep          String
+  rua          String
+  numero       String
+  complemento  String?
+  bairro       String?
+  cidade       String
+  estado       String
+  entregas     Entrega[]
+  compras      Compra[]
+}
+
+// ───────────── Catálogo ─────────────
+
+model CategoriaProduto {
+  id       String    @id @default(uuid())
+  nome     String    @unique
+  produtos Produto[]
+}
+
+model Produto {
+  id                     String            @id @default(uuid())
+  artesaoId              String
+  artesao                Artesao           @relation(fields: [artesaoId], references: [id], onDelete: Cascade)
+  categoriaId            String?
+  categoria              CategoriaProduto? @relation(fields: [categoriaId], references: [id])
+  titulo                 String
+  descricao              String?
+  /// AJUSTE C3: obrigatório (HU1/HU2/TC09)
+  tecnica                String
+  /// AJUSTE C3: obrigatório (HU1/HU2/TC09)
+  poloOrigem             String
+  preco                  Decimal           @db.Decimal(10, 2)
+  materiaisUtilizados    String?
+  /// AJUSTE: usado pelo frontend atual
+  dimensoes              String?
+  prontaEntrega          Boolean           @default(true)
+  tempoProducaoDias      Int?
+  imagensUrls            String[]
+  avaliacaoMedia         Float             @default(0)
+  status                 StatusProduto     @default(PENDENTE)
+  justificativaCuradoria String?
+  criadoEm               DateTime          @default(now())
+  atualizadoEm           DateTime          @updatedAt
+
+  estoque       Estoque?
+  itensCarrinho ItemCarrinho[]
+  itensPedido   ItemPedido[]
+  avaliacoes    Avaliacao[]
+  favoritos     Favorito[]
+  mensagens     MensagemContato[]
+
+  @@index([status, categoriaId])
+  @@index([status, tecnica, poloOrigem])
+  @@index([artesaoId])
+}
+
+model Estoque {
+  id                   String  @id @default(uuid())
+  produtoId            String  @unique
+  produto              Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  /// CHECK (>= 0) adicionado na migration
+  quantidadeDisponivel Int     @default(0)
+  /// Contador de alterações (lock otimista do diagrama de classes)
+  versao               Int     @default(0)
+}
+
+// ───────────── Carrinho ─────────────
+
+model Carrinho {
+  id           String         @id @default(uuid())
+  consumidorId String         @unique
+  consumidor   Consumidor     @relation(fields: [consumidorId], references: [id], onDelete: Cascade)
+  itens        ItemCarrinho[]
+  atualizadoEm DateTime       @updatedAt
+}
+
+model ItemCarrinho {
+  id         String   @id @default(uuid())
+  carrinhoId String
+  carrinho   Carrinho @relation(fields: [carrinhoId], references: [id], onDelete: Cascade)
+  produtoId  String
+  produto    Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  quantidade Int
+
+  @@unique([carrinhoId, produtoId])
+}
+
+// ───────────── Pedidos ─────────────
+
+/// AJUSTE C9/D5: o checkout gera uma Compra (um pagamento) dividida em um Pedido por artesão.
+model Compra {
+  id              String       @id @default(uuid())
+  /// Código exibido ao comprador (ex.: PT-LZ3K9A-7Q2F)
+  codigo          String       @unique
+  consumidorId    String
+  consumidor      Consumidor   @relation(fields: [consumidorId], references: [id])
+  enderecoId      String
+  endereco        Endereco     @relation(fields: [enderecoId], references: [id])
+  valorProdutos   Decimal      @db.Decimal(10, 2)
+  valorFrete      Decimal      @db.Decimal(10, 2)
+  valorTotal      Decimal      @db.Decimal(10, 2)
+  status          StatusCompra @default(AGUARDANDO_PAGAMENTO)
+  /// Até quando o estoque fica reservado sem pagamento (PIX 30 min, boleto 3 dias úteis) — TC16
+  reservaExpiraEm DateTime
+  criadoEm        DateTime     @default(now())
+
+  pedidos   Pedido[]
+  pagamento Pagamento?
+
+  @@index([consumidorId])
+  @@index([status, reservaExpiraEm])
+}
+
+model Pedido {
+  id            String       @id @default(uuid())
+  /// AJUSTE C9: compra (checkout) a que este pedido pertence
+  compraId      String
+  compra        Compra       @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  consumidorId  String
+  consumidor    Consumidor   @relation(fields: [consumidorId], references: [id])
+  /// AJUSTE C9
+  artesaoId     String
+  artesao       Artesao      @relation(fields: [artesaoId], references: [id])
+  dataPedido    DateTime     @default(now())
+  valorProdutos Decimal      @db.Decimal(10, 2)
+  valorFrete    Decimal      @db.Decimal(10, 2)
+  valorTotal    Decimal      @db.Decimal(10, 2)
+  status        StatusPedido @default(CRIADO)
+
+  itens        ItemPedido[]
+  entrega      Entrega?
+  historico    HistoricoStatusPedido[]
+  intervencoes IntervencaoPedido[]
+  notificacoes NotificacaoLog[]
+
+  @@index([consumidorId])
+  @@index([artesaoId, status])
+  @@index([compraId])
+  @@index([status, dataPedido])
+}
+
+model ItemPedido {
+  id            String  @id @default(uuid())
+  pedidoId      String
+  pedido        Pedido  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produtoId     String
+  produto       Produto @relation(fields: [produtoId], references: [id])
+  artesaoId     String
+  artesao       Artesao @relation(fields: [artesaoId], references: [id])
+  /// Snapshot: o pedido não muda se o produto for editado
+  tituloProduto String
+  quantidade    Int
+  /// Snapshot do preço no momento da compra (TC08)
+  precoUnitario Decimal @db.Decimal(10, 2)
+}
+
+/// AJUSTE: linha do tempo do pedido (HU6)
+model HistoricoStatusPedido {
+  id       String       @id @default(uuid())
+  pedidoId String
+  pedido   Pedido       @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  status   StatusPedido
+  criadoEm DateTime     @default(now())
+  autorId  String?
+}
+
+/// AJUSTE: substitui Pedido.notasIntervencaoAdmin (HU10)
+model IntervencaoPedido {
+  id       String   @id @default(uuid())
+  pedidoId String
+  pedido   Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  adminId  String
+  nota     String
+  criadoEm DateTime @default(now())
+}
+
+/// Pagamento SIMULADO (Notion: sem integração com gateways reais). Um por compra.
+model Pagamento {
+  id                String          @id @default(uuid())
+  /// AJUSTE: o pagamento é da compra (não de cada pedido)
+  compraId          String          @unique
+  compra            Compra          @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  metodo            MetodoPagamento
+  status            StatusPagamento @default(PENDENTE)
+  parcelas          Int             @default(1)
+  /// Único: garante idempotência do webhook (TC16)
+  codigoTransacao   String          @unique
+  /// PIX "copia e cola" (simulado)
+  pixCopiaECola     String?
+  /// QR Code do PIX como data URL (PNG)
+  pixQrCode         String?
+  /// Linha digitável do boleto (simulada)
+  linhaDigitavel    String?
+  /// Apenas os 4 últimos dígitos do cartão — os dados do cartão nunca são armazenados
+  cartaoFinal       String?
+  motivoRecusa      String?
+  expiraEm          DateTime?
+  criadoEm          DateTime        @default(now())
+  dataProcessamento DateTime?
+}
+
+model Entrega {
+  id             String    @id @default(uuid())
+  pedidoId       String    @unique
+  pedido         Pedido    @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  enderecoId     String
+  endereco       Endereco  @relation(fields: [enderecoId], references: [id])
+  codigoRastreio String?
+  transportadora String?   @default("Correios")
+  dataPostagem   DateTime?
+  dataPrevista   DateTime?
+}
+
+// ───────────── Interação ─────────────
+
+model Avaliacao {
+  id            String     @id @default(uuid())
+  consumidorId  String
+  consumidor    Consumidor @relation(fields: [consumidorId], references: [id], onDelete: Cascade)
+  produtoId     String
+  produto       Produto    @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  /// CHECK (1..5) adicionado na migration
+  nota          Int
+  comentario    String?
+  dataAvaliacao DateTime   @default(now())
+
+  @@unique([consumidorId, produtoId])
+}
+
+model Favorito {
+  id           String     @id @default(uuid())
+  consumidorId String
+  consumidor   Consumidor @relation(fields: [consumidorId], references: [id], onDelete: Cascade)
+  produtoId    String
+  produto      Produto    @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@unique([consumidorId, produtoId])
+}
+
+model MensagemContato {
+  id           String     @id @default(uuid())
+  consumidorId String
+  consumidor   Consumidor @relation(fields: [consumidorId], references: [id], onDelete: Cascade)
+  artesaoId    String
+  artesao      Artesao    @relation(fields: [artesaoId], references: [id], onDelete: Cascade)
+  produtoId    String
+  produto      Produto    @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  mensagem     String
+  dataEnvio    DateTime   @default(now())
+}
+
+model NotificacaoLog {
+  id                String     @id @default(uuid())
+  /// AJUSTE: evento da outbox que originou a notificação (garante processamento único pelo worker)
+  eventoId          String?    @unique
+  artesaoId         String?
+  artesao           Artesao?   @relation(fields: [artesaoId], references: [id], onDelete: Cascade)
+  /// AJUSTE: destinatário genérico (ex.: consumidor)
+  usuarioId         String?
+  pedidoId          String?
+  pedido            Pedido?    @relation(fields: [pedidoId], references: [id], onDelete: SetNull)
+  tipoEvento        TipoEvento
+  payload           Json?
+  enviadoComSucesso Boolean    @default(false)
+  tentativas        Int        @default(0)
+  lida              Boolean    @default(false)
+  dataEnvio         DateTime   @default(now())
+
+  @@index([artesaoId, lida])
+  @@index([usuarioId, lida])
+}
+
+model ChecklistFormalizacao {
+  id                  String   @id @default(uuid())
+  artesaoId           String   @unique
+  artesao             Artesao  @relation(fields: [artesaoId], references: [id], onDelete: Cascade)
+  itensConcluidos     Json     @default("[]")
+  percentualConclusao Int      @default(0)
+  atualizadoEm        DateTime @updatedAt
+}
+
+/// AJUSTE: Transactional Outbox — o evento é gravado na mesma transação da operação
+/// de negócio e publicado na fila por um relay (garante "sem perda de mensagens").
+model EventoOutbox {
+  id          String     @id @default(uuid())
+  tipo        TipoEvento
+  payload     Json
+  criadoEm    DateTime   @default(now())
+  publicadoEm DateTime?
+
+  @@index([publicadoEm])
+}

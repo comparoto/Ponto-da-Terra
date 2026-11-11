@@ -1,0 +1,197 @@
+/**
+ * Autenticação real (JWT) — substitui o antigo demoAuth.ts.
+ *
+ * A sessão continua com o mesmo formato que as telas já usavam (role, name, email, artisanId, ...),
+ * agora acompanhada do token JWT emitido pela API. `readSession()` segue síncrono (lê o cache local),
+ * então guards de rota e componentes não precisaram mudar.
+ */
+import { artesaoParaFront, type ArtesaoApi } from './mappers';
+import { type ApiResult, lerToken, limparSessaoLocal, request, SESSAO_ALTERADA, SESSION_KEY } from './http';
+
+export type UserRole = 'comprador' | 'artesao' | 'administrador';
+
+export interface Sessao {
+  token: string;
+  role: UserRole;
+  email: string;
+  name: string;
+  phone?: string;
+  artisanId?: string;
+  city?: string;
+  state?: string;
+  specialty?: string;
+  bio?: string;
+  imageUrl?: string;
+  workshopImageUrl?: string;
+  /** HU7: técnicas tradicionais que o artesão domina */
+  techniques?: string[];
+  /** HU7: polo regional de atuação */
+  region?: string;
+}
+
+type TipoApi = 'CONSUMIDOR' | 'ARTESAO' | 'ADMIN';
+type PerfilApi = { id: string; nome: string; email: string; telefone: string | null; tipo: TipoApi; artesaoId: string | null };
+
+const ROLE_POR_TIPO: Record<TipoApi, UserRole> = { CONSUMIDOR: 'comprador', ARTESAO: 'artesao', ADMIN: 'administrador' };
+
+const isBrowser = () => typeof window !== 'undefined';
+
+/** Lê o `exp` do JWT (sem validar assinatura — quem valida é o servidor) para descartar sessões vencidas. */
+function tokenExpirado(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+}
+
+function salvarSessao(sessao: Sessao) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(sessao));
+  window.dispatchEvent(new Event(SESSAO_ALTERADA));
+}
+
+export function readSession(): Sessao | null {
+  if (!isBrowser()) return null;
+  try {
+    const bruto = localStorage.getItem(SESSION_KEY);
+    if (!bruto) return null;
+    const sessao = JSON.parse(bruto) as Sessao;
+    if (!sessao.token || tokenExpirado(sessao.token)) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return sessao;
+  } catch {
+    return null;
+  }
+}
+
+/** Monta a sessão a partir do perfil da API (e, para artesão, do perfil do ateliê). */
+async function montarSessao(token: string, usuario: PerfilApi): Promise<Sessao> {
+  const sessao: Sessao = {
+    token,
+    role: ROLE_POR_TIPO[usuario.tipo],
+    email: usuario.email,
+    name: usuario.nome,
+    phone: usuario.telefone ?? undefined,
+    artisanId: usuario.artesaoId ?? undefined,
+  };
+  salvarSessao(sessao); // o token precisa estar salvo para a chamada autenticada abaixo
+
+  if (sessao.role === 'artesao') {
+    const perfil = await request<ArtesaoApi>('/artesao/perfil');
+    if (perfil.success && perfil.data) {
+      const a = artesaoParaFront(perfil.data);
+      Object.assign(sessao, {
+        city: a.cidade,
+        state: a.estado,
+        specialty: a.especialidade,
+        bio: a.biografia,
+        imageUrl: a.imagemUrl || undefined,
+        workshopImageUrl: a.fotoAtelieUrl,
+        techniques: a.tecnicasPrincipais ?? [],
+        region: a.poloRegional,
+      });
+      salvarSessao(sessao);
+    }
+  }
+  return sessao;
+}
+
+export async function signIn(email: string, senha: string): Promise<ApiResult<Sessao>> {
+  const res = await request<{ token: string; usuario: PerfilApi }>('/auth/login', { method: 'POST', body: { email, senha } });
+  if (!res.success || !res.data) return { ...res, data: null };
+  return { success: true, data: await montarSessao(res.data.token, res.data.usuario), error: null };
+}
+
+export interface ArtisanRegistration {
+  city: string;
+  state: string;
+  specialty: string;
+}
+
+export async function registerAccount(
+  nome: string,
+  email: string,
+  senha: string,
+  role: 'comprador' | 'artesao',
+  artisan?: ArtisanRegistration,
+): Promise<ApiResult<Sessao>> {
+  const res = await request<{ token: string; usuario: PerfilApi }>('/auth/cadastro', {
+    method: 'POST',
+    body: {
+      nome,
+      email,
+      senha,
+      tipo: role === 'artesao' ? 'ARTESAO' : 'CONSUMIDOR',
+      ...(role === 'artesao' && artisan ? { cidade: artisan.city, estado: artisan.state || undefined, especialidade: artisan.specialty } : {}),
+    },
+  });
+  if (!res.success || !res.data) return { ...res, data: null };
+  return { success: true, data: await montarSessao(res.data.token, res.data.usuario), error: null };
+}
+
+/** Encerra a sessão no servidor (invalida o token) e localmente. */
+export async function signOut(): Promise<void> {
+  if (lerToken()) await request('/auth/logout', { method: 'POST' });
+  limparSessaoLocal();
+}
+
+export interface AtualizacaoPerfil {
+  name: string;
+  city?: string;
+  state?: string;
+  specialty?: string;
+  bio?: string;
+  techniques?: string[];
+  region?: string;
+}
+
+/** Atualiza nome (todos) e dados do ateliê (artesão). Reflete na página pública imediatamente. */
+export async function updateAccountProfile(dados: AtualizacaoPerfil): Promise<ApiResult<Sessao>> {
+  const atual = readSession();
+  if (!atual) return { success: false, data: null, error: 'Sessão expirada. Entre novamente.' };
+
+  const me = await request<PerfilApi>('/me', { method: 'PUT', body: { nome: dados.name } });
+  if (!me.success) return { ...me, data: null };
+
+  const atualizada: Sessao = { ...atual, name: dados.name };
+  if (atual.role === 'artesao') {
+    const perfil = await request<ArtesaoApi>('/artesao/perfil', {
+      method: 'PUT',
+      body: {
+        cidade: dados.city,
+        estado: dados.state,
+        especialidade: dados.specialty,
+        biografia: dados.bio?.trim() ? dados.bio.trim() : null,
+        tecnicasPrincipais: dados.techniques ?? [],
+        poloRegional: dados.region?.trim() ? dados.region.trim() : null,
+      },
+    });
+    if (!perfil.success) return { ...perfil, data: null };
+    Object.assign(atualizada, { city: dados.city, state: dados.state, specialty: dados.specialty, bio: dados.bio, techniques: dados.techniques ?? [], region: dados.region });
+  }
+
+  salvarSessao(atualizada);
+  return { success: true, data: atualizada, error: null };
+}
+
+/** Envia a foto de perfil ou da oficina do artesão (JPG/PNG até 5 MB — validado no servidor). */
+export async function uploadArtisanPhoto(arquivo: File, tipo: 'perfil' | 'atelie'): Promise<ApiResult<Sessao>> {
+  const form = new FormData();
+  form.append('foto', arquivo);
+  const res = await request<ArtesaoApi>('/artesao/perfil/fotos', { method: 'POST', form, query: { tipo } });
+  if (!res.success || !res.data) return { ...res, data: null };
+
+  const a = artesaoParaFront(res.data);
+  const atualizada = { ...readSession()!, imageUrl: a.imagemUrl || undefined, workshopImageUrl: a.fotoAtelieUrl };
+  salvarSessao(atualizada);
+  return { success: true, data: atualizada, error: null };
+}
+
+export async function deleteAccount(): Promise<ApiResult<null>> {
+  const res = await request<null>('/me', { method: 'DELETE' });
+  if (res.success) limparSessaoLocal();
+  return res;
+}

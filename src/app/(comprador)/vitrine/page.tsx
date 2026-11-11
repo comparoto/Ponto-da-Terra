@@ -2,28 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, SimpleGrid, Text, Image, Heading, Spinner,IconButton, Icon, Button, Badge, HStack, useDisclosure,Input, Select,} from '@chakra-ui/react';
+import { Box, Flex, SimpleGrid, Text, Image, Heading, Spinner,IconButton, Icon, Button, Badge, HStack, useDisclosure,Input, Select, type IconProps } from '@chakra-ui/react';
 import { Navbar } from '@/components/Navbar';
 import { ProductModal } from '@/components/ProductModal';
 import { Artesao, Peca } from '@/types';
-import { fakeApi } from '@/services/api';
+import { api } from '@/services/api';
 import { CATEGORIAS } from '@/services/produtoService';
 import { useCart } from '@/store/cartStore';
 
 
-const FilterIcon = (props: any) => (
+const FilterIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
   </Icon>
 );
 
-const ArrowRightIcon = (props: any) => (
+const ArrowRightIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
   </Icon>
 );
 
-const ShoppingBagIcon = (props: any) => (
+const ShoppingBagIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
   </Icon>
@@ -78,8 +78,8 @@ export default function VitrinePage() {
 
       try {
         const [artesaosResult, pecasResult] = await Promise.all([
-          fakeApi.getArtesaos(),
-          fakeApi.getPecas(),
+          api.getArtesaos(),
+          api.getPecas(),
         ]);
 
         if (!artesaosResult.success || !pecasResult.success) {

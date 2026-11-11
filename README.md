@@ -47,7 +47,9 @@ A plataforma conecta esses artesãos diretamente a compradores de todo o país, 
 - **Painel do artesão** — gestão de catálogo, estoque e pedidos;
 - **Painel administrativo** — indicadores de venda e gestão geral da plataforma.
 
-> 📌 **Status atual do projeto:** esta versão da aplicação conta apenas com **frontend responsivo** e uma **Fake API** (dados mockados diretamente no código, nas pastas `data/` e `services/`), simulando o comportamento de um backend real enquanto a integração com a API definitiva não é implementada.
+> 📌 **Status atual do projeto (11/11/2026):** aplicação full stack integrada. O frontend consome a **API real** (pasta [`backend/`](backend/README.md): Node.js + Express + PostgreSQL + Redis/BullMQ + worker de filas) em todos os fluxos: login e cadastro (JWT), vitrine e catálogo, checkout com reserva atômica de estoque, pagamentos simulados (PIX, cartão e boleto), pedidos com rastreio, avaliações, contato com o produtor, painéis do artesão e do admin e a central de orientação. As 18 histórias de usuário do backlog estão implementadas. Requisitos e roadmap: [`REQUISITOS_BACKEND.md`](REQUISITOS_BACKEND.md).
+>
+> As seções abaixo sobre a Fake API documentam a etapa anterior (primeira entrega).
 
 O projeto integra três frentes acadêmicas complementares:
 
@@ -155,10 +157,11 @@ Com base no progresso registrado no repositório, os seguintes fluxos já estão
 |---|---|
 | **Frontend** | Next.js + TypeScript |
 | **Estilização** | Chakra UI |
-| **Fake API** | Dados mockados em código (`data/`) consumidos via camada de serviços (`services/`) |
-| **Backend real** | Ainda não implementado nesta versão |
-| **Banco de dados** | Ainda não implementado nesta versão pois ninguém da equipe está na disciplina de Bando de Dados |
-| **Autenticação** | Autenticação simulada (`services/demoAuth.ts`), sem backend/token real |
+| **Camada de serviços** | `src/services/` consome a API via HTTP mantendo o contrato `ApiResult<T>` da antiga Fake API |
+| **Backend** | Node.js + TypeScript + Express 5, documentado com Swagger (`backend/`) |
+| **Banco de dados** | PostgreSQL 16 com Prisma (migrations versionadas) |
+| **Cache** | Redis (catálogo) |
+| **Autenticação** | JWT com perfis Comprador / Artesão / Administrador validados no servidor |
 | **Testes de concorrência** | Java (`CountDownLatch`, simulação de 20 threads paralelas) — módulo `TesteDeStress`, independente da aplicação |
 | **Controle de versão** | Git / GitHub |
 
@@ -166,11 +169,12 @@ Com base no progresso registrado no repositório, os seguintes fluxos já estão
 
 ## ⚙️ Como executar localmente
 
-Como não há backend nesta versão, basta rodar o frontend — a Fake API já está embutida no próprio código.
+O frontend depende da API (pasta `backend/`), que precisa estar rodando.
 
 ### 1. Pré-requisitos
-- Node.js
-- npm ou yarn
+- Node.js 20+
+- npm
+- Docker Desktop (para o PostgreSQL e o Redis)
 
 ### 2. Clonar o repositório
 ```bash
@@ -178,16 +182,40 @@ git clone https://github.com/comparoto/Ponto-da-Terra.git
 cd Ponto-da-Terra
 ```
 
-### 3. Instalar dependências
+### 3. Subir a API (terminal 1)
 ```bash
+cd backend
 npm install
+cp .env.example .env
+npm run db:up                 # PostgreSQL (porta 5434) e Redis (porta 6380) via Docker
+npx prisma migrate deploy     # cria as tabelas
+npm run db:seed               # dados iniciais + contas de demonstração
+npm run dev                   # API em http://localhost:3333/api  ·  Swagger em /api/docs
 ```
 
-### 4. Executar a aplicação
+### 4. Subir o worker de filas (terminal 2, na pasta backend)
 ```bash
+npm run dev:worker            # notificações (fila) e expiração de reservas de PIX/boleto
+```
+
+### 5. Subir o frontend (terminal 3, na raiz do projeto)
+```bash
+npm install
 npm run dev
 ```
-A aplicação ficará disponível em `http://localhost:3000`. Não é necessário subir nenhum serviço adicional — a Fake API roda junto com o frontend.
+A aplicação ficará disponível em `http://localhost:3000`. Se a API estiver em outro endereço, copie `.env.example` para `.env.local` e ajuste `NEXT_PUBLIC_API_URL`.
+
+**Contas de demonstração:** `admin@pontodaterra.com / admin123`, `comprador@pontodaterra.com / comprador123`, `artesao@pontodaterra.com / artesao123`.
+**Cartões de teste (pagamento simulado):** `4111 1111 1111 1111` aprovado · `4000 0000 0000 0002` recusado.
+
+### 6. Testes
+```bash
+cd backend && npm test        # 101 testes de API (Jest), inclusive concorrência do checkout
+cd e2e && npm install && npm test   # segurança, fluxos, responsividade e acessibilidade (requer passos 3 a 5)
+```
+Resultados da última execução: [`RELATORIO_TESTES.md`](RELATORIO_TESTES.md).
+
+O CI do GitHub (`.github/workflows/ci.yml`) roda lint, typecheck, testes e build em cada push e pull request.
 
 ---
 
@@ -235,7 +263,9 @@ type ApiResult<T> = {
 
 ## 🚀 Deploy
 
-- [Clique aqui](https://ponto-da-terra.vercel.app/)
+- **Versão full stack (atual):** [site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) · [documentação da API](https://ponto-da-terra-api.vercel.app/api/docs)
+- [1ª entrega](https://ponto-da-terra.vercel.app/) (somente frontend, com a Fake API)
+- Como foi configurado e como publicar novas versões: [**DEPLOY_VERCEL.md**](DEPLOY_VERCEL.md)
 
 ---
 

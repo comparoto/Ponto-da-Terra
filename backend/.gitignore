@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+.env
+uploads/
+uploads-test/
+.env.local
+.vercel
+
+# Modelos de variáveis de ambiente (sem segredos reais) devem ir para o repositório
+!.env.example
+!.env.test
