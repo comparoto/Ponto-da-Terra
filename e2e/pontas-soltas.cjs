@@ -153,6 +153,18 @@ const sair = page => page.evaluate(() => localStorage.removeItem('ponto_da_terra
 
   ok('Nenhum erro de JavaScript nas páginas', erros.length === 0, erros.join(' | '));
   await browser.close();
+
+  // Limpeza: as contas criadas pelo roteiro não têm pedidos, então são excluídas de verdade
+  // (sem isso, o ateliê de teste aprovado ficaria visível na vitrine de produção)
+  const tokenArtesao = await tokenDe(emailArtesao, 'segredo1').catch(() => null);
+  if (tokenArtesao) await chamar('/me', { token: tokenArtesao, method: 'DELETE' });
+  const compradorInativo = (await chamar(`/admin/usuarios?busca=${encodeURIComponent(emailComprador)}`, { token: admin })).data?.[0];
+  if (compradorInativo) await chamar(`/admin/usuarios/${compradorInativo.id}/reativar`, { token: admin, method: 'POST' });
+  const tokenComprador = await tokenDe(emailComprador, 'segredo1').catch(() => null);
+  if (tokenComprador) await chamar('/me', { token: tokenComprador, method: 'DELETE' });
+  const aindaEntram = (await Promise.all([emailArtesao, emailComprador].map(e => chamar('/auth/login', { method: 'POST', body: { email: e, senha: 'segredo1' } })))).filter(r => r.success).length;
+  ok('Limpeza · contas de teste excluídas', aindaEntram === 0, aindaEntram ? `${aindaEntram} conta(s) de teste ainda existe(m)` : '');
+
   const falhas = resultados.filter(r => !r.ok).length;
   console.log(`\n${resultados.length - falhas}/${resultados.length} verificações passaram`);
   process.exit(falhas ? 1 : 0);
