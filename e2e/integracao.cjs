@@ -158,6 +158,10 @@ async function sair(page) {
 
   ok('Nenhum erro de JavaScript nas páginas', errosConsole.length === 0, errosConsole.join(' | '));
   await browser.close();
+  // A sacola do comprador de demonstração fica salva na conta: termina vazia, como começou
+  const login1 = await (await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'comprador@pontodaterra.com', senha: 'comprador123' }) })).json();
+  await fetch(`${API}/carrinho`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${login1.data.token}` }, body: JSON.stringify({ itens: [] }) });
+
   const falhas = resultados.filter(r => !r.ok).length;
   console.log(`\n${resultados.length - falhas}/${resultados.length} verificações passaram`);
   process.exit(falhas ? 1 : 0);
