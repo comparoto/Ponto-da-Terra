@@ -9,6 +9,7 @@ import { Artesao, Peca } from '@/types';
 import { api } from '@/services/api';
 import { CATEGORIAS } from '@/services/produtoService';
 import { useCart } from '@/store/cartStore';
+import NextLink from 'next/link';
 
 
 const FilterIcon = (props: IconProps) => (
@@ -301,6 +302,9 @@ export default function VitrinePage() {
                         <Text fontSize="md" fontWeight="medium" mb={1} textAlign="center" color={isSelected ? 'terra.500' : 'white'}>{art.nome}</Text>
                         <Text fontSize="xs" color="whiteAlpha.700" textAlign="center">{art.cidade} - {art.estado}</Text>
                         {art.especialidade && <Badge mt={1.5} bg="blackAlpha.600" color="terra.500" border="1px solid" borderColor="terra.500" fontSize="2xs" borderRadius="full">{art.especialidade}</Badge>}
+                        <Text as={NextLink} href={`/artesaos/${art.id}`} mt={2} fontSize="xs" color="terra.500" textDecoration="underline" onClick={e => e.stopPropagation()}>
+                          Ver perfil
+                        </Text>
                       </Flex>
                     );
                   })}

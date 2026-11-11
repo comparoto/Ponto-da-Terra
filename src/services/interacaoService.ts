@@ -2,7 +2,9 @@
  * Avaliações (HU17), contato com o produtor (HU14), notificações, painel do artesão
  * (indicadores HU18, checklist HU15) e administração (usuários HU16, dashboard HU9).
  */
-import { request } from './http';
+import type { Peca } from '@/types';
+import { type ApiResult, request } from './http';
+import { produtoParaPeca, type ProdutoApi } from './mappers';
 
 export type ResumoAvaliacoes = {
   media: number;
@@ -42,6 +44,22 @@ export type UsuarioAdmin = {
   motivoSuspensao: string | null;
   dataCadastro: string;
   produtosAtivos: number;
+  statusCadastro: 'PENDENTE' | 'APROVADO' | 'REJEITADO' | null;
+};
+
+export type CadastroArtesao = {
+  artesaoId: string;
+  usuarioId: string;
+  nome: string;
+  email: string;
+  cidade: string;
+  estado: string;
+  especialidade: string | null;
+  biografia: string | null;
+  statusCadastro: 'PENDENTE' | 'APROVADO' | 'REJEITADO';
+  motivoCadastro: string | null;
+  pecasCadastradas: number;
+  dataCadastro: string;
 };
 
 export type MetricasAdmin = {
@@ -71,7 +89,29 @@ export const mensagemService = {
 
 export const notificacaoService = {
   listar: () => request<Notificacao[]>('/notificacoes', { query: { limit: 30 } }),
+  naoLidas: () => request<Notificacao[]>('/notificacoes', { query: { limit: 1, naoLidas: 'true' } }),
   marcarLida: (id: string) => request<Notificacao>(`/notificacoes/${id}/lida`, { method: 'PATCH' }),
+  marcarTodasLidas: () => request<{ marcadas: number }>('/notificacoes/marcar-todas-lidas', { method: 'POST' }),
+};
+
+const mapearPecas = (res: ApiResult<ProdutoApi[]>): ApiResult<Peca[]> => ({ ...res, data: res.data ? res.data.map(produtoParaPeca) : null });
+
+export const favoritoService = {
+  listar: async () => mapearPecas(await request<ProdutoApi[]>('/comprador/favoritos')),
+  adicionar: (produtoId: string) => request<{ produtoId: string }>(`/favoritos/${produtoId}`, { method: 'POST' }),
+  remover: (produtoId: string) => request<null>(`/favoritos/${produtoId}`, { method: 'DELETE' }),
+};
+
+type CarrinhoApi = { itens: { produto: ProdutoApi; quantidade: number }[] };
+const mapearCarrinho = (res: ApiResult<CarrinhoApi>): ApiResult<{ peca: Peca; quantidade: number }[]> => ({
+  ...res,
+  data: res.data ? res.data.itens.map(i => ({ peca: produtoParaPeca(i.produto), quantidade: i.quantidade })) : null,
+});
+
+/** Carrinho guardado no servidor: acompanha o comprador entre aparelhos. */
+export const carrinhoSalvoService = {
+  ler: async () => mapearCarrinho(await request<CarrinhoApi>('/carrinho')),
+  salvar: async (itens: { produtoId: string; quantidade: number }[]) => mapearCarrinho(await request<CarrinhoApi>('/carrinho', { method: 'PUT', body: { itens } })),
 };
 
 export const painelService = {
@@ -84,5 +124,10 @@ export const adminService = {
   usuarios: (filtros: { tipo?: string; status?: string; busca?: string }) => request<UsuarioAdmin[]>('/admin/usuarios', { query: { limit: 50, ...filtros } }),
   suspender: (id: string, motivo: string) => request<UsuarioAdmin>(`/admin/usuarios/${id}/suspender`, { method: 'POST', body: { motivo } }),
   reativar: (id: string) => request<UsuarioAdmin>(`/admin/usuarios/${id}/reativar`, { method: 'POST' }),
+  inativar: (id: string, motivo?: string) => request<UsuarioAdmin>(`/admin/usuarios/${id}/inativar`, { method: 'POST', body: { motivo: motivo || undefined } }),
+  cadastrosPendentes: () => request<CadastroArtesao[]>('/admin/cadastros', { query: { status: 'PENDENTE', limit: 50 } }),
+  aprovarCadastro: (artesaoId: string) => request<CadastroArtesao>(`/admin/artesaos/${artesaoId}/aprovar-cadastro`, { method: 'POST' }),
+  reprovarCadastro: (artesaoId: string, motivo: string) =>
+    request<CadastroArtesao>(`/admin/artesaos/${artesaoId}/reprovar-cadastro`, { method: 'POST', body: { motivo } }),
   metricas: (de?: string, ate?: string) => request<MetricasAdmin>('/admin/dashboard/metricas', { query: { de, ate } }),
 };

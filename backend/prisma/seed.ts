@@ -107,6 +107,8 @@ async function main() {
             cidade: a.cidade,
             estado: a.estado,
             fotoPerfilUrl: a.imagemUrl,
+            // Artesãos de demonstração já entram aprovados pela curadoria (HU8)
+            statusCadastro: 'APROVADO',
           },
         },
       },

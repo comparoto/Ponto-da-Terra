@@ -15,6 +15,8 @@ const ASSUNTOS: Record<TipoEvento, string> = {
   PRODUTO_REJEITADO: 'Sua peça precisa de ajustes',
   NOVA_MENSAGEM: 'Um comprador enviou uma dúvida sobre sua peça',
   PEDIDO_ATUALIZADO: 'Atualização do pedido',
+  CADASTRO_APROVADO: 'Seu cadastro de artesão foi aprovado',
+  CADASTRO_REJEITADO: 'Seu cadastro de artesão precisa de ajustes',
 };
 
 export type EmailEnviado = { para: string; assunto: string; eventoId: string };

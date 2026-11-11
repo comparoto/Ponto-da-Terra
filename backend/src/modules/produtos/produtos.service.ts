@@ -1,4 +1,4 @@
-import { Prisma, StatusProduto, StatusUsuario, TipoUsuario } from '@prisma/client';
+import { Prisma, StatusCadastroArtesao, StatusProduto, StatusUsuario, TipoUsuario } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { comCache, invalidarCatalogo } from '../../shared/cache';
 import { badRequest, conflict, forbidden, notFound } from '../../shared/errors';
@@ -12,10 +12,10 @@ import type { atualizarProdutoBody, criarProdutoBody, meusProdutosQuery, vitrine
 const insensivel = (valor: string) => ({ equals: valor, mode: Prisma.QueryMode.insensitive });
 const contem = (valor: string) => ({ contains: valor, mode: Prisma.QueryMode.insensitive });
 
-/** Regra de visibilidade da vitrine (HU8/HU16): só peças ATIVAS de artesãos com conta ATIVA. */
+/** Regra de visibilidade da vitrine (HU8/HU16): só peças ATIVAS de artesãos APROVADOS e com conta ATIVA. */
 export const visivelNaVitrine: Prisma.ProdutoWhereInput = {
   status: StatusProduto.ATIVO,
-  artesao: { usuario: { status: StatusUsuario.ATIVO } },
+  artesao: { statusCadastro: StatusCadastroArtesao.APROVADO, usuario: { status: StatusUsuario.ATIVO } },
 };
 
 const ORDEM: Record<z.infer<typeof vitrineQuery>['ordenacao'], Prisma.ProdutoOrderByWithRelationInput[]> = {

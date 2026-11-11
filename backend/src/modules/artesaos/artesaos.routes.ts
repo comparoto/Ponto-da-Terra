@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { StatusUsuario, TipoUsuario } from '@prisma/client';
+import { StatusCadastroArtesao, StatusUsuario, TipoUsuario } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { documentar } from '../../docs/registry';
 import { ok } from '../../shared/api-result';
@@ -66,8 +66,8 @@ const perfilBody = z
 
 const fotoQuery = z.object({ tipo: z.enum(['perfil', 'atelie']).default('perfil') });
 
-/** Artesãos visíveis publicamente: conta ATIVA. */
-const artesaoVisivel = { usuario: { status: StatusUsuario.ATIVO } };
+/** Artesãos visíveis publicamente: cadastro APROVADO pelo admin (HU8) e conta ATIVA. */
+const artesaoVisivel = { statusCadastro: StatusCadastroArtesao.APROVADO, usuario: { status: StatusUsuario.ATIVO } };
 
 // ───────────── Público ─────────────
 

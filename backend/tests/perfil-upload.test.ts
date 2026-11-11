@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { StatusProduto } from '@prisma/client';
-import { api, bearer, ciclo, login, prisma } from './helpers';
+import { api, aprovarCadastro, bearer, ciclo, login, prisma } from './helpers';
 
 ciclo();
 
@@ -124,6 +124,7 @@ describe('TC11 · Perfil público do artesão', () => {
     const cadastro = await api()
       .post('/api/auth/cadastro')
       .send({ nome: 'Sem Bio', email: 'sembio@teste.com', senha: 'segredo1', tipo: 'ARTESAO', cidade: 'Olinda', estado: 'PE', especialidade: 'Xilogravura' });
+    await aprovarCadastro(cadastro.body.data.usuario.artesaoId);
     const res = await api().get(`/api/artesaos/${cadastro.body.data.usuario.artesaoId}`);
 
     expect(res.status).toBe(200);

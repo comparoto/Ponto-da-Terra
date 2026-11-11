@@ -4,6 +4,8 @@ import { Box,Image,Text,Badge,Flex,Button,IconButton,Icon,Tooltip, type IconProp
 import { Peca } from '@/types';
 import { useCart } from '@/store/cartStore';
 import { useSession } from '@/hooks/useSession';
+import NextLink from 'next/link';
+import { BotaoFavorito } from '@/components/BotaoFavorito';
 
 interface ProductCardProps {
   peca: Peca;
@@ -63,6 +65,10 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
           fallbackSrc="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=600&q=80"
         />
 
+        <Box position="absolute" bottom={2} right={2} zIndex={1}>
+          <BotaoFavorito produtoId={peca.id} />
+        </Box>
+
         {peca.categoria && (
           <Badge
             position="absolute"
@@ -109,7 +115,14 @@ export function ProductCard({ peca, onSelect }: ProductCardProps) {
         <Box>
           {peca.artesaoNome && (
             <Text fontSize="xs" color="terra.500" fontWeight="medium" mb={1} noOfLines={1}>
-              Por {peca.artesaoNome}
+              Por{' '}
+              {peca.artesaoId ? (
+                <Text as={NextLink} href={`/artesaos/${peca.artesaoId}`} textDecoration="underline" _hover={{ color: 'terra.600' }} onClick={e => e.stopPropagation()}>
+                  {peca.artesaoNome}
+                </Text>
+              ) : (
+                peca.artesaoNome
+              )}
               {peca.artesaoCidade ? ` • ${peca.artesaoCidade}` : ''}
             </Text>
           )}

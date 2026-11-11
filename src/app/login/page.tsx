@@ -45,7 +45,7 @@ function LoginContent() {
     setError('');
     setLoading(true);
     // O perfil (comprador/artesão/admin) é definido pela conta no servidor, não pela opção escolhida
-    const resultado = await signIn(email, password);
+    const resultado = await signIn(email, password, true); // o aceite dos Termos é obrigatório nesta tela
     setLoading(false);
 
     if (!resultado.success || !resultado.data) {

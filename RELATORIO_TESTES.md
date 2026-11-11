@@ -1,15 +1,15 @@
 # Relatório de Testes · Origem: Ponto da Terra
 
-**Data da execução:** 11/11/2026 · **Versão:** backend fase 2 + frontend integrado (Next.js 16.4.6)
+**Data da execução:** 11/11/2026 · **Versão:** integração completa (branch `integracao-backend`) · Next.js 16.4.6
 **Ambiente:** Windows 11, Node 24, PostgreSQL 16 e Redis 7 em Docker, Microsoft Edge (Playwright). A API rodou em modo de desenvolvimento e o frontend em build de produção (`next start`).
 
 ## Resumo
 
 | Tipo de teste | Ferramenta | Resultado |
 |---|---|---|
-| Testes automatizados da API (unidade + integração) | Jest + Supertest | **101 / 101** passaram |
+| Testes automatizados da API (unidade + integração) | Jest + Supertest | **114 / 114** passaram |
 | Cobertura de código da API | Jest (`npm run test:cobertura`) | **91,5 %** das instruções · **95,2 %** das linhas · 72,4 % dos desvios |
-| Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **41 / 41** verificações (18 + 23) |
+| Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **58 / 58** verificações (18 + 23 + 17) |
 | Responsividade (celular 375 px, tablet 768 px, desktop 1366 px) | Playwright | **36 / 36** combinações sem rolagem horizontal e sem erros de JavaScript |
 | Acessibilidade (WCAG 2 A e AA) | axe-core 4.14 | **0 violações** nas 12 telas × 3 tamanhos (depois das correções abaixo) |
 | Segurança caixa-preta | script próprio (`e2e/seguranca.mjs`) | **20 / 20** ataques bloqueados (depois da correção abaixo) |
@@ -34,6 +34,20 @@ Depois do deploy em https://ponto-da-terra-eight.vercel.app (site) e https://pon
 **Defeito encontrado em produção (D-07, corrigido):** a contagem regressiva do PIX usava o relógio do aparelho do comprador. Numa máquina com o relógio 2 min adiantado, o prazo aparecia como 27 min em vez de 29–30. Agora a API envia a própria hora e a tela calcula a diferença.
 
 **Observação:** a primeira requisição depois de um deploy (função "fria") pode levar alguns segundos. Uma execução do roteiro falhou por isso logo após o deploy e passou na repetição.
+
+## Funcionalidades que completam a integração (`e2e/pontas-soltas.cjs`, 17 / 17)
+
+| Funcionalidade | Verificado |
+|---|---|
+| Aceite dos Termos | Cadastro sem aceite é bloqueado; a data do aceite fica gravada na conta |
+| HU8 · aprovação de novos artesãos | Artesão novo vê o aviso "em análise"; o perfil não é público até o admin aprovar pela tela; depois da aprovação o aviso some e chega a notificação |
+| HU3 · perfil público do artesão | `/artesaos/:id` mostra biografia, polo e as peças ativas |
+| Notificações | Sino com contador na barra; "Marcar todas como lidas" zera as não lidas |
+| Favoritos | Coração no card; a peça aparece em "Meus favoritos" |
+| Sacola salva na conta | Os itens vão para o servidor; ao sair e entrar de novo, a sacola volta |
+| HU16 · inativar conta | Conta inativada pelo admin não consegue entrar ("Conta inativa") |
+
+Defeito encontrado nesta rodada (D-08, corrigido): o contador vermelho de notificações tinha contraste 3,0:1 (o mínimo AA é 4,5:1). A cor de fundo foi escurecida.
 
 ## Casos de teste do plano v3
 
@@ -95,15 +109,15 @@ As 47 respostas MISS no cenário com cache são as primeiras requisições simul
 - **5 vulnerabilidades "altas" no backend:** `zod` 3 (consumo de memória com coleções muito grandes) e `deepmerge-ts`, dependência do CLI do Prisma 6. As duas só se corrigem com troca de versão principal (Zod 4, Prisma 7). Mitigação: todas as listas validadas têm tamanho máximo e o corpo da requisição é limitado a 1 MB. A falha do Prisma está no CLI de desenvolvimento, não no servidor. Recomenda-se migrar numa próxima etapa.
 - **Ambiente dos números de desempenho:** os números vêm de uma máquina de desenvolvimento Windows, com a API em modo watch. Valem como comparação (com e sem cache), não como capacidade de produção.
 - **Celular e tablet emulados:** a responsividade foi verificada por emulação de tela no Edge, não em aparelhos físicos.
-- **CI ainda não executado no GitHub:** o workflow `.github/workflows/ci.yml` está pronto, mas o código ainda não foi enviado ao repositório. Todos os passos dele (lint, tipos, testes, build) foram executados localmente com sucesso.
+- **CI:** o workflow `.github/workflows/ci.yml` roda na branch `integracao-backend` do GitHub. Todos os passos dele (lint, tipos, testes, build) também foram executados localmente com sucesso.
 - **Pagamentos e frete simulados,** conforme a restrição de escopo do Notion. Não há integração com gateway nem com os Correios.
 
 ## Como reproduzir
 
 ```bash
 # Infra + API + worker + frontend (ver README da raiz)
-cd backend && npm test                     # 101 testes da API
+cd backend && npm test                     # 114 testes da API
 cd backend && npm run test:cobertura       # relatório de cobertura (backend/coverage/index.html)
 cd backend && npm run test:carga           # k6 (ou via Docker, ver backend/README.md)
-cd e2e && npm install && npm test          # segurança + 2 roteiros de fluxo + responsividade/acessibilidade
+cd e2e && npm install && npm test          # segurança + 3 roteiros de fluxo + responsividade/acessibilidade
 ```

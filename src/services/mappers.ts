@@ -74,4 +74,5 @@ export const artesaoParaFront = (a: ArtesaoApi): Artesao => ({
   poloRegional: a.poloRegional ?? undefined,
   fotoAtelieUrl: urlImagem(a.fotoAtelieUrl) || undefined,
   tecnicasPrincipais: a.tecnicasPrincipais,
+  avaliacaoMedia: a.avaliacaoMedia || undefined,
 });

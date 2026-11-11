@@ -1,8 +1,8 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Box, Button, Flex, Heading, HStack, Select, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Flex, Heading, Select, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Navbar } from '@/components/Navbar';
 import { OrderManager } from '@/components/OrderManager';
 import { RoleGate } from '@/components/Portal';
@@ -10,7 +10,9 @@ import { ProductManager } from '@/components/ProductManager';
 import { BarList, brl, CartaoMetrica, dataBr } from '@/components/ui';
 import { useCarregar } from '@/hooks/useCarregar';
 import { useSession } from '@/hooks/useSession';
-import { mensagemService, notificacaoService, painelService, type Notificacao } from '@/services/interacaoService';
+import { mensagemService, painelService } from '@/services/interacaoService';
+import { ListaNotificacoes } from '@/components/Notificacoes';
+import { atualizarSessaoDoServidor } from '@/services/authService';
 
 const opcoes = { '& option': { color: '#fff', backgroundColor: '#2C2724' } };
 
@@ -93,56 +95,6 @@ function Indicadores() {
   );
 }
 
-const TEXTO_EVENTO: Record<string, string> = {
-  NOVO_PEDIDO: 'Novo pedido recebido',
-  PRODUTO_APROVADO: 'Peça aprovada',
-  PRODUTO_REJEITADO: 'Peça reprovada',
-  NOVA_MENSAGEM: 'Nova dúvida de comprador',
-  PEDIDO_ATUALIZADO: 'Pedido atualizado',
-};
-
-function descrever(n: Notificacao): string {
-  const p = n.payload as Record<string, string | string[] | number | undefined>;
-  if (n.tipoEvento === 'NOVO_PEDIDO') return `${p.codigoCompra} · ${Array.isArray(p.itens) ? p.itens.join(', ') : ''}`;
-  if (n.tipoEvento === 'PRODUTO_REJEITADO') return `"${p.titulo}" — motivo: ${p.justificativa}`;
-  if (n.tipoEvento === 'PRODUTO_APROVADO') return `"${p.titulo}" já está na vitrine.`;
-  if (n.tipoEvento === 'NOVA_MENSAGEM') return `${p.comprador} sobre "${p.titulo}": ${p.trecho}`;
-  return String(p.mensagem ?? '');
-}
-
-/** Notificações geradas pela fila (HU8, HU12, HU14). */
-function Notificacoes() {
-  const { dados: notificacoes, erro, carregando, recarregar } = useCarregar(() => notificacaoService.listar());
-  if (carregando) return <Spinner color="terra.500" />;
-  if (erro) return <Text color="red.300">{erro}</Text>;
-  if (!notificacoes?.length) return <Text color="whiteAlpha.700">Nenhuma notificação.</Text>;
-  return (
-    <VStack align="stretch" spacing={2}>
-      {notificacoes.map(n => (
-        <Flex key={n.id} p={3} bg={n.lida ? 'whiteAlpha.50' : 'whiteAlpha.200'} borderRadius="md" justify="space-between" align="center" gap={3} border="1px solid" borderColor={n.lida ? 'transparent' : 'terra.500'}>
-          <Box>
-            <HStack>
-              <Text fontWeight="semibold">{TEXTO_EVENTO[n.tipoEvento] ?? n.tipoEvento}</Text>
-              {!n.lida && <Badge colorScheme="orange">nova</Badge>}
-            </HStack>
-            <Text fontSize="sm" color="whiteAlpha.800">
-              {descrever(n)}
-            </Text>
-            <Text fontSize="xs" color="whiteAlpha.500">
-              {dataBr(n.dataEnvio, true)}
-            </Text>
-          </Box>
-          {!n.lida && (
-            <Button size="xs" variant="ghost" onClick={() => void notificacaoService.marcarLida(n.id).then(recarregar)}>
-              Marcar como lida
-            </Button>
-          )}
-        </Flex>
-      ))}
-    </VStack>
-  );
-}
-
 const ABAS = [
   ['products', 'Minhas peças'],
   ['orders', 'Pedidos'],
@@ -155,6 +107,11 @@ function ArtesaoContent() {
   const router = useRouter();
   const session = useSession();
   const [tab, setTab] = useState<(typeof ABAS)[number][0]>('products');
+
+  // Busca a situação atual do cadastro (o admin pode ter aprovado depois do login)
+  useEffect(() => {
+    void atualizarSessaoDoServidor();
+  }, []);
 
   return (
     <Box maxW="1100px" w="100%" mx="auto" p={{ base: 4, md: 8 }}>
@@ -175,6 +132,19 @@ function ArtesaoContent() {
         </Button>
       </Flex>
 
+      {session?.artisanStatus === 'PENDENTE' && (
+        <Alert status="info" mb={6} borderRadius="md" bg="blue.900" color="white">
+          <AlertIcon />
+          Seu cadastro está em análise pela curadoria. Você já pode cadastrar peças: elas e o seu perfil aparecem na vitrine assim que o cadastro for aprovado.
+        </Alert>
+      )}
+      {session?.artisanStatus === 'REJEITADO' && (
+        <Alert status="warning" mb={6} borderRadius="md" bg="orange.900" color="white">
+          <AlertIcon />
+          Seu cadastro precisa de ajustes{session.artisanStatusReason ? `: ${session.artisanStatusReason}` : '.'} Atualize seu perfil e fale com a curadoria pelo contato do site.
+        </Alert>
+      )}
+
       <VStack align="stretch" spacing={5}>
         <Flex gap={3} wrap="wrap" borderBottom="1px solid" borderColor="whiteAlpha.200" pb={4}>
           {ABAS.map(([id, rotulo]) => (
@@ -187,7 +157,7 @@ function ArtesaoContent() {
         {tab === 'orders' && <OrderManager artisanOnly />}
         {tab === 'messages' && <Mensagens />}
         {tab === 'insights' && <Indicadores />}
-        {tab === 'notifications' && <Notificacoes />}
+        {tab === 'notifications' && <ListaNotificacoes />}
       </VStack>
     </Box>
   );

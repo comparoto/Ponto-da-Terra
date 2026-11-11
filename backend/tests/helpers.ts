@@ -98,3 +98,7 @@ export async function compraPaga(token: string, produtoId: string, quantidade = 
   if (p.status !== 201) throw new Error(`pagamento falhou: ${JSON.stringify(p.body)}`);
   return { codigo: c.body.data.codigo as string, pedidoId: c.body.data.pedidos[0].id as string };
 }
+
+/** HU8: novos artesãos nascem PENDENTES; nos testes que precisam do perfil público, aprova direto no banco. */
+export const aprovarCadastro = (artesaoId: string) =>
+  prisma.artesao.update({ where: { id: artesaoId }, data: { statusCadastro: 'APROVADO' } });

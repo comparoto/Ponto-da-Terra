@@ -1,4 +1,4 @@
-import { api, bearer, ciclo, compraPaga, login, novoComprador, pecaAtiva, prisma } from './helpers';
+import { api, aprovarCadastro, bearer, ciclo, compraPaga, login, novoComprador, pecaAtiva, prisma } from './helpers';
 
 ciclo();
 
@@ -91,6 +91,7 @@ describe('HU16 · Suspender e reativar contas', () => {
       .post('/api/auth/cadastro')
       .send({ nome: 'Artesão Suspenso', email: 'suspenso@teste.com', senha: 'segredo1', tipo: 'ARTESAO', cidade: 'Olinda', estado: 'PE', especialidade: 'Barro' });
     const { token, usuario } = cadastro.body.data;
+    await aprovarCadastro(usuario.artesaoId);
     const peca = await prisma.produto.create({
       data: { titulo: 'Peça de artesão suspenso', tecnica: 'Barro', poloOrigem: 'Olinda', preco: 10, status: 'ATIVO', artesaoId: usuario.artesaoId, imagensUrls: ['https://x/a.jpg'], estoque: { create: { quantidadeDisponivel: 1 } } },
     });

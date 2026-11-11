@@ -52,6 +52,20 @@ notificacoesRoutes.get('/notificacoes', autenticar, validate({ query: listaQuery
 });
 
 documentar({
+  method: 'post',
+  path: '/api/notificacoes/marcar-todas-lidas',
+  tags,
+  summary: 'Marca todas as notificações do usuário como lidas',
+  autenticado: true,
+  sucesso: { status: 200, descricao: 'Quantidade marcada', data: z.object({ marcadas: z.number() }) },
+  falhas: [401],
+});
+notificacoesRoutes.post('/notificacoes/marcar-todas-lidas', autenticar, async (req, res) => {
+  const { count } = await prisma.notificacaoLog.updateMany({ where: { ...doUsuario(req.user!), lida: false }, data: { lida: true } });
+  res.json(ok({ marcadas: count }));
+});
+
+documentar({
   method: 'patch',
   path: '/api/notificacoes/{id}/lida',
   tags,

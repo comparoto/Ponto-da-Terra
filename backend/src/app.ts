@@ -15,6 +15,7 @@ import { adminRoutes } from './modules/admin/admin.routes';
 import { adminExtrasRoutes } from './modules/admin/usuarios.routes';
 import { painelArtesaoRoutes } from './modules/artesaos/painel.routes';
 import { comprasRoutes } from './modules/compras/compras.routes';
+import { compradorRoutes } from './modules/comprador/comprador.routes';
 import { interacaoRoutes } from './modules/interacao/interacao.routes';
 import { jobsRoutes } from './modules/jobs/jobs.routes';
 import { pedidosRoutes } from './modules/pedidos/pedidos.routes';
@@ -87,6 +88,7 @@ export function criarApp() {
   api.use(carrinhoRoutes);
   api.use(notificacoesRoutes);
   api.use(comprasRoutes);
+  api.use(compradorRoutes);
   api.use(pedidosRoutes);
   api.use(interacaoRoutes);
   api.use(painelArtesaoRoutes);

@@ -105,7 +105,7 @@ const sair = page => page.evaluate(() => localStorage.removeItem('ponto_da_terra
     // ── Artesão: notificação da fila (HU12), mensagem (HU14), status e rastreio (HU13) ──
     await sair(page);
     await login(page, 'artesao@pontodaterra.com', 'artesao123', '/artesao');
-    await page.getByRole('button', { name: 'Notificações' }).click();
+    await page.getByRole('button', { name: 'Notificações', exact: true }).last().click(); // .last(): aba do painel (o sino da barra também se chama Notificações)
     await page.getByText(new RegExp(`${codigoCompra}`)).first().waitFor({ timeout: 15000 });
     ok('HU12 · artesão recebeu a notificação "Novo pedido" gerada pelo worker', await page.getByText('Novo pedido recebido').first().isVisible());
     await page.getByRole('button', { name: 'Mensagens' }).click();

@@ -18,6 +18,8 @@ export const cadastroBody = z
     cidade: z.string().trim().max(80).optional(),
     estado: z.enum(UFS).optional(),
     especialidade: z.string().trim().max(80).optional(),
+    /// Registro do aceite dos Termos de Uso e da Política de Privacidade
+    aceiteTermos: z.boolean().optional(),
   })
   .superRefine((d, ctx) => {
     if (d.tipo !== 'ARTESAO') return;
@@ -32,6 +34,7 @@ export const loginBody = z
   .object({
     email,
     senha: z.string().min(1).openapi({ example: 'comprador123' }),
+    aceiteTermos: z.boolean().optional(),
   })
   .openapi('Login');
 
@@ -53,6 +56,8 @@ export const perfilUsuario = z
     status: z.enum(['ATIVO', 'INATIVO', 'SUSPENSO']),
     consumidorId: z.string().nullable(),
     artesaoId: z.string().nullable(),
+    termosAceitosEm: z.string().nullable(),
+    cadastroArtesao: z.object({ status: z.enum(['PENDENTE', 'APROVADO', 'REJEITADO']), motivo: z.string().nullable() }).nullable(),
     dataCadastro: z.string(),
   })
   .openapi('PerfilUsuario');

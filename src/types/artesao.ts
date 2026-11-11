@@ -10,4 +10,5 @@ export interface Artesao {
   poloRegional?: string;
   fotoAtelieUrl?: string;
   tecnicasPrincipais?: string[];
+  avaliacaoMedia?: number;
 }

@@ -135,4 +135,4 @@ O `.vercelignore` da raiz impede que a pasta `backend/` seja enviada junto com o
 
 - **API:** `vercel build` executado num contêiner Linux com Node 22, igual ao ambiente de build da Vercel. A função empacotada foi executada e respondeu health, vitrine, login, Swagger e OpenAPI com HTTP 200; bloqueou as rotas internas sem autorização (401) e aceitou o CORS das URLs de preview.
 - **Site:** `vercel build` do Next.js 16.4.6 concluído, com a URL da API embutida no bundle.
-- **Modo serverless:** 106 testes de API passando, incluindo os novos, que cobrem as rotas de fila, o CORS com curinga e o ajuste da URL do Neon.
+- **Modo serverless:** 114 testes de API passando, incluindo os novos, que cobrem as rotas de fila, o CORS com curinga e o ajuste da URL do Neon.

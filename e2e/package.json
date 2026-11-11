@@ -3,7 +3,8 @@
   "private": true,
   "description": "Testes ponta a ponta no navegador (Playwright) — fluxos dos casos de teste TC01–TC16",
   "scripts": {
-    "test": "node seguranca.mjs && node integracao.cjs && node fase2.cjs && node responsivo-acessibilidade.cjs",
+    "test": "node seguranca.mjs && node integracao.cjs && node fase2.cjs && node responsivo-acessibilidade.cjs && node pontas-soltas.cjs",
+    "test:pontas-soltas": "node pontas-soltas.cjs",
     "test:integracao": "node integracao.cjs",
     "test:fase2": "node fase2.cjs",
     "test:responsivo": "node responsivo-acessibilidade.cjs",

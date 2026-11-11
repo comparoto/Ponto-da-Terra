@@ -7,6 +7,9 @@ import { useCart } from '@/store/cartStore';
 import { CartDrawer } from './CartDrawer';
 import { signOut } from '@/services/authService';
 import { useSession } from '@/hooks/useSession';
+import { useCarregar } from '@/hooks/useCarregar';
+import { notificacaoService } from '@/services/interacaoService';
+import { BellIcon } from '@/components/ui';
 
 const SearchIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
@@ -22,9 +25,17 @@ const ShoppingBagIcon = (props: IconProps) => (
 
 export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () => void; onLogoClick?: () => void }) {
   const router = useRouter();
-  const { totalItens, abrirCarrinho } = useCart();
+  const { totalItens, abrirCarrinho, limparCarrinho } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const account = useSession();
+  // Contador de notificações não lidas (recarrega quando a sessão muda ou uma notificação é lida)
+  const naoLidas = useCarregar(() => (account ? notificacaoService.naoLidas() : Promise.resolve({ success: true, data: [], error: null })), [account?.token]);
+  const totalNaoLidas = account ? (naoLidas.meta?.totalItems ?? 0) : 0;
+  React.useEffect(() => {
+    const recarregar = () => naoLidas.recarregar();
+    window.addEventListener('ponto-da-terra-profile-updated', recarregar);
+    return () => window.removeEventListener('ponto-da-terra-profile-updated', recarregar);
+  }, [naoLidas]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
@@ -134,6 +145,25 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
 
         <HStack spacing={{ base: 2, md: 5 }}>
 
+          {account && (
+            <Box position="relative">
+              <IconButton
+                aria-label={totalNaoLidas ? `Notificações (${totalNaoLidas} não lidas)` : 'Notificações'}
+                icon={<BellIcon />}
+                bg="whiteAlpha.200"
+                color="white"
+                _hover={{ bg: 'terra.500', color: 'black' }}
+                borderRadius="full"
+                size="md"
+                onClick={() => router.push('/notificacoes')}
+              />
+              {totalNaoLidas > 0 && (
+                <Badge position="absolute" top="-4px" right="-4px" bg="red.700" color="white" borderRadius="full" minW="20px" h="20px" display="flex" alignItems="center" justifyContent="center" fontSize="xs" border="2px solid" borderColor="#1C1816">
+                  {totalNaoLidas > 9 ? '9+' : totalNaoLidas}
+                </Badge>
+              )}
+            </Box>
+          )}
           {account ? (
             <Menu>
               <MenuButton as={Button} size="sm" variant="outline" borderColor="terra.500" color="terra.500">
@@ -142,8 +172,10 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
               <MenuList bg="#2C2724" color="white" borderColor="whiteAlpha.300" zIndex={200}>
                 <MenuItem bg="#2C2724" _hover={{ bg: 'whiteAlpha.200' }} onClick={() => router.push('/perfil')}>Meu perfil</MenuItem>
                 {account.role === 'comprador' && <MenuItem bg="#2C2724" _hover={{ bg: 'whiteAlpha.200' }} onClick={() => router.push('/meus-pedidos')}>Meus pedidos</MenuItem>}
+                {account.role === 'comprador' && <MenuItem bg="#2C2724" _hover={{ bg: 'whiteAlpha.200' }} onClick={() => router.push('/favoritos')}>Meus favoritos</MenuItem>}
+                <MenuItem bg="#2C2724" _hover={{ bg: 'whiteAlpha.200' }} onClick={() => router.push('/notificacoes')}>Notificações{totalNaoLidas ? ` (${totalNaoLidas})` : ''}</MenuItem>
                 {account.role !== 'comprador' && <MenuItem bg="#2C2724" _hover={{ bg: 'whiteAlpha.200' }} onClick={() => router.push(account.role === 'artesao' ? '/artesao' : '/admin')}>Meu painel</MenuItem>}
-                <MenuItem bg="#2C2724" color="red.300" _hover={{ bg: 'whiteAlpha.200' }} onClick={async () => { await signOut(); router.replace('/vitrine'); }}>Sair da conta</MenuItem>
+                <MenuItem bg="#2C2724" color="red.300" _hover={{ bg: 'whiteAlpha.200' }} onClick={async () => { await signOut(); limparCarrinho(); router.replace('/vitrine'); }}>Sair da conta</MenuItem>
               </MenuList>
             </Menu>
           ) : (

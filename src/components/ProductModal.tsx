@@ -7,6 +7,8 @@ import { Peca } from '@/types';
 import { MSG_LIMITE_ESTOQUE, useCart } from '@/store/cartStore';
 import { CheckIcon, Estrelas, ShoppingBagIcon as CartAddIcon, dataBr } from '@/components/ui';
 import { useSession } from '@/hooks/useSession';
+import NextLink from 'next/link';
+import { BotaoFavorito } from '@/components/BotaoFavorito';
 import { mensagemDeErro } from '@/services/http';
 import { avaliacaoService, mensagemService, type ResumoAvaliacoes } from '@/services/interacaoService';
 
@@ -185,14 +187,24 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
               <Box>
                 {peca.artesaoNome && (
                   <Text fontSize="sm" color="terra.500" fontWeight="medium" mb={1}>
-                    Artesão: {peca.artesaoNome}
+                    Artesão:{' '}
+                    {peca.artesaoId ? (
+                      <Text as={NextLink} href={`/artesaos/${peca.artesaoId}`} textDecoration="underline" _hover={{ color: 'terra.600' }}>
+                        {peca.artesaoNome}
+                      </Text>
+                    ) : (
+                      peca.artesaoNome
+                    )}
                     {peca.artesaoCidade ? ` (${peca.artesaoCidade})` : ''}
                   </Text>
                 )}
 
-                <Heading as="h3" size="lg" fontFamily="heading" mb={3} lineHeight="1.2">
-                  {peca.nome}
-                </Heading>
+                <Flex justify="space-between" align="flex-start" gap={3} mb={3}>
+                  <Heading as="h3" size="lg" fontFamily="heading" lineHeight="1.2">
+                    {peca.nome}
+                  </Heading>
+                  <BotaoFavorito produtoId={peca.id} tamanho="md" />
+                </Flex>
 
                 <Text fontSize="2xl" fontWeight="bold" color="terra.500" mb={4}>
                   R$ {peca.preco.toFixed(2).replace('.', ',')}

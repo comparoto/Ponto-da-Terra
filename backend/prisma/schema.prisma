@@ -30,6 +30,13 @@ enum StatusUsuario {
   SUSPENSO
 }
 
+/// HU8: cadastro de artesão passa por aprovação do admin antes de ir a público
+enum StatusCadastroArtesao {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
 enum StatusProduto {
   PENDENTE
   ATIVO
@@ -74,6 +81,9 @@ enum TipoEvento {
   PRODUTO_REJEITADO
   NOVA_MENSAGEM
   PEDIDO_ATUALIZADO
+  /// HU8: resultado da aprovação do cadastro do artesão
+  CADASTRO_APROVADO
+  CADASTRO_REJEITADO
 }
 
 // ───────────── Usuários ─────────────
@@ -89,6 +99,8 @@ model Usuario {
   motivoSuspensao String?
   /// AJUSTE: incrementado no logout/suspensão para invalidar tokens emitidos (HU16)
   tokenVersion    Int           @default(0)
+  /// Quando o usuário aceitou os Termos de Uso e a Política de Privacidade
+  termosAceitosEm DateTime?
   dataCadastro    DateTime      @default(now())
 
   consumidor    Consumidor?
@@ -120,9 +132,9 @@ model Administrador {
 }
 
 model Artesao {
-  id                 String   @id @default(uuid())
-  usuarioId          String   @unique
-  usuario            Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  id                 String                @id @default(uuid())
+  usuarioId          String                @unique
+  usuario            Usuario               @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   nomeAtelie         String?
   biografia          String?
   tecnicasPrincipais String[]
@@ -131,13 +143,16 @@ model Artesao {
   /// AJUSTE: polo regional de atuação (ex.: "Alto do Moura", "Agreste") — HU7
   poloRegional       String?
   cidade             String
-  estado             String   @default("PE")
+  estado             String                @default("PE")
   cepOrigem          String?
   fotoPerfilUrl      String?
   fotoAtelieUrl      String?
-  aceitaEncomenda    Boolean  @default(false)
-  avaliacaoMedia     Float    @default(0)
-  dataCadastro       DateTime @default(now())
+  aceitaEncomenda    Boolean               @default(false)
+  avaliacaoMedia     Float                 @default(0)
+  /// HU8: o perfil e as peças só aparecem ao público depois da aprovação
+  statusCadastro     StatusCadastroArtesao @default(PENDENTE)
+  motivoCadastro     String?
+  dataCadastro       DateTime              @default(now())
 
   produtos      Produto[]
   itensVendidos ItemPedido[]

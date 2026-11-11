@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Button, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Checkbox, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
 import { registerAccount } from '@/services/authService';
 import { mensagemDeErro } from '@/services/http';
 import { AREAS_ARTESANATO, ESTADOS_BRASILEIROS } from '@/data';
@@ -29,10 +29,15 @@ export default function CadastroPage() {
   const [customSpecialty, setCustomSpecialty] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function submit(event: React.SyntheticEvent) {
     event.preventDefault();
     setError('');
+    if (!acceptedTerms) {
+      setError('Você precisa aceitar os Termos de Uso e a Política de Privacidade para criar a conta.');
+      return;
+    }
     setSaving(true);
 
     try {
@@ -45,7 +50,7 @@ export default function CadastroPage() {
         : undefined;
 
       // A API cria a conta e já devolve a sessão autenticada (JWT)
-      const resultado = await registerAccount(name.trim(), email, password, role, artisanInfo);
+      const resultado = await registerAccount(name.trim(), email, password, role, artisanInfo, true);
 
       if (!resultado.success) {
         setError(mensagemDeErro(resultado, 'Não foi possível criar a conta. Confira os dados e tente novamente.'));
@@ -230,6 +235,18 @@ export default function CadastroPage() {
                 />
               )}
             </>
+          )}
+
+          <Checkbox colorScheme="orange" alignItems="flex-start" isChecked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)}>
+            <Text fontSize="sm" color="#E8DFD7" mt="-1px">
+              Li e aceito os <Link href="/termos" color="terra.500" textDecoration="underline">Termos de Uso</Link> e a{' '}
+              <Link href="/termos#privacidade" color="terra.500" textDecoration="underline">Política de Privacidade</Link>.
+            </Text>
+          </Checkbox>
+          {role === 'artesao' && (
+            <Text fontSize="sm" color="whiteAlpha.700">
+              Novos ateliês passam por uma aprovação rápida da curadoria antes de aparecer na vitrine.
+            </Text>
           )}
 
           {error && (

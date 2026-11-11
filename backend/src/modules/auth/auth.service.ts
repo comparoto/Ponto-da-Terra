@@ -16,8 +16,9 @@ const selecaoPerfil = {
   status: true,
   tokenVersion: true,
   dataCadastro: true,
+  termosAceitosEm: true,
   consumidor: { select: { id: true } },
-  artesao: { select: { id: true } },
+  artesao: { select: { id: true, statusCadastro: true, motivoCadastro: true } },
 } satisfies Prisma.UsuarioSelect;
 
 type UsuarioSelecionado = Prisma.UsuarioGetPayload<{ select: typeof selecaoPerfil }>;
@@ -31,6 +32,8 @@ const perfil = (u: UsuarioSelecionado) => ({
   status: u.status,
   consumidorId: u.consumidor?.id ?? null,
   artesaoId: u.artesao?.id ?? null,
+  termosAceitosEm: u.termosAceitosEm,
+  cadastroArtesao: u.artesao ? { status: u.artesao.statusCadastro, motivo: u.artesao.motivoCadastro } : null,
   dataCadastro: u.dataCadastro,
 });
 
@@ -46,6 +49,7 @@ export const authService = {
         email: dados.email,
         telefone: dados.telefone,
         senhaHash,
+        termosAceitosEm: dados.aceiteTermos ? new Date() : undefined,
         tipo: dados.tipo === 'ARTESAO' ? TipoUsuario.ARTESAO : TipoUsuario.CONSUMIDOR,
         ...(dados.tipo === 'ARTESAO'
           ? {
@@ -66,12 +70,17 @@ export const authService = {
     return { token: assinarToken(usuario), usuario: perfil(usuario) };
   },
 
-  async login({ email, senha }: z.infer<typeof loginBody>) {
-    const usuario = await prisma.usuario.findUnique({ where: { email }, select: { ...selecaoPerfil, senhaHash: true, motivoSuspensao: true } });
+  async login({ email, senha, aceiteTermos }: z.infer<typeof loginBody>) {
+    let usuario = await prisma.usuario.findUnique({ where: { email }, select: { ...selecaoPerfil, senhaHash: true, motivoSuspensao: true } });
     // Mesma mensagem para e-mail inexistente e senha errada (não revela quais e-mails existem)
     if (!usuario || !(await bcrypt.compare(senha, usuario.senhaHash))) throw unauthorized('E-mail ou senha inválidos');
     if (usuario.status === StatusUsuario.SUSPENSO) throw forbidden('Conta suspensa');
     if (usuario.status === StatusUsuario.INATIVO) throw forbidden('Conta inativa');
+
+    // Registra (ou renova) o aceite dos Termos feito na tela de login
+    if (aceiteTermos) {
+      usuario = await prisma.usuario.update({ where: { id: usuario.id }, data: { termosAceitosEm: new Date() }, select: { ...selecaoPerfil, senhaHash: true, motivoSuspensao: true } });
+    }
 
     return { token: assinarToken(usuario), usuario: perfil(usuario) };
   },

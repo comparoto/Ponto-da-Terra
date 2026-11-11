@@ -10,7 +10,7 @@ import { useCarregar } from '@/hooks/useCarregar';
 import { useSession } from '@/hooks/useSession';
 import { curadoriaService } from '@/services/curadoriaService';
 import { mensagemDeErro } from '@/services/http';
-import { adminService, type UsuarioAdmin } from '@/services/interacaoService';
+import { adminService, type CadastroArtesao, type UsuarioAdmin } from '@/services/interacaoService';
 import type { Peca } from '@/types';
 
 const field = { bg: 'whiteAlpha.100', borderColor: 'whiteAlpha.300', color: 'white' };
@@ -209,6 +209,96 @@ function ApprovalManager({ onChange }: { onChange: () => void }) {
   );
 }
 
+// ───────────── HU8 · Cadastros de novos artesãos ─────────────
+
+function CadastroPendente({ c, onDecidido }: { c: CadastroArtesao; onDecidido: (msg: string) => void }) {
+  const [reprovando, setReprovando] = useState(false);
+  const [motivo, setMotivo] = useState('');
+  const [erro, setErro] = useState('');
+  const [salvando, setSalvando] = useState(false);
+
+  async function decidir(aprovar: boolean) {
+    if (!aprovar && motivo.trim().length < MIN_JUSTIFICATIVA) {
+      setErro(`Descreva o motivo (mínimo de ${MIN_JUSTIFICATIVA} caracteres).`);
+      return;
+    }
+    setSalvando(true);
+    const res = aprovar ? await adminService.aprovarCadastro(c.artesaoId) : await adminService.reprovarCadastro(c.artesaoId, motivo.trim());
+    setSalvando(false);
+    if (!res.success) {
+      setErro(mensagemDeErro(res));
+      return;
+    }
+    onDecidido(aprovar ? `Cadastro de ${c.nome} aprovado: o perfil já aparece na vitrine.` : `Cadastro de ${c.nome} reprovado. O artesão recebeu o motivo.`);
+  }
+
+  return (
+    <Box bg="whiteAlpha.100" p={4} borderRadius="lg" border="1px solid" borderColor="blue.400">
+      <Flex justify="space-between" align="center" gap={3} wrap="wrap">
+        <Box>
+          <Text fontWeight="bold">{c.nome}</Text>
+          <Text color="whiteAlpha.700" fontSize="sm">
+            {c.email} · {c.cidade}/{c.estado} · {c.especialidade ?? 'Artesanato'} · {c.pecasCadastradas} peça(s) cadastrada(s) · desde {dataBr(c.dataCadastro)}
+          </Text>
+          {c.biografia && (
+            <Text color="whiteAlpha.600" fontSize="sm" noOfLines={2}>
+              {c.biografia}
+            </Text>
+          )}
+        </Box>
+        <HStack>
+          <Button size="sm" colorScheme="green" isLoading={salvando && !reprovando} onClick={() => decidir(true)}>
+            Aprovar cadastro
+          </Button>
+          <Button size="sm" colorScheme="red" variant="outline" onClick={() => setReprovando(r => !r)}>
+            Reprovar
+          </Button>
+        </HStack>
+      </Flex>
+      {reprovando && (
+        <Box mt={3}>
+          <Textarea size="sm" rows={2} placeholder="Motivo (ex.: fotos não comprovam a técnica artesanal)" value={motivo} onChange={e => setMotivo(e.target.value)} {...field} />
+          <Button size="sm" mt={2} colorScheme="red" isLoading={salvando} onClick={() => decidir(false)}>
+            Confirmar reprovação do cadastro
+          </Button>
+        </Box>
+      )}
+      {erro && (
+        <Text color="red.300" fontSize="sm" mt={2} role="alert">
+          {erro}
+        </Text>
+      )}
+    </Box>
+  );
+}
+
+function CadastrosPendentes({ onChange }: { onChange: () => void }) {
+  const { dados: cadastros, recarregar } = useCarregar(() => adminService.cadastrosPendentes());
+  const [mensagem, setMensagem] = useState('');
+  if (!cadastros?.length && !mensagem) return null;
+  return (
+    <VStack align="stretch" spacing={3} mb={6}>
+      <Heading size="md">Novos artesãos aguardando aprovação ({cadastros?.length ?? 0})</Heading>
+      {mensagem && (
+        <Text color="terra.200" role="status">
+          {mensagem}
+        </Text>
+      )}
+      {cadastros?.map(c => (
+        <CadastroPendente
+          key={c.artesaoId}
+          c={c}
+          onDecidido={msg => {
+            setMensagem(msg);
+            recarregar();
+            onChange();
+          }}
+        />
+      ))}
+    </VStack>
+  );
+}
+
 // ───────────── HU16 · Usuários ─────────────
 
 const COR_STATUS_USUARIO = { ATIVO: 'green', INATIVO: 'gray', SUSPENSO: 'red' } as const;
@@ -241,6 +331,7 @@ function LinhaUsuario({ u, onAtualizar }: { u: UsuarioAdmin; onAtualizar: () => 
           <HStack>
             <Text fontWeight="bold">{u.nome}</Text>
             <Badge colorScheme={COR_STATUS_USUARIO[u.status]}>{u.status}</Badge>
+            {u.statusCadastro && u.statusCadastro !== 'APROVADO' && <Badge colorScheme={u.statusCadastro === 'PENDENTE' ? 'blue' : 'orange'}>cadastro {u.statusCadastro.toLowerCase()}</Badge>}
           </HStack>
           <Text color="whiteAlpha.700" fontSize="sm">
             {u.email} · {ROTULO_TIPO[u.tipo]} · desde {dataBr(u.dataCadastro)}
@@ -253,14 +344,19 @@ function LinhaUsuario({ u, onAtualizar }: { u: UsuarioAdmin; onAtualizar: () => 
           )}
         </Box>
         {u.tipo !== 'ADMIN' &&
-          (u.status === 'SUSPENSO' ? (
+          (u.status !== 'ATIVO' ? (
             <Button size="sm" colorScheme="green" variant="outline" isLoading={salvando} onClick={() => executar(() => adminService.reativar(u.id))}>
               Reativar conta
             </Button>
           ) : (
-            <Button size="sm" colorScheme="red" variant="outline" onClick={() => setSuspendendo(s => !s)}>
-              Suspender conta
-            </Button>
+            <HStack>
+              <Button size="sm" variant="outline" isLoading={salvando && !suspendendo} onClick={() => executar(() => adminService.inativar(u.id, 'Inativada pela administração'))}>
+                Inativar conta
+              </Button>
+              <Button size="sm" colorScheme="red" variant="outline" onClick={() => setSuspendendo(s => !s)}>
+                Suspender conta
+              </Button>
+            </HStack>
           ))}
       </Flex>
       {suspendendo && (
@@ -306,6 +402,7 @@ function UserManager() {
           <option value="">Todas as situações</option>
           <option value="ATIVO">Ativos</option>
           <option value="SUSPENSO">Suspensos</option>
+          <option value="INATIVO">Inativos</option>
         </Select>
       </Flex>
       {carregando ? <Spinner color="terra.500" /> : erro ? <Text color="red.300">{erro}</Text> : usuarios?.map(u => <LinhaUsuario key={u.id} u={u} onAtualizar={recarregar} />)}
@@ -319,6 +416,8 @@ function AdminContent() {
   const session = useSession();
   const [tab, setTab] = useState('overview');
   const { dados: pendentes, recarregar: recarregarPendentes } = useCarregar(() => curadoriaService.fila('PENDENTE'));
+  const { dados: cadastros, recarregar: recarregarCadastros } = useCarregar(() => adminService.cadastrosPendentes());
+  const totalAprovacoes = (pendentes?.length ?? 0) + (cadastros?.length ?? 0);
 
   return (
     <Box maxW="1100px" mx="auto" p={{ base: 4, md: 8 }}>
@@ -338,7 +437,7 @@ function AdminContent() {
         <Flex gap={3} wrap="wrap" borderBottom="1px solid" borderColor="whiteAlpha.200" pb={4}>
           {[
             ['overview', 'Indicadores'],
-            ['approvals', `Aprovações${pendentes?.length ? ` (${pendentes.length})` : ''}`],
+            ['approvals', `Aprovações${totalAprovacoes ? ` (${totalAprovacoes})` : ''}`],
             ['products', 'Catálogo'],
             ['users', 'Usuários'],
             ['orders', 'Pedidos'],
@@ -350,7 +449,12 @@ function AdminContent() {
         </Flex>
 
         {tab === 'overview' && <Dashboard />}
-        {tab === 'approvals' && <ApprovalManager onChange={recarregarPendentes} />}
+        {tab === 'approvals' && (
+          <>
+            <CadastrosPendentes onChange={recarregarCadastros} />
+            <ApprovalManager onChange={recarregarPendentes} />
+          </>
+        )}
         {tab === 'products' && <ProductManager />}
         {tab === 'users' && <UserManager />}
         {tab === 'orders' && <OrderManager />}

@@ -83,7 +83,7 @@ Fonte: Notion. São exigências de avaliação e não dependem de prioridade do 
 | HU5 | Escolher forma de pagamento | MUST | Concluído | PIX, cartão (1x a 6x) e boleto, todos simulados |
 | HU6 | Visualizar e acompanhar compras | MUST | Concluído | Linha do tempo do pedido e código de rastreio |
 | HU7 | Gestão do perfil do ateliê | MUST | Concluído | Bio, técnicas, polo, upload de foto (JPG/PNG ≤ 5 MB) |
-| HU8 | Curadoria e aprovação de catálogo | MUST | Concluído | Pendente → Ativo / Rejeitado com justificativa e notificação |
+| HU8 | Curadoria e aprovação de catálogo | MUST | Concluído | Peças: Pendente → Ativo / Rejeitado com justificativa e notificação. Novos artesãos: cadastro `PENDENTE` → `APROVADO`/`REJEITADO` (só aprovados aparecem na vitrine) |
 | HU9 | Dashboard geral do admin | MUST | Concluído | Métricas agregadas com filtro de período |
 | HU10 | Acompanhamento operacional de pedidos | MUST | Concluído | Todos os pedidos, filtro por status, notas de intervenção |
 | HU11 | Reservar produto de baixo estoque | SHOULD | Backlog | **Checkout atômico e concorrente** |
@@ -164,7 +164,7 @@ Fonte: Notion. São exigências de avaliação e não dependem de prioridade do 
 | C7 | **Mensagem de estoque esgotado:** HU11 `"Item esgotado durante a finalização"` vs. TC02 `"Estoque Insuficiente"` | Usar a mensagem da HU11 e alinhar o TC02 |
 | C8 | **Usuário:** HU16 cita ativar/inativar/suspender; o diagrama só tem `ATIVO, SUSPENSO` | Enum `ATIVO, INATIVO, SUSPENSO` |
 | C9 | **Pedido com itens de vários artesãos:** cada artesão atualiza o status, mas o pedido é único | **[DECIDIR]**: proposta = dividir o checkout em **um `Pedido` por artesão**, agrupados por um `codigoCompra` (ver §16) |
-| C10 | **HU8** cita aprovar também "cadastros de novos artesãos" | Campo `statusCadastro` em `Artesao` (fase 3, se houver tempo) |
+| C10 | **HU8** cita aprovar também "cadastros de novos artesãos" | ✅ Feito: `Artesao.statusCadastro` (`PENDENTE`, `APROVADO`, `REJEITADO`) com fila no painel do admin |
 | C11 | O Doc. de Substituição usa `VITE_API_URL`, mas o projeto migrou para Next.js | Usar `NEXT_PUBLIC_API_URL` |
 
 ---
@@ -856,8 +856,10 @@ O `data/mockData.ts` vira o **`prisma/seed.ts`**.
 - **Fase 5 (integração) concluída:**
   - **Telas:** todas usam a API; o `mockData` e o `demoAuth.ts` foram removidos.
   - **Qualidade:** lint zerado (eram 31 avisos), `package-lock.json` sincronizado e CI no GitHub Actions.
-- **Testes:** 100 testes de API (Jest) e 41 verificações no navegador (`e2e/`, Playwright), todos passando.
-- **Falta:** deploy público (D2, D4, D7), definir a "IA" (D6) e os relatórios das disciplinas (benchmark, diagramas, 2ª rodada de testes).
+- **Deploy concluído** na Vercel (site + API serverless, Neon, Upstash Redis/QStash, Vercel Blob).
+- **Integração completa (pontas soltas fechadas):** perfil público do artesão (HU3), aprovação de novos artesãos (HU8), inativar conta (HU16), favoritos e sacola salvos na conta, notificações para todos os perfis (sino com contador e "marcar todas como lidas"), aceite dos Termos com data registrada e texto dos Termos atualizado.
+- **Testes:** 114 testes de API (Jest) e 58 verificações de fluxo no navegador (`e2e/`, Playwright), todos passando.
+- **Falta:** definir a "IA" (D6) e os relatórios das disciplinas (benchmark, diagramas, 2ª rodada de testes).
 
 ---
 

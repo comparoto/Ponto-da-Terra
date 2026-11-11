@@ -47,7 +47,7 @@ A plataforma conecta esses artesãos diretamente a compradores de todo o país, 
 - **Painel do artesão** — gestão de catálogo, estoque e pedidos;
 - **Painel administrativo** — indicadores de venda e gestão geral da plataforma.
 
-> 📌 **Status atual do projeto (11/11/2026):** aplicação full stack integrada. O frontend consome a **API real** (pasta [`backend/`](backend/README.md): Node.js + Express + PostgreSQL + Redis/BullMQ + worker de filas) em todos os fluxos: login e cadastro (JWT), vitrine e catálogo, checkout com reserva atômica de estoque, pagamentos simulados (PIX, cartão e boleto), pedidos com rastreio, avaliações, contato com o produtor, painéis do artesão e do admin e a central de orientação. As 18 histórias de usuário do backlog estão implementadas. Requisitos e roadmap: [`REQUISITOS_BACKEND.md`](REQUISITOS_BACKEND.md).
+> 📌 **Status atual do projeto (11/11/2026):** aplicação full stack integrada. O frontend consome a **API real** (pasta [`backend/`](backend/README.md): Node.js + Express + PostgreSQL + Redis/BullMQ + worker de filas) em todos os fluxos: login e cadastro (JWT), vitrine e catálogo, checkout com reserva atômica de estoque, pagamentos simulados (PIX, cartão e boleto), pedidos com rastreio, avaliações, contato com o produtor, favoritos e sacola salvos na conta, perfil público do artesão (`/artesaos/:id`), notificações com contador, aprovação de novos artesãos, painéis do artesão e do admin e a central de orientação. As 18 histórias de usuário do backlog estão implementadas. Requisitos e roadmap: [`REQUISITOS_BACKEND.md`](REQUISITOS_BACKEND.md).
 >
 > As seções abaixo sobre a Fake API documentam a etapa anterior (primeira entrega).
 
@@ -210,7 +210,7 @@ A aplicação ficará disponível em `http://localhost:3000`. Se a API estiver e
 
 ### 6. Testes
 ```bash
-cd backend && npm test        # 101 testes de API (Jest), inclusive concorrência do checkout
+cd backend && npm test        # 114 testes de API (Jest), inclusive concorrência do checkout
 cd e2e && npm install && npm test   # segurança, fluxos, responsividade e acessibilidade (requer passos 3 a 5)
 ```
 Resultados da última execução: [`RELATORIO_TESTES.md`](RELATORIO_TESTES.md).

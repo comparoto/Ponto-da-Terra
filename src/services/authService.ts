@@ -27,10 +27,21 @@ export interface Sessao {
   techniques?: string[];
   /** HU7: polo regional de atuação */
   region?: string;
+  /** HU8: situação do cadastro do artesão (só aparece ao público depois de APROVADO) */
+  artisanStatus?: 'PENDENTE' | 'APROVADO' | 'REJEITADO';
+  artisanStatusReason?: string;
 }
 
 type TipoApi = 'CONSUMIDOR' | 'ARTESAO' | 'ADMIN';
-type PerfilApi = { id: string; nome: string; email: string; telefone: string | null; tipo: TipoApi; artesaoId: string | null };
+type PerfilApi = {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string | null;
+  tipo: TipoApi;
+  artesaoId: string | null;
+  cadastroArtesao?: { status: 'PENDENTE' | 'APROVADO' | 'REJEITADO'; motivo: string | null } | null;
+};
 
 const ROLE_POR_TIPO: Record<TipoApi, UserRole> = { CONSUMIDOR: 'comprador', ARTESAO: 'artesao', ADMIN: 'administrador' };
 
@@ -76,6 +87,8 @@ async function montarSessao(token: string, usuario: PerfilApi): Promise<Sessao> 
     name: usuario.nome,
     phone: usuario.telefone ?? undefined,
     artisanId: usuario.artesaoId ?? undefined,
+    artisanStatus: usuario.cadastroArtesao?.status,
+    artisanStatusReason: usuario.cadastroArtesao?.motivo ?? undefined,
   };
   salvarSessao(sessao); // o token precisa estar salvo para a chamada autenticada abaixo
 
@@ -99,8 +112,8 @@ async function montarSessao(token: string, usuario: PerfilApi): Promise<Sessao> 
   return sessao;
 }
 
-export async function signIn(email: string, senha: string): Promise<ApiResult<Sessao>> {
-  const res = await request<{ token: string; usuario: PerfilApi }>('/auth/login', { method: 'POST', body: { email, senha } });
+export async function signIn(email: string, senha: string, aceiteTermos = false): Promise<ApiResult<Sessao>> {
+  const res = await request<{ token: string; usuario: PerfilApi }>('/auth/login', { method: 'POST', body: { email, senha, aceiteTermos } });
   if (!res.success || !res.data) return { ...res, data: null };
   return { success: true, data: await montarSessao(res.data.token, res.data.usuario), error: null };
 }
@@ -117,6 +130,7 @@ export async function registerAccount(
   senha: string,
   role: 'comprador' | 'artesao',
   artisan?: ArtisanRegistration,
+  aceiteTermos = false,
 ): Promise<ApiResult<Sessao>> {
   const res = await request<{ token: string; usuario: PerfilApi }>('/auth/cadastro', {
     method: 'POST',
@@ -125,6 +139,7 @@ export async function registerAccount(
       email,
       senha,
       tipo: role === 'artesao' ? 'ARTESAO' : 'CONSUMIDOR',
+      aceiteTermos,
       ...(role === 'artesao' && artisan ? { cidade: artisan.city, estado: artisan.state || undefined, especialidade: artisan.specialty } : {}),
     },
   });
@@ -194,4 +209,20 @@ export async function deleteAccount(): Promise<ApiResult<null>> {
   const res = await request<null>('/me', { method: 'DELETE' });
   if (res.success) limparSessaoLocal();
   return res;
+}
+
+/** Atualiza a sessão com o perfil atual do servidor (ex.: o admin aprovou o cadastro do artesão). */
+export async function atualizarSessaoDoServidor(): Promise<Sessao | null> {
+  const atual = readSession();
+  if (!atual) return null;
+  const me = await request<PerfilApi>('/me');
+  if (!me.success || !me.data) return atual;
+  const nova: Sessao = {
+    ...atual,
+    name: me.data.nome,
+    artisanStatus: me.data.cadastroArtesao?.status,
+    artisanStatusReason: me.data.cadastroArtesao?.motivo ?? undefined,
+  };
+  if (JSON.stringify(nova) !== JSON.stringify(atual)) salvarSessao(nova);
+  return nova;
 }

@@ -1,8 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Peca, ItemCarrinho } from '@/types';
 import { readSession } from '@/services/authService';
+import { useSession } from '@/hooks/useSession';
+import { carrinhoSalvoService } from '@/services/interacaoService';
 
 export const MSG_LIMITE_ESTOQUE = 'Limite de estoque atingido para esta peça';
 
@@ -58,6 +60,48 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       /* armazenamento indisponível */
     }
   }, [items, isLoaded]);
+
+  // Carrinho do comprador logado também fica salvo no servidor: ao entrar, junta o que estava no
+  // aparelho com o que estava na conta (respeitando o estoque) e, depois, salva cada alteração.
+  const session = useSession();
+  const tokenComprador = session?.role === 'comprador' ? session.token : null;
+  const sincronizado = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded || !tokenComprador || sincronizado.current === tokenComprador) return;
+    let ativo = true;
+    void carrinhoSalvoService.ler().then(res => {
+      if (!ativo) return;
+      if (res.success && res.data) {
+        const remotos = res.data;
+        setItems(locais => {
+          const juntos = new Map(locais.map(i => [i.peca.id, i]));
+          for (const r of remotos) {
+            const atual = juntos.get(r.peca.id);
+            const quantidade = Math.min(Math.max(atual?.quantidade ?? 0, r.quantidade), estoqueDe(r.peca));
+            if (quantidade > 0) juntos.set(r.peca.id, { peca: r.peca, quantidade });
+          }
+          return [...juntos.values()];
+        });
+      }
+      sincronizado.current = tokenComprador;
+    });
+    return () => {
+      ativo = false;
+    };
+  }, [isLoaded, tokenComprador]);
+
+  useEffect(() => {
+    if (!tokenComprador) {
+      sincronizado.current = null;
+      return;
+    }
+    if (sincronizado.current !== tokenComprador) return;
+    const t = setTimeout(() => {
+      void carrinhoSalvoService.salvar(items.map(i => ({ produtoId: i.peca.id, quantidade: i.quantidade })));
+    }, 600);
+    return () => clearTimeout(t);
+  }, [items, tokenComprador]);
 
   const quantidadeNoCarrinho = (pecaId: string) => items.find(i => i.peca.id === pecaId)?.quantidade ?? 0;
   const limiteAtingido = (peca: Peca) => quantidadeNoCarrinho(peca.id) >= estoqueDe(peca);
