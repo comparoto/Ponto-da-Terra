@@ -858,7 +858,8 @@ O `data/mockData.ts` vira o **`prisma/seed.ts`**.
   - **Qualidade:** lint zerado (eram 31 avisos), `package-lock.json` sincronizado e CI no GitHub Actions.
 - **Deploy concluído** na Vercel (site + API serverless, Neon, Upstash Redis/QStash, Vercel Blob).
 - **Integração completa (pontas soltas fechadas):** perfil público do artesão (HU3), aprovação de novos artesãos (HU8), inativar conta (HU16), favoritos e sacola salvos na conta, notificações para todos os perfis (sino com contador e "marcar todas como lidas"), aceite dos Termos com data registrada e texto dos Termos atualizado.
-- **Testes:** 114 testes de API (Jest) e 58 verificações de fluxo no navegador (`e2e/`, Playwright), todos passando.
+- **Acabamento:** menu no celular, troca e recuperação de senha (link por e-mail), e-mails reais via SMTP, otimização das fotos na fila (WebP, sem EXIF), dependências atualizadas (Zod 4, Prisma 7: 0 vulnerabilidades em produção), limpeza dos dados de teste (`npm run limpar:testes`) e regra de deploy automático só a partir do `main`.
+- **Testes:** 123 testes de API (Jest) e 68 verificações de fluxo no navegador (`e2e/`, Playwright), todos passando.
 - **Falta:** definir a "IA" (D6) e os relatórios das disciplinas (benchmark, diagramas, 2ª rodada de testes).
 
 ---

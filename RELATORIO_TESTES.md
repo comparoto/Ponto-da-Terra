@@ -7,15 +7,15 @@
 
 | Tipo de teste | Ferramenta | Resultado |
 |---|---|---|
-| Testes automatizados da API (unidade + integração) | Jest + Supertest | **114 / 114** passaram |
+| Testes automatizados da API (unidade + integração) | Jest + Supertest | **123 / 123** passaram |
 | Cobertura de código da API | Jest (`npm run test:cobertura`) | **91,5 %** das instruções · **95,2 %** das linhas · 72,4 % dos desvios |
-| Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **58 / 58** verificações (18 + 23 + 17) |
-| Responsividade (celular 375 px, tablet 768 px, desktop 1366 px) | Playwright | **36 / 36** combinações sem rolagem horizontal e sem erros de JavaScript |
+| Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **68 / 68** verificações (18 + 23 + 17 + 10) |
+| Responsividade (celular 375 px, tablet 768 px, desktop 1366 px) | Playwright | **39 / 39** combinações (13 telas × 3 tamanhos) sem rolagem horizontal e sem erros de JavaScript |
 | Acessibilidade (WCAG 2 A e AA) | axe-core 4.14 | **0 violações** nas 12 telas × 3 tamanhos (depois das correções abaixo) |
 | Segurança caixa-preta | script próprio (`e2e/seguranca.mjs`) | **20 / 20** ataques bloqueados (depois da correção abaixo) |
 | Concorrência no checkout (TC02) | k6 (Docker) | 50 compradores simultâneos para 1 unidade: **1 venda, 49 recusas, 0 inesperadas, estoque final 0** |
 | Desempenho do cache da vitrine | k6 (Docker) | Com cache: **+85 % de vazão** e **−47 % de tempo mediano** |
-| Dependências vulneráveis (`npm audit --omit=dev`) | npm | Frontend: **0**. Backend: 5 "altas" aceitas (ver Riscos) |
+| Dependências vulneráveis (`npm audit --omit=dev`) | npm | Frontend: **0**. Backend: **0** (eram 5 "altas"; corrigidas com Zod 4 e Prisma 7) |
 | Qualidade estática | ESLint, TypeScript | Lint: **0** problemas. Tipos: **0** erros (frontend e backend) |
 | Build de produção | `next build`, `tsc` | Frontend e backend compilam |
 
@@ -52,6 +52,18 @@ Depois do deploy em https://ponto-da-terra-eight.vercel.app (site) e https://pon
 Defeitos encontrados nesta rodada (corrigidos):
 - **D-08:** o contador vermelho de notificações e as etiquetas de status do pedido ("Cancelado", "Pago", "Entregue"…) tinham contraste de 3,0 a 4,1:1 (o mínimo AA é 4,5:1). As cores de fundo foram escurecidas.
 - **D-09:** se o comprador tocasse num coração antes de a lista de favoritos terminar de carregar, a resposta atrasada apagava a marcação na tela. Agora as duas são combinadas.
+
+## Conta, e-mails e imagens (`e2e/conta-e-midia.cjs`, 10 / 10)
+
+| Funcionalidade | Verificado |
+|---|---|
+| Menu no celular | Botão ☰ abre a gaveta com todos os links, inclusive Contato |
+| Esqueci minha senha | A tela confirma o envio; link inválido é recusado e oferece pedir outro |
+| Alterar senha | No perfil, com a senha atual; a antiga deixa de funcionar e a pessoa continua conectada |
+| Imagens na fila | PNG enviado vira WebP pelo worker; o original é apagado e a versão nova responde 200 |
+| Limpeza | A conta de teste é excluída no final |
+
+Na API, `tests/senha-email.test.ts` cobre o link de uso único (só o hash fica no banco, expira, um pedido novo anula o anterior, não revela quais e-mails existem) e o escape de HTML do modelo de e-mail; `tests/imagens-fila.test.ts` cobre a conversão (3000 × 2000 → 1600 px, sem EXIF), a idempotência e a troca da foto durante o processamento.
 
 ## Casos de teste do plano v3
 
@@ -110,7 +122,7 @@ As 47 respostas MISS no cenário com cache são as primeiras requisições simul
 
 ## Riscos aceitos e limitações
 
-- **5 vulnerabilidades "altas" no backend:** `zod` 3 (consumo de memória com coleções muito grandes) e `deepmerge-ts`, dependência do CLI do Prisma 6. As duas só se corrigem com troca de versão principal (Zod 4, Prisma 7). Mitigação: todas as listas validadas têm tamanho máximo e o corpo da requisição é limitado a 1 MB. A falha do Prisma está no CLI de desenvolvimento, não no servidor. Recomenda-se migrar numa próxima etapa.
+- **Dependências:** as 5 vulnerabilidades "altas" do backend (Zod 3 e `deepmerge-ts` do Prisma 6) foram corrigidas com a migração para Zod 4.6 e Prisma 7.10 (driver `pg`). Os 123 testes passaram sem mudanças de comportamento. Restam avisos apenas em ferramentas de desenvolvimento (Jest/glob), que não vão para o servidor.
 - **Ambiente dos números de desempenho:** os números vêm de uma máquina de desenvolvimento Windows, com a API em modo watch. Valem como comparação (com e sem cache), não como capacidade de produção.
 - **Celular e tablet emulados:** a responsividade foi verificada por emulação de tela no Edge, não em aparelhos físicos.
 - **CI:** o workflow `.github/workflows/ci.yml` roda na branch `integracao-backend` do GitHub. Todos os passos dele (lint, tipos, testes, build) também foram executados localmente com sucesso.
@@ -120,7 +132,7 @@ As 47 respostas MISS no cenário com cache são as primeiras requisições simul
 
 ```bash
 # Infra + API + worker + frontend (ver README da raiz)
-cd backend && npm test                     # 114 testes da API
+cd backend && npm test                     # 123 testes da API
 cd backend && npm run test:cobertura       # relatório de cobertura (backend/coverage/index.html)
 cd backend && npm run test:carga           # k6 (ou via Docker, ver backend/README.md)
 cd e2e && npm install && npm test          # segurança + 3 roteiros de fluxo + responsividade/acessibilidade

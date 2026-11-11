@@ -24,5 +24,11 @@
       "path": "/api/jobs/outbox-relay",
       "schedule": "0 7 * * *"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "**": false
+    }
+  }
 }

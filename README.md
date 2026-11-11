@@ -159,7 +159,7 @@ Com base no progresso registrado no repositório, os seguintes fluxos já estão
 | **Estilização** | Chakra UI |
 | **Camada de serviços** | `src/services/` consome a API via HTTP mantendo o contrato `ApiResult<T>` da antiga Fake API |
 | **Backend** | Node.js + TypeScript + Express 5, documentado com Swagger (`backend/`) |
-| **Banco de dados** | PostgreSQL 16 com Prisma (migrations versionadas) |
+| **Banco de dados** | PostgreSQL 16 com Prisma 7 (migrations versionadas, driver `pg`) |
 | **Cache** | Redis (catálogo) |
 | **Autenticação** | JWT com perfis Comprador / Artesão / Administrador validados no servidor |
 | **Testes de concorrência** | Java (`CountDownLatch`, simulação de 20 threads paralelas) — módulo `TesteDeStress`, independente da aplicação |
@@ -210,7 +210,7 @@ A aplicação ficará disponível em `http://localhost:3000`. Se a API estiver e
 
 ### 6. Testes
 ```bash
-cd backend && npm test        # 114 testes de API (Jest), inclusive concorrência do checkout
+cd backend && npm test        # 123 testes de API (Jest), inclusive concorrência do checkout
 cd e2e && npm install && npm test   # segurança, fluxos, responsividade e acessibilidade (requer passos 3 a 5)
 ```
 Resultados da última execução: [`RELATORIO_TESTES.md`](RELATORIO_TESTES.md).

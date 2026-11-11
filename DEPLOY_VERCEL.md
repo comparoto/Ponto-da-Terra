@@ -103,6 +103,32 @@ No PowerShell: `$env:DATABASE_URL="..."; $env:DATABASE_URL_UNPOOLED="..."; npx t
 
 ---
 
+## Deploy automático pelo GitHub
+
+Os dois `vercel.json` já trazem a regra abaixo: só o `main` publica sozinho. Push em outras branches (como `integracao-backend`) **não** gera deploy. Isso evita que um preview da API rode migrations de uma branch ainda não aprovada no banco de produção (os previews usam o mesmo Neon).
+
+```json
+"git": { "deploymentEnabled": { "main": true, "**": false } }
+```
+
+Para ligar (uma vez, no painel da Vercel, com uma conta que tenha acesso ao repositório `comparoto/Ponto-da-Terra`):
+
+1. Projeto **ponto-da-terra** (site) → Settings → Git → **Connect Git Repository** → escolha o repositório. Root Directory: `.` (padrão).
+2. Projeto **ponto-da-terra-api** → Settings → **Build and Deployment → Root Directory = `backend`** → salvar. Depois Settings → Git → **Connect Git Repository** → o mesmo repositório.
+3. Em Settings → Environments → Production, confira que a branch de produção é `main`.
+
+Pela linha de comando, o passo de conectar é `npx vercel git connect https://github.com/comparoto/Ponto-da-Terra.git` (na raiz para o site e em `backend/` para a API), mas a Root Directory da API só muda pelo painel.
+
+A partir daí, cada merge no `main` publica a API (com `prisma migrate deploy`) e o site. Até lá, o deploy continua manual, como abaixo.
+
+## E-mails de verdade (opcional)
+
+Sem `SMTP_URL`, os e-mails (notificações e "Esqueci minha senha") só aparecem nos logs da função. Para enviar de verdade, crie uma conta num provedor e adicione no projeto da API (Production):
+
+- `SMTP_URL`: por exemplo `smtp://USUARIO:SENHA@sandbox.smtp.mailtrap.io:2525` (Mailtrap captura os e-mails numa caixa de testes, bom para demonstração) ou `smtps://resend:re_CHAVE@smtp.resend.com:465` (Resend envia para caixas reais; exige domínio verificado para destinatários de fora da conta).
+- `EMAIL_REMETENTE` (opcional): ex. `Ponto da Terra <nao-responda@seu-dominio.com>`.
+- `SITE_URL`: já configurado como `https://ponto-da-terra-eight.vercel.app` (usado nos links dos e-mails).
+
 ## Alternativa: pela linha de comando (sem GitHub)
 
 ```bash
@@ -128,7 +154,7 @@ O `.vercelignore` da raiz impede que a pasta `backend/` seja enviada junto com o
 - **Fotos acima de ~4,5 MB:** a Vercel limita o corpo das requisições das funções a 4,5 MB. A API aceita até 5 MB localmente; na Vercel, fotos entre 4,5 e 5 MB são recusadas pela plataforma (HTTP 413).
 - **Cron diário:** no plano Hobby, as tarefas agendadas rodam 1 vez por dia. Isso não afeta o funcionamento normal: a expiração de cada PIX/boleto é agendada no QStash para o horário exato, e o cron é só uma rede de segurança.
 - **Limite de tentativas de login por instância:** o contador fica na memória de cada instância da função. Sob carga, com várias instâncias, o limite efetivo é maior. Para endurecer, troque o armazenamento do `express-rate-limit` pelo Redis.
-- **Previews usam o mesmo banco:** deploys de preview da API rodam as migrations no mesmo Neon da produção. Para isolar, crie uma *branch* do Neon para Preview nas configurações da integração.
+- **Previews usariam o mesmo banco:** um deploy de preview da API rodaria as migrations no mesmo Neon da produção. Por isso os `vercel.json` desligam o deploy automático fora do `main`. Se quiser previews, crie antes uma *branch* do Neon para o ambiente Preview nas configurações da integração.
 - **Primeira requisição mais lenta:** uma função "fria" leva alguns segundos para abrir a conexão com o banco e o Redis.
 - **Cotas gratuitas:** QStash, Neon, Upstash e Blob têm limites mensais, suficientes para demonstração acadêmica.
 
@@ -136,4 +162,4 @@ O `.vercelignore` da raiz impede que a pasta `backend/` seja enviada junto com o
 
 - **API:** `vercel build` executado num contêiner Linux com Node 22, igual ao ambiente de build da Vercel. A função empacotada foi executada e respondeu health, vitrine, login, Swagger e OpenAPI com HTTP 200; bloqueou as rotas internas sem autorização (401) e aceitou o CORS das URLs de preview.
 - **Site:** `vercel build` do Next.js 16.4.6 concluído, com a URL da API embutida no bundle.
-- **Modo serverless:** 114 testes de API passando, incluindo os novos, que cobrem as rotas de fila, o CORS com curinga e o ajuste da URL do Neon.
+- **Modo serverless:** 123 testes de API passando, incluindo os que cobrem as rotas de fila, o CORS com curinga e a conexão do Prisma 7 pelo driver `pg`.
