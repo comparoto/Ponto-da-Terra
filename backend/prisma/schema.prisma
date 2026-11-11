@@ -2,17 +2,14 @@
 // Ajustes em relação ao diagrama estão documentados em REQUISITOS_BACKEND.md §5 e marcados com "AJUSTE".
 
 generator client {
-  provider      = "prisma-client-js"
-  // "rhel-openssl-3.0.x" é o Linux das funções da Vercel
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
+// Prisma 7: as URLs de conexão ficam fora do schema.
+//   - aplicação: src/config/prisma.ts (driver pg, DATABASE_URL — na Vercel/Neon, a URL com pooler)
+//   - migrations: prisma.config.ts (DATABASE_URL_UNPOOLED, conexão direta)
 datasource db {
-  provider  = "postgresql"
-  // Conexão usada pela aplicação (na Vercel/Neon: a URL com pooler)
-  url       = env("DATABASE_URL")
-  // Conexão direta, usada pelas migrations (no Neon: DATABASE_URL_UNPOOLED; localmente, a mesma URL)
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
 }
 
 // ───────────── Enums ─────────────

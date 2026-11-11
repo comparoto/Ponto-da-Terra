@@ -8,10 +8,11 @@
  *   npm run limpar:testes -- --apagar → apaga (tudo numa transação)
  */
 import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import Redis from 'ioredis';
 
-const prisma = new PrismaClient({ datasources: { db: { url: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL } } });
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: (process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL)! }) });
 const apagar = process.argv.includes('--apagar');
 const TERMOS_DE_TESTE = /e2e|drop table|<script|or 1=1/i;
 

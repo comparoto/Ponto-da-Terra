@@ -1,6 +1,6 @@
 import { TipoEvento } from '@prisma/client';
 import { origemPermitida } from '../src/app';
-import { ajustarUrlBanco } from '../src/config/prisma';
+import { criarPrisma } from '../src/config/prisma';
 import { api, bearer, checkout, ciclo, novoComprador, pecaAtiva, prisma } from './helpers';
 
 ciclo();
@@ -23,10 +23,15 @@ describe('Implantação na Vercel', () => {
     for (const [origem, esperado] of casos) f(origem, (_e, ok) => expect([origem, ok]).toEqual([origem, esperado]));
   });
 
-  it('URL do pooler do Neon ganha pgbouncer=true; demais URLs ficam iguais', () => {
-    expect(ajustarUrlBanco('postgresql://u:s@ep-abc-pooler.sa-east-1.aws.neon.tech/db?sslmode=require')).toContain('pgbouncer=true');
-    expect(ajustarUrlBanco('postgresql://u:s@ep-abc.sa-east-1.aws.neon.tech/db?sslmode=require')).not.toContain('pgbouncer');
-    expect(ajustarUrlBanco('postgresql://u:s@ep-abc-pooler.neon.tech/db?pgbouncer=false')).toContain('pgbouncer=false');
+  it('Prisma 7 + driver pg: conecta com poucas conexões (modo serverless) e consulta o banco', async () => {
+    const cliente = criarPrisma(process.env.DATABASE_URL!, 1);
+    try {
+      const [linha] = await cliente.$queryRaw<{ ok: number }[]>`SELECT 1 AS ok`;
+      expect(Number(linha.ok)).toBe(1);
+      expect(await cliente.usuario.count()).toBeGreaterThan(0);
+    } finally {
+      await cliente.$disconnect();
+    }
   });
 });
 

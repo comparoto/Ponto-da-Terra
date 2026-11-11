@@ -2,24 +2,24 @@ import { paginacaoQuery } from '../../shared/pagination';
 import { z } from '../../shared/zod';
 
 const textoObrigatorio = (mensagem: string, max = 120) =>
-  z.string({ required_error: mensagem, invalid_type_error: mensagem }).trim().min(2, mensagem).max(max);
+  z.string({ error: mensagem }).trim().min(2, mensagem).max(max);
 
 const preco = z
-  .number({ required_error: 'Informe o preço', invalid_type_error: 'O preço deve ser um número' })
+  .number({ error: iss => (iss.input === undefined ? 'Informe o preço' : 'O preço deve ser um número') })
   .positive('O preço deve ser maior que zero')
   .max(1_000_000, 'Preço acima do permitido')
   .refine(v => Number.isInteger(Math.round(v * 100)) && Math.abs(v * 100 - Math.round(v * 100)) < 1e-6, 'Use no máximo 2 casas decimais')
   .openapi({ example: 85.0 });
 
 const quantidadeEstoque = z
-  .number({ required_error: 'Informe o estoque disponível', invalid_type_error: 'O estoque deve ser um número' })
+  .number({ error: iss => (iss.input === undefined ? 'Informe o estoque disponível' : 'O estoque deve ser um número') })
   .int('O estoque deve ser um número inteiro')
   .min(0, 'O estoque não pode ser negativo')
   .max(100_000);
 
 const camposProduto = {
   titulo: z
-    .string({ required_error: 'Informe o título da peça', invalid_type_error: 'Informe o título da peça' })
+    .string({ error: 'Informe o título da peça' })
     .trim()
     .min(3, 'O título deve ter no mínimo 3 caracteres')
     .max(120)

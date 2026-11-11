@@ -8,11 +8,12 @@
  *   artesao@pontodaterra.com   / artesao123   (Mestre Severino Ramos)
  *   artesao2..6@pontodaterra.com / artesao123 (demais artesãos)
  */
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, StatusProduto, TipoUsuario } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import seedData from './seed-data.json';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
 type ArtesaoMock = (typeof seedData.artesaos)[number];
 type ProdutoMock = (typeof seedData.produtos)[number];

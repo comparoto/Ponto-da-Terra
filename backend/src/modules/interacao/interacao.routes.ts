@@ -25,7 +25,7 @@ const consumidorIdDe = (req: Express.Request) => {
 const avaliacaoBody = z
   .object({
     produtoId: z.string().uuid('Identificador de produto inválido'),
-    nota: z.number({ required_error: 'Informe a nota' }).int('A nota deve ser inteira').min(1, 'A nota vai de 1 a 5').max(5, 'A nota vai de 1 a 5'),
+    nota: z.number({ error: 'Informe a nota' }).int('A nota deve ser inteira').min(1, 'A nota vai de 1 a 5').max(5, 'A nota vai de 1 a 5'),
     comentario: z.string().trim().max(1000).optional(),
   })
   .openapi('Avaliacao');
@@ -115,7 +115,7 @@ interacaoRoutes.get('/produtos/:id/avaliacoes', validate({ params: produtoParam,
 const mensagemBody = z
   .object({
     mensagem: z
-      .string({ required_error: 'O campo de mensagem não pode ficar vazio' })
+      .string({ error: 'O campo de mensagem não pode ficar vazio' })
       .trim()
       .min(1, 'O campo de mensagem não pode ficar vazio')
       .max(1000, 'A mensagem deve ter no máximo 1000 caracteres'),

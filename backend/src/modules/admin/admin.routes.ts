@@ -19,7 +19,7 @@ const filaQuery = z.object({ ...paginacaoQuery, status: z.nativeEnum(StatusProdu
 const reprovarBody = z
   .object({
     justificativa: z
-      .string({ required_error: 'Informe o motivo da reprovação' })
+      .string({ error: 'Informe o motivo da reprovação' })
       .trim()
       .min(10, 'Descreva o motivo da reprovação (mínimo de 10 caracteres)')
       .max(1000)

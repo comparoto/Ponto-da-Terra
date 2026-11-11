@@ -23,7 +23,7 @@ const usuariosQuery = z.object({
   busca: z.string().trim().max(100).optional(),
 });
 const suspenderBody = z
-  .object({ motivo: z.string({ required_error: 'Informe o motivo da suspensão' }).trim().min(10, 'Descreva o motivo formal da suspensão (mínimo de 10 caracteres)').max(1000) })
+  .object({ motivo: z.string({ error: 'Informe o motivo da suspensão' }).trim().min(10, 'Descreva o motivo formal da suspensão (mínimo de 10 caracteres)').max(1000) })
   .openapi('SuspenderUsuario');
 
 const usuarioResposta = (u: Prisma.UsuarioGetPayload<{ include: { artesao: { select: { id: true; statusCadastro: true; _count: { select: { produtos: true } } } } } }>) => ({
@@ -160,7 +160,7 @@ adminExtrasRoutes.post('/admin/usuarios/:id/inativar', ...somente(TipoUsuario.AD
 
 const cadastrosQuery = z.object({ ...paginacaoQuery, status: z.nativeEnum(StatusCadastroArtesao).default(StatusCadastroArtesao.PENDENTE) });
 const reprovarCadastroBody = z
-  .object({ motivo: z.string({ required_error: 'Informe o motivo' }).trim().min(10, 'Descreva o motivo (mínimo de 10 caracteres)').max(1000) })
+  .object({ motivo: z.string({ error: 'Informe o motivo' }).trim().min(10, 'Descreva o motivo (mínimo de 10 caracteres)').max(1000) })
   .openapi('ReprovarCadastroArtesao');
 
 const incluirCadastro = {

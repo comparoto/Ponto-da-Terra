@@ -29,7 +29,7 @@ export type Periodo = { de: Date; ate: Date };
 const data = (fimDoDia: boolean) =>
   z.preprocess(
     v => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? `${v}T${fimDoDia ? '23:59:59.999' : '00:00:00.000'}Z` : v),
-    z.coerce.date({ invalid_type_error: fimDoDia ? 'Data final inválida' : 'Data inicial inválida' }),
+    z.coerce.date({ error: fimDoDia ? 'Data final inválida' : 'Data inicial inválida' }),
   );
 
 export const periodoQuery = z

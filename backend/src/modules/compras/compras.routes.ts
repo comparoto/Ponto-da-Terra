@@ -38,7 +38,7 @@ const checkoutBody = z
       complemento: z.string().trim().max(80).optional(),
       bairro: z.string().trim().max(80).optional(),
       cidade: z.string().trim().min(2, 'Informe a cidade').max(80),
-      estado: z.enum(UFS, { errorMap: () => ({ message: 'Informe a UF' }) }),
+      estado: z.enum(UFS, { error: 'Informe a UF' }),
     }),
   })
   .openapi('Checkout');

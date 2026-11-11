@@ -36,7 +36,7 @@ const autenticarJob: RequestHandler = async (req, _res, next) => {
   next(unauthorized('Chamada de job não autorizada'));
 };
 
-const eventoBody = z.object({ id: z.string().min(1), tipo: z.string().min(1), payload: z.record(z.unknown()) });
+const eventoBody = z.object({ id: z.string().min(1), tipo: z.string().min(1), payload: z.record(z.string(), z.unknown()) });
 
 documentar({
   method: 'post',

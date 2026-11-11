@@ -18,7 +18,7 @@ const TAMANHOS = [
 ];
 
 const TELAS = [
-  { perfil: null, rotas: ['/home', '/vitrine', '/produtos', '/login', '/cadastro', '/termos', '/orientacao'] },
+  { perfil: null, rotas: ['/home', '/vitrine', '/produtos', '/login', '/cadastro', '/termos', '/orientacao', '/esqueci-senha'] },
   { perfil: ['comprador@pontodaterra.com', 'comprador123', '/home'], rotas: ['/meus-pedidos', '/checkout', '/perfil'] },
   { perfil: ['artesao@pontodaterra.com', 'artesao123', '/artesao'], rotas: ['/artesao'] },
   { perfil: ['admin@pontodaterra.com', 'admin123', '/admin'], rotas: ['/admin'] },

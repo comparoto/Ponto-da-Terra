@@ -1,19 +1,15 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
-import { env } from './env';
+import { env, naVercel } from './env';
 
 /**
- * Pooler de conexões (Neon "-pooler" / PgBouncer em modo transação): o Prisma precisa de
- * `pgbouncer=true` para não usar prepared statements nomeados. Acrescenta automaticamente
- * quando a URL aponta para um pooler e o parâmetro não foi informado.
+ * Prisma 7: a conexão é feita pelo driver `pg` (node-postgres) através do adaptador oficial.
+ *
+ * O adaptador não usa prepared statements nomeados, então funciona direto com o pooler do Neon
+ * (PgBouncer em modo transação) — o antigo parâmetro `pgbouncer=true` deixou de ser necessário.
+ * Nas funções serverless da Vercel, cada instância abre poucas conexões: quem multiplexa é o pooler.
  */
-export function ajustarUrlBanco(url: string): string {
-  try {
-    const u = new URL(url);
-    if (u.hostname.includes('-pooler') && !u.searchParams.has('pgbouncer')) u.searchParams.set('pgbouncer', 'true');
-    return u.toString();
-  } catch {
-    return url;
-  }
-}
+export const criarPrisma = (connectionString: string, maxConexoes = naVercel ? 3 : 10) =>
+  new PrismaClient({ adapter: new PrismaPg({ connectionString, max: maxConexoes }) });
 
-export const prisma = new PrismaClient({ datasourceUrl: ajustarUrlBanco(env.DATABASE_URL) });
+export const prisma = criarPrisma(env.DATABASE_URL);
