@@ -28,6 +28,8 @@ Depois do deploy em https://ponto-da-terra-eight.vercel.app (site) e https://pon
 | Segurança caixa-preta | **20 / 20**. O JWT com `alg: none` é bloqueado já pelo firewall da Vercel (HTTP 403) |
 | Fluxos de integração (TC04, TC08, TC09, TC14) | **18 / 18** |
 | Fluxos da fase 2 (TC12, TC15, TC16, HU9–HU18) | **23 / 23** |
+| Funcionalidades que completam a integração (HU3, HU8, HU16, favoritos, sacola, notificações, Termos) | **17 / 17** |
+| Responsividade e acessibilidade | **36 / 36**, 0 violações WCAG A/AA |
 | Fila serverless (QStash) | Notificação de "Novo pedido" entregue ao artesão |
 | Expiração agendada (TC16) | PIX não pago cancelado automaticamente após 30 min, com estoque devolvido |
 
@@ -47,7 +49,9 @@ Depois do deploy em https://ponto-da-terra-eight.vercel.app (site) e https://pon
 | Sacola salva na conta | Os itens vão para o servidor; ao sair e entrar de novo, a sacola volta |
 | HU16 · inativar conta | Conta inativada pelo admin não consegue entrar ("Conta inativa") |
 
-Defeito encontrado nesta rodada (D-08, corrigido): o contador vermelho de notificações tinha contraste 3,0:1 (o mínimo AA é 4,5:1). A cor de fundo foi escurecida.
+Defeitos encontrados nesta rodada (corrigidos):
+- **D-08:** o contador vermelho de notificações e as etiquetas de status do pedido ("Cancelado", "Pago", "Entregue"…) tinham contraste de 3,0 a 4,1:1 (o mínimo AA é 4,5:1). As cores de fundo foram escurecidas.
+- **D-09:** se o comprador tocasse num coração antes de a lista de favoritos terminar de carregar, a resposta atrasada apagava a marcação na tela. Agora as duas são combinadas.
 
 ## Casos de teste do plano v3
 

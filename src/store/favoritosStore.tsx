@@ -27,7 +27,10 @@ export function FavoritosProvider({ children }: { children: React.ReactNode }) {
     if (!token) return;
     let ativo = true;
     void favoritoService.listar().then(res => {
-      if (ativo && res.success) setEstado({ token, ids: new Set((res.data ?? []).map(p => p.id)) });
+      if (!ativo || !res.success) return;
+      const doServidor = (res.data ?? []).map(p => p.id);
+      // Se o comprador já tocou num coração antes da lista chegar, mantém essa marcação em vez de sobrescrevê-la
+      setEstado(atual => ({ token, ids: new Set([...doServidor, ...(atual.token === token ? atual.ids : [])]) }));
     });
     return () => {
       ativo = false;

@@ -109,8 +109,10 @@ const sair = page => page.evaluate(() => localStorage.removeItem('ponto_da_terra
     await sair(page);
     await login(page, emailComprador, 'segredo1', '/home');
     await page.goto(`${FRONT}/produtos?q=${encodeURIComponent(peca.titulo)}`);
-    await page.getByRole('button', { name: 'Adicionar aos favoritos' }).first().click({ timeout: 15000 });
-    await page.getByRole('button', { name: 'Remover dos favoritos' }).first().waitFor({ timeout: 10000 });
+    // O card certo: a busca pode trazer outras peças antes desta
+    const cardDaPeca = page.locator('div').filter({ has: page.getByText(peca.titulo, { exact: true }) }).filter({ has: page.getByRole('button', { name: /favoritos/ }) }).last();
+    await cardDaPeca.getByRole('button', { name: 'Adicionar aos favoritos' }).click({ timeout: 15000 });
+    await cardDaPeca.getByRole('button', { name: 'Remover dos favoritos' }).waitFor({ timeout: 10000 });
     await page.goto(`${FRONT}/favoritos`);
     ok('Favoritos · peça aparece em "Meus favoritos"', await aparece(page.getByText(peca.titulo)));
 

@@ -90,7 +90,7 @@ function CompraContent() {
               {compra.status === 'PAGA' ? 'Pedido confirmado!' : compra.status === 'CANCELADA' ? 'Compra cancelada' : 'Falta pouco: conclua o pagamento'}
             </Heading>
           </Box>
-          <Badge colorScheme={status.cor} variant="solid" px={3} py={1} borderRadius="md" fontSize="sm">
+          <Badge bg={`${status.cor}.700`} color="white" px={3} py={1} borderRadius="md" fontSize="sm">
             {status.texto}
           </Badge>
         </Flex>

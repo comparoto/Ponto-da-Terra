@@ -13,7 +13,8 @@ O endereço `ponto-da-terra.vercel.app` pertence ao deploy da 1ª entrega, em ou
 
 **Verificado em produção:**
 - Segurança: 20 de 20 ataques bloqueados. O JWT forjado com `alg: none` é barrado já pelo firewall da Vercel (403).
-- Fluxos no navegador: 18 de 18 e 23 de 23 verificações.
+- Fluxos no navegador: 18 de 18, 23 de 23 e 17 de 17 verificações (este último cobre HU3, HU8, HU16, favoritos, sacola salva, notificações e Termos).
+- Responsividade e acessibilidade: 36 de 36 combinações, 0 violações WCAG A/AA.
 - Fila: o QStash entregou a notificação de "Novo pedido" ao artesão.
 - Expiração agendada: um PIX não pago foi cancelado sozinho após 30 min, com o estoque devolvido.
 

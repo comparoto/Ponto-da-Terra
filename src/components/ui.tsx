@@ -42,7 +42,7 @@ export const dataBr = (iso: string | null | undefined, comHora = false) =>
 export function StatusPedidoBadge({ status, atrasado }: { status: StatusPedido; atrasado?: boolean }) {
   return (
     <HStack spacing={1}>
-      <Badge colorScheme={COR_STATUS[status]} variant="solid" px={2} py={1} borderRadius="md">
+      <Badge bg={`${COR_STATUS[status]}.700`} color="white" px={2} py={1} borderRadius="md">
         {ROTULO_STATUS[status]}
       </Badge>
       {atrasado && (
