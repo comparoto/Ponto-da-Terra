@@ -145,11 +145,11 @@ export function ProductManager({ artisanOnly = false }: { artisanOnly?: boolean 
           <Button bg="terra.500" color="black" fontSize="md" minH="48px" _hover={{ bg: 'terra.600' }} onClick={salvar} isLoading={saving}>{editingId ? 'Salvar alterações' : 'Adicionar peça'}</Button>
           {editingId && <Button variant="ghost" onClick={limpar}>Cancelar edição</Button>}
         </HStack>
-        {message && <Text mt={3} color={isError ? 'red.200' : 'terra.200'} fontSize="md" role={isError ? 'alert' : 'status'}>{message}</Text>}
+        {message && <Text mt={3} color={isError ? 'red.200' : 'terra.100'} fontSize="md" role={isError ? 'alert' : 'status'}>{message}</Text>}
       </Box>
     )}
 
-    {!artisanOnly && message && <Text color={isError ? 'red.200' : 'terra.200'} role="alert">{message}</Text>}
+    {!artisanOnly && message && <Text color={isError ? 'red.200' : 'terra.100'} role="alert">{message}</Text>}
 
     {lista.erro && <Text color="red.200" role="alert">{lista.erro}</Text>}
 

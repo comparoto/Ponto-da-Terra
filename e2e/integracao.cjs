@@ -36,6 +36,10 @@ async function sair(page) {
 }
 
 (async () => {
+  // A sacola do comprador fica salva na conta: começa vazia para o roteiro não herdar itens de execuções anteriores
+  const login0 = await (await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'comprador@pontodaterra.com', senha: 'comprador123' }) })).json();
+  await fetch(`${API}/carrinho`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${login0.data.token}` }, body: JSON.stringify({ itens: [] }) });
+
   const browser = await chromium.launch({ channel: process.env.BROWSER ?? 'msedge', headless: process.env.HEADLESS !== 'false' });
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
   const errosConsole = [];

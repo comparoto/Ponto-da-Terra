@@ -1,7 +1,8 @@
 ﻿'use client';
 
 import React, { useState } from 'react';
-import {Flex,HStack,Text,Input,InputGroup,InputLeftElement,Image,Icon,IconButton,Badge,Button,Menu,MenuButton,MenuList,MenuItem,Box, type IconProps } from '@chakra-ui/react';
+import {Flex,HStack,Text,Input,InputGroup,InputLeftElement,Image,Icon,IconButton,Badge,Button,Menu,MenuButton,MenuList,MenuItem,Box,useDisclosure, type IconProps } from '@chakra-ui/react';
+import { ContatoModal } from './ContatoModal';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/store/cartStore';
 import { CartDrawer } from './CartDrawer';
@@ -28,6 +29,7 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
   const { totalItens, abrirCarrinho, limparCarrinho } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const account = useSession();
+  const contato = useDisclosure();
   // Contador de notificações não lidas (recarrega quando a sessão muda ou uma notificação é lida)
   const naoLidas = useCarregar(() => (account ? notificacaoService.naoLidas() : Promise.resolve({ success: true, data: [], error: null })), [account?.token]);
   const totalNaoLidas = account ? (naoLidas.meta?.totalItems ?? 0) : 0;
@@ -118,7 +120,7 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
             cursor="pointer"
             transition="color 0.2s"
             _hover={{ color: 'terra.500' }}
-            onClick={() => alert('Dúvidas? Entre em contato pelo e-mail contato@pontodaterra.com.br')}
+            onClick={contato.onOpen}
           >
             Contato
           </Text>
@@ -219,6 +221,7 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
       </Flex>
 
       {(!account || account.role === 'comprador') && <CartDrawer />}
+      <ContatoModal isOpen={contato.isOpen} onClose={contato.onClose} />
     </>
   );
 }

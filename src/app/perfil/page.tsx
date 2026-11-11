@@ -179,7 +179,7 @@ function PerfilForm({ inicial }: { inicial: Sessao }) {
 
             {isArtisan && (
               <>
-                <Heading size="md" color="terra.200" mt={2}>Perfil do artesão</Heading>
+                <Heading size="md" color="terra.100" mt={2}>Perfil do artesão</Heading>
                 <Box>
                   <Text mb={1} fontWeight="semibold">Cidade</Text>
                   <Input aria-label="Cidade" value={city} onChange={event => setCity(event.target.value)} placeholder="Cidade onde você trabalha" {...fieldStyles} />
@@ -216,7 +216,7 @@ function PerfilForm({ inicial }: { inicial: Sessao }) {
             )}
           </Stack>
 
-          {message && <Text role="status" color="terra.200">{message}</Text>}
+          {message && <Text role="status" color="terra.100">{message}</Text>}
 
           <Flex justify="space-between" wrap="wrap" gap={3} mt={4}>
             <Button bg="terra.500" color="black" _hover={{ bg: 'terra.600' }} onClick={saveProfile} isLoading={saving}>Salvar alterações</Button>

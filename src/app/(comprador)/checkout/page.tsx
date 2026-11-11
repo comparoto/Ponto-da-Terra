@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Alert,
@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Select,
   SimpleGrid,
+  Spinner,
   Text,
   VStack,
   useToast,
@@ -28,6 +29,7 @@ import { ESTADOS_BRASILEIROS } from '@/data';
 import { carrinhoService, type CalculoCarrinho } from '@/services/carrinhoService';
 import { mensagemDeErro } from '@/services/http';
 import { compraService, type MetodoPagamento } from '@/services/pedidoService';
+import { apenasDigitos, buscarCep, mascararCep } from '@/services/cepService';
 
 const campo = { bg: 'whiteAlpha.200', border: 'none', _placeholder: { color: 'whiteAlpha.600' } };
 
@@ -44,6 +46,12 @@ function CheckoutContent() {
   const [erroCarrinho, setErroCarrinho] = useState('');
   const [endereco, setEndereco] = useState<FormEndereco>(enderecoVazio);
   const [erroCep, setErroCep] = useState('');
+  // Busca do endereço pelo CEP (ViaCEP / BrasilAPI)
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const [avisoCep, setAvisoCep] = useState<'' | 'encontrado' | 'nao-encontrado'>('');
+  const ultimoCep = useRef('');
+  const numeroRef = useRef<HTMLInputElement>(null);
+  const ruaRef = useRef<HTMLInputElement>(null);
   const [metodo, setMetodo] = useState<MetodoPagamento>('PIX');
   const [cartao, setCartao] = useState({ numero: '', validade: '', cvv: '', titular: '' });
   const [parcelas, setParcelas] = useState(1);
@@ -72,10 +80,10 @@ function CheckoutContent() {
 
   const set = (chave: keyof FormEndereco) => (e: { target: { value: string } }) => setEndereco(atual => ({ ...atual, [chave]: e.target.value }));
 
-  const calcularFrete = async () => {
+  const calcularFrete = async (cep = endereco.cep) => {
     setIsCalculando(true);
     setErroCep('');
-    const res = await carrinhoService.calcular(items, endereco.cep);
+    const res = await carrinhoService.calcular(items, cep);
     setIsCalculando(false);
     if (!res.success || !res.data) {
       setErroCep(res.errors?.find(e => e.campo === 'cep')?.mensagem ?? mensagemDeErro(res)); // TC14: CEP inválido
@@ -90,6 +98,30 @@ function CheckoutContent() {
       duration: 3000,
       isClosable: true,
     });
+  };
+
+  /** CEP completo: preenche rua, bairro, cidade e UF e já calcula o frete */
+  const preencherPeloCep = async (cep: string) => {
+    ultimoCep.current = cep;
+    setBuscandoCep(true);
+    setAvisoCep('');
+    const [achado] = await Promise.all([buscarCep(cep), calcularFrete(cep)]);
+    if (ultimoCep.current !== cep) return; // a pessoa já digitou outro CEP
+    setBuscandoCep(false);
+    if (!achado) {
+      setAvisoCep('nao-encontrado');
+      return;
+    }
+    setEndereco(atual => ({
+      ...atual,
+      rua: achado.rua || atual.rua,
+      bairro: achado.bairro || atual.bairro,
+      cidade: achado.cidade,
+      estado: achado.estado,
+    }));
+    setAvisoCep('encontrado');
+    // Cursor vai direto para o que falta preencher
+    (achado.rua ? numeroRef : ruaRef).current?.focus();
   };
 
   const finalizarCompra = async () => {
@@ -227,10 +259,19 @@ function CheckoutContent() {
             <Input
               placeholder="CEP (ex.: 01310-100)"
               aria-label="CEP"
+              inputMode="numeric"
+              autoComplete="postal-code"
               value={endereco.cep}
               onChange={e => {
-                set('cep')(e);
+                const cep = mascararCep(e.target.value);
+                setEndereco(atual => ({ ...atual, cep }));
                 setErroCep('');
+                setAvisoCep('');
+                if (apenasDigitos(cep).length === 8 && cep !== ultimoCep.current) void preencherPeloCep(cep);
+                else if (apenasDigitos(cep).length < 8) {
+                  ultimoCep.current = '';
+                  setBuscandoCep(false);
+                }
               }}
               onKeyDown={e => {
                 if (e.key === 'Enter' && endereco.cep) void calcularFrete();
@@ -239,7 +280,7 @@ function CheckoutContent() {
               isInvalid={Boolean(erroCep)}
               {...campo}
             />
-            <Button onClick={calcularFrete} isLoading={isCalculando} variant="outline" isDisabled={!endereco.cep}>
+            <Button onClick={() => calcularFrete()} isLoading={isCalculando} variant="outline" isDisabled={!endereco.cep}>
               Calcular
             </Button>
           </HStack>
@@ -248,14 +289,30 @@ function CheckoutContent() {
               {erroCep}
             </Text>
           )}
+          {buscandoCep && (
+            <HStack color="whiteAlpha.700" fontSize="sm" mb={3} role="status">
+              <Spinner size="xs" color="terra.500" />
+              <Text>Buscando o endereço…</Text>
+            </HStack>
+          )}
+          {!buscandoCep && avisoCep === 'encontrado' && (
+            <Text color="green.200" fontSize="sm" mb={3} role="status">
+              ✓ Endereço preenchido pelo CEP. Confira e informe o número.
+            </Text>
+          )}
+          {!buscandoCep && avisoCep === 'nao-encontrado' && !erroCep && (
+            <Text color="orange.200" fontSize="sm" mb={3} role="status">
+              Não encontramos esse CEP na base dos Correios. Preencha o endereço abaixo.
+            </Text>
+          )}
           {calculoAtual?.frete && (
             <Text color="whiteAlpha.700" fontSize="sm" mb={4}>
               Entrega para {calculoAtual.frete.cep} ({calculoAtual.frete.regiao}): até {calculoAtual.frete.prazoDias} dias úteis.
             </Text>
           )}
           <SimpleGrid columns={{ base: 1, sm: 6 }} spacing={3}>
-            <Input gridColumn={{ sm: 'span 4' }} placeholder="Rua / avenida" aria-label="Rua" value={endereco.rua} onChange={set('rua')} {...campo} />
-            <Input gridColumn={{ sm: 'span 2' }} placeholder="Número" aria-label="Número" value={endereco.numero} onChange={set('numero')} {...campo} />
+            <Input ref={ruaRef} gridColumn={{ sm: 'span 4' }} placeholder="Rua / avenida" aria-label="Rua" autoComplete="address-line1" value={endereco.rua} onChange={set('rua')} {...campo} />
+            <Input ref={numeroRef} gridColumn={{ sm: 'span 2' }} placeholder="Número" aria-label="Número" value={endereco.numero} onChange={set('numero')} {...campo} />
             <Input gridColumn={{ sm: 'span 3' }} placeholder="Complemento (opcional)" aria-label="Complemento" value={endereco.complemento} onChange={set('complemento')} {...campo} />
             <Input gridColumn={{ sm: 'span 3' }} placeholder="Bairro (opcional)" aria-label="Bairro" value={endereco.bairro} onChange={set('bairro')} {...campo} />
             <Input gridColumn={{ sm: 'span 4' }} placeholder="Cidade" aria-label="Cidade" value={endereco.cidade} onChange={set('cidade')} {...campo} />

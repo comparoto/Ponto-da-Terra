@@ -164,7 +164,7 @@ export default function CadastroPage() {
           {role === 'artesao' && (
             <>
               <Text
-                color="terra.200"
+                color="terra.100"
                 fontWeight="semibold"
                 fontSize="md"
                 mt={2}

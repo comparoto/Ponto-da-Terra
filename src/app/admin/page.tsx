@@ -137,7 +137,7 @@ function ApprovalManager({ onChange }: { onChange: () => void }) {
   return (
     <VStack align="stretch" spacing={4}>
       {(mensagem || erro) && (
-        <Text color="terra.200" role="status">
+        <Text color="terra.100" role="status">
           {mensagem || erro}
         </Text>
       )}
@@ -280,7 +280,7 @@ function CadastrosPendentes({ onChange }: { onChange: () => void }) {
     <VStack align="stretch" spacing={3} mb={6}>
       <Heading size="md">Novos artesãos aguardando aprovação ({cadastros?.length ?? 0})</Heading>
       {mensagem && (
-        <Text color="terra.200" role="status">
+        <Text color="terra.100" role="status">
           {mensagem}
         </Text>
       )}
