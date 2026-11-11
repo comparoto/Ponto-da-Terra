@@ -152,9 +152,10 @@ describe('HU12 · Fila: outbox → relay → worker', () => {
     const notificacoes = await prisma.notificacaoLog.findMany({ where: { eventoId: evento.id } });
     expect(notificacoes).toHaveLength(1);
     expect(notificacoes[0]).toMatchObject({ tipoEvento: 'NOVO_PEDIDO', enviadoComSucesso: true, tentativas: 1, pedidoId });
-    expect(emails.filter(e => e.eventoId === evento.id)).toEqual([
-      { para: 'artesao@pontodaterra.com', assunto: 'Você recebeu um novo pedido', eventoId: evento.id },
-    ]);
+    const enviados = emails.filter(e => e.eventoId === evento.id);
+    expect(enviados).toHaveLength(1);
+    expect(enviados[0]).toMatchObject({ para: 'artesao@pontodaterra.com', assunto: 'Você recebeu um novo pedido', eventoId: evento.id });
+    expect(enviados[0].botao?.url).toMatch(/\/artesao$/);
 
     // A notificação aparece no painel do artesão
     const artesao = (await login('artesao')).token;

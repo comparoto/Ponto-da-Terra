@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { StatusCadastroArtesao, StatusUsuario, TipoUsuario } from '@prisma/client';
+import { StatusCadastroArtesao, StatusUsuario, TipoEvento, TipoUsuario } from '@prisma/client';
+import { registrarEvento } from '../../shared/eventos';
 import { prisma } from '../../config/prisma';
 import { documentar } from '../../docs/registry';
 import { ok } from '../../shared/api-result';
@@ -169,7 +170,12 @@ artesaosRoutes.post('/artesao/perfil/fotos', ...somente(TipoUsuario.ARTESAO), va
   const artesaoId = artesaoIdDe(req);
   const url = await salvarImagem(req.file, 'foto', 'artesaos');
   const campo = req.valid!.query.tipo === 'atelie' ? 'fotoAtelieUrl' : 'fotoPerfilUrl';
-  const artesao = await prisma.artesao.update({ where: { id: artesaoId }, data: { [campo]: url }, include: incluirArtesaoComNome });
+  const artesao = await prisma.$transaction(async tx => {
+    const atualizado = await tx.artesao.update({ where: { id: artesaoId }, data: { [campo]: url }, include: incluirArtesaoComNome });
+    // A fila gera a versão otimizada da foto (WebP, até 1600 px, sem EXIF)
+    await registrarEvento(tx, TipoEvento.IMAGEM_ENVIADA, { url, pasta: 'artesaos', alvo: { tipo: 'artesao', artesaoId, campo } });
+    return atualizado;
+  });
   await invalidarCatalogo();
   res.status(201).json(ok(artesaoPublico(artesao)));
 });

@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import multer from 'multer';
-import { put } from '@vercel/blob';
+import { del, put } from '@vercel/blob';
 import { env } from '../config/env';
 import { badRequest } from './errors';
 
@@ -37,17 +37,47 @@ export async function salvarImagem(arquivo: Express.Multer.File | undefined, cam
   const formato = detectarFormato(arquivo.buffer);
   if (!formato) throw badRequest(MENSAGEM_FORMATO, [{ campo, mensagem: MENSAGEM_FORMATO }]);
 
-  const nomeArquivo = `${randomUUID()}.${formato.ext}`;
+  return gravarArquivo(pasta, `${randomUUID()}.${formato.ext}`, arquivo.buffer, formato.mime);
+}
 
+/** Grava no Vercel Blob (produção) ou no disco local e devolve a URL pública. */
+export async function gravarArquivo(pasta: string, nomeArquivo: string, conteudo: Buffer, contentType: string): Promise<string> {
   // Vercel: funções serverless não têm disco persistente → Vercel Blob
   if (env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(`${pasta}/${nomeArquivo}`, arquivo.buffer, { access: 'public', contentType: formato.mime, token: env.BLOB_READ_WRITE_TOKEN });
+    const blob = await put(`${pasta}/${nomeArquivo}`, conteudo, { access: 'public', contentType, token: env.BLOB_READ_WRITE_TOKEN });
     return blob.url;
   }
-
   const diretorio = resolve(env.UPLOAD_DIR, pasta);
   await mkdir(diretorio, { recursive: true });
-  await writeFile(join(diretorio, nomeArquivo), arquivo.buffer);
-
+  await writeFile(join(diretorio, nomeArquivo), conteudo);
   return `${env.PUBLIC_URL ?? ''}/uploads/${pasta}/${nomeArquivo}`;
+}
+
+/** Caminho no disco de uma URL "/uploads/..." gravada localmente (null se for de outro lugar) */
+function caminhoLocal(url: string): string | null {
+  const i = url.indexOf('/uploads/');
+  if (env.BLOB_READ_WRITE_TOKEN || i < 0) return null;
+  const relativo = url.slice(i + '/uploads/'.length);
+  if (relativo.includes('..')) return null;
+  return resolve(env.UPLOAD_DIR, relativo);
+}
+
+/** Lê um arquivo enviado (do disco local ou baixando a URL pública do Blob). */
+export async function lerArquivo(url: string): Promise<Buffer> {
+  const local = caminhoLocal(url);
+  if (local) return readFile(local);
+  const resposta = await fetch(url);
+  if (!resposta.ok) throw new Error(`Não foi possível baixar ${url}: HTTP ${resposta.status}`);
+  return Buffer.from(await resposta.arrayBuffer());
+}
+
+/** Remove um arquivo enviado. Falhas são ignoradas (no pior caso sobra um arquivo órfão). */
+export async function removerArquivo(url: string): Promise<void> {
+  try {
+    const local = caminhoLocal(url);
+    if (local) await unlink(local);
+    else if (env.BLOB_READ_WRITE_TOKEN && url.includes('.blob.vercel-storage.com')) await del(url, { token: env.BLOB_READ_WRITE_TOKEN });
+  } catch {
+    /* arquivo já removido */
+  }
 }

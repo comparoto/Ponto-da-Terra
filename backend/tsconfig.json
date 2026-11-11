@@ -23,6 +23,7 @@
     "prisma",
     "tests",
     "prisma.config.ts",
-    "api"
+    "api",
+    "scripts"
   ]
 }

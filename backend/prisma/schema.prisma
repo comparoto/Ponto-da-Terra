@@ -84,6 +84,8 @@ enum TipoEvento {
   /// HU8: resultado da aprovação do cadastro do artesão
   CADASTRO_APROVADO
   CADASTRO_REJEITADO
+  /// Foto enviada: a fila gera a versão otimizada (WebP, até 1600 px, sem EXIF)
+  IMAGEM_ENVIADA
 }
 
 // ───────────── Usuários ─────────────
@@ -106,6 +108,20 @@ model Usuario {
   consumidor    Consumidor?
   artesao       Artesao?
   administrador Administrador?
+  tokensSenha   TokenRedefinicaoSenha[]
+}
+
+/// Link de "esqueci minha senha": guarda só o hash do token (o token em si vai apenas no e-mail)
+model TokenRedefinicaoSenha {
+  id        String    @id @default(uuid())
+  usuarioId String
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiraEm  DateTime
+  usadoEm   DateTime?
+  criadoEm  DateTime  @default(now())
+
+  @@index([usuarioId])
 }
 
 model Consumidor {
@@ -249,6 +265,8 @@ model ItemCarrinho {
   produtoId  String
   produto    Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
   quantidade Int
+  /// Ordem em que o comprador colocou as peças na sacola
+  posicao    Int      @default(0)
 
   @@unique([carrinhoId, produtoId])
 }

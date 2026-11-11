@@ -27,6 +27,15 @@ const schema = z.object({
   LOGIN_MAX_TENTATIVAS: z.coerce.number().int().positive().default(10),
   LOGIN_JANELA_MINUTOS: z.coerce.number().int().positive().default(15),
 
+  // ───── E-mail ─────
+  /// SMTP do provedor (ex.: smtp://usuario:senha@sandbox.smtp.mailtrap.io:2525). Vazio: e-mails só vão para o log.
+  SMTP_URL: opcional,
+  EMAIL_REMETENTE: z.string().default('Ponto da Terra <nao-responda@pontodaterra.com.br>'),
+  /// Endereço do site (frontend), usado nos links dos e-mails (redefinir senha, acompanhar pedido...)
+  SITE_URL: z.string().default('http://localhost:3000'),
+  /// Validade do link de redefinição de senha
+  REDEFINIR_SENHA_MINUTOS: z.coerce.number().int().positive().default(60),
+
   // ───── Implantação na Vercel (todas opcionais; sem elas, roda no modo local: BullMQ + disco) ─────
   /// Upstash QStash: fila serverless. Com QSTASH_TOKEN, a fila deixa de usar o worker BullMQ.
   QSTASH_TOKEN: opcional,

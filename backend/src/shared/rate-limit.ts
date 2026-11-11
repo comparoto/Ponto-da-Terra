@@ -1,5 +1,5 @@
 import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
-import { env } from '../config/env';
+import { env, isTest } from '../config/env';
 import { fail } from './api-result';
 
 /**
@@ -12,6 +12,18 @@ import { fail } from './api-result';
  * Armazenamento em memória: suficiente para uma instância. Com várias instâncias da API,
  * troque por um store compartilhado no Redis (ex.: rate-limit-redis).
  */
+/** "Esqueci minha senha" e redefinição: 5 pedidos a cada 15 minutos por IP (evita spam de e-mails e adivinhação de links). */
+export const limitarPedidosDeSenha = rateLimit({
+  windowMs: 15 * 60_000,
+  limit: isTest ? 1000 : 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  keyGenerator: req => ipKeyGenerator(req.ip ?? ''),
+  handler: (_req, res) => {
+    res.status(429).json(fail('Muitos pedidos de redefinição de senha. Aguarde 15 minutos e tente novamente.'));
+  },
+});
+
 export const limitarTentativasDeLogin = rateLimit({
   windowMs: env.LOGIN_JANELA_MINUTOS * 60_000,
   limit: env.LOGIN_MAX_TENTATIVAS,

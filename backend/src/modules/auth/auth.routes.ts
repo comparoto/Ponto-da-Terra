@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { documentar } from '../../docs/registry';
 import { ok } from '../../shared/api-result';
 import { autenticar } from '../../shared/auth';
-import { limitarTentativasDeLogin } from '../../shared/rate-limit';
+import { limitarPedidosDeSenha, limitarTentativasDeLogin } from '../../shared/rate-limit';
 import { validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
-import { atualizarMeBody, cadastroBody, loginBody, perfilUsuario, sessao } from './auth.schemas';
+import { alterarSenhaBody, atualizarMeBody, cadastroBody, esqueciSenhaBody, loginBody, perfilUsuario, redefinirSenhaBody, sessao } from './auth.schemas';
 import { authService } from './auth.service';
 
 export const authRoutes = Router();
@@ -32,7 +32,7 @@ documentar({
   request: { body: { content: { 'application/json': { schema: loginBody } } } },
   description: 'Após 10 tentativas erradas em 15 minutos (mesmo IP e e-mail), responde 429 até a janela expirar.',
   sucesso: { status: 200, descricao: 'Autenticado', data: sessao },
-  falhas: [400, 401, 403],
+  falhas: [400, 401, 403, 429],
 });
 authRoutes.post('/auth/login', limitarTentativasDeLogin, validate({ body: loginBody }), async (req, res) => {
   res.json(ok(await authService.login(req.valid!.body)));
@@ -77,6 +77,51 @@ documentar({
 });
 authRoutes.put('/me', autenticar, validate({ body: atualizarMeBody }), async (req, res) => {
   res.json(ok(await authService.atualizar(req.user!.id, req.valid!.body)));
+});
+
+documentar({
+  method: 'put',
+  path: '/api/me/senha',
+  tags: ['Autenticação'],
+  summary: 'Troca a senha (exige a senha atual)',
+  description: 'Encerra as outras sessões e devolve um token novo para este aparelho. Envia um e-mail avisando da troca.',
+  autenticado: true,
+  request: { body: { content: { 'application/json': { schema: alterarSenhaBody } } } },
+  sucesso: { status: 200, descricao: 'Senha alterada', data: sessao },
+  falhas: [400, 401],
+});
+authRoutes.put('/me/senha', autenticar, validate({ body: alterarSenhaBody }), async (req, res) => {
+  res.json(ok(await authService.alterarSenha(req.user!.id, req.valid!.body)));
+});
+
+documentar({
+  method: 'post',
+  path: '/api/auth/esqueci-senha',
+  tags: ['Autenticação'],
+  summary: 'Envia por e-mail um link para criar uma nova senha',
+  description: 'Sempre responde 200, exista ou não a conta (não revela e-mails cadastrados). Limite de 5 pedidos a cada 15 minutos por IP.',
+  request: { body: { content: { 'application/json': { schema: esqueciSenhaBody } } } },
+  sucesso: { status: 200, descricao: 'Pedido registrado', data: z.object({ mensagem: z.string() }) },
+  falhas: [400, 429],
+});
+authRoutes.post('/auth/esqueci-senha', limitarPedidosDeSenha, validate({ body: esqueciSenhaBody }), async (req, res) => {
+  await authService.esqueciSenha(req.valid!.body);
+  res.json(ok({ mensagem: 'Se houver uma conta com esse e-mail, enviamos um link para criar uma nova senha.' }));
+});
+
+documentar({
+  method: 'post',
+  path: '/api/auth/redefinir-senha',
+  tags: ['Autenticação'],
+  summary: 'Cria a nova senha com o link recebido por e-mail',
+  description: 'O link vale por 60 minutos e só pode ser usado uma vez. Todas as sessões abertas são encerradas.',
+  request: { body: { content: { 'application/json': { schema: redefinirSenhaBody } } } },
+  sucesso: { status: 200, descricao: 'Senha redefinida', data: z.null() },
+  falhas: [400, 429],
+});
+authRoutes.post('/auth/redefinir-senha', limitarPedidosDeSenha, validate({ body: redefinirSenhaBody }), async (req, res) => {
+  await authService.redefinirSenha(req.valid!.body);
+  res.json(ok(null));
 });
 
 documentar({

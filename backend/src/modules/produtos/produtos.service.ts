@@ -1,4 +1,5 @@
-import { Prisma, StatusCadastroArtesao, StatusProduto, StatusUsuario, TipoUsuario } from '@prisma/client';
+import { Prisma, StatusCadastroArtesao, StatusProduto, StatusUsuario, TipoEvento, TipoUsuario } from '@prisma/client';
+import { registrarEvento } from '../../shared/eventos';
 import { prisma } from '../../config/prisma';
 import { comCache, invalidarCatalogo } from '../../shared/cache';
 import { badRequest, conflict, forbidden, notFound } from '../../shared/errors';
@@ -153,15 +154,20 @@ export const produtosService = {
   /** Adiciona uma foto à peça; com `substituir`, ela passa a ser a única foto (troca da foto principal). */
   async adicionarImagem(artesaoId: string, id: string, url: string, substituir = false) {
     const atual = await produtoDoArtesao(artesaoId, id);
-    const produto = await prisma.produto.update({
-      where: { id },
-      // Fotos fazem parte da curadoria (TC04: "falta nitidez nas fotos") → volta para PENDENTE
-      data: {
-        imagensUrls: substituir ? { set: [url] } : { push: url },
-        status: StatusProduto.PENDENTE,
-        justificativaCuradoria: null,
-      },
-      include: incluirProduto,
+    const produto = await prisma.$transaction(async tx => {
+      const atualizado = await tx.produto.update({
+        where: { id },
+        // Fotos fazem parte da curadoria (TC04: "falta nitidez nas fotos") → volta para PENDENTE
+        data: {
+          imagensUrls: substituir ? { set: [url] } : { push: url },
+          status: StatusProduto.PENDENTE,
+          justificativaCuradoria: null,
+        },
+        include: incluirProduto,
+      });
+      // A fila gera a versão otimizada da foto (WebP, até 1600 px, sem EXIF)
+      await registrarEvento(tx, TipoEvento.IMAGEM_ENVIADA, { url, pasta: 'produtos', alvo: { tipo: 'produto', produtoId: id } });
+      return atualizado;
     });
     if (atual.status === StatusProduto.ATIVO) await invalidarCatalogo();
     return produtoGestao(produto);

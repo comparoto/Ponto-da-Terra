@@ -226,3 +226,18 @@ export async function atualizarSessaoDoServidor(): Promise<Sessao | null> {
   if (JSON.stringify(nova) !== JSON.stringify(atual)) salvarSessao(nova);
   return nova;
 }
+
+/** Troca a senha de quem está logado; o servidor devolve um token novo (as outras sessões caem). */
+export async function alterarSenha(senhaAtual: string, novaSenha: string): Promise<ApiResult<null>> {
+  const res = await request<{ token: string; usuario: PerfilApi }>('/me/senha', { method: 'PUT', body: { senhaAtual, novaSenha } });
+  if (!res.success || !res.data) return { ...res, data: null };
+  const atual = readSession();
+  if (atual) salvarSessao({ ...atual, token: res.data.token });
+  return { success: true, data: null, error: null };
+}
+
+/** "Esqueci minha senha": o servidor envia o link por e-mail (a resposta é a mesma exista ou não a conta). */
+export const pedirLinkDeSenha = (email: string) => request<{ mensagem: string }>('/auth/esqueci-senha', { method: 'POST', body: { email } });
+
+/** Cria a nova senha com o token do link recebido por e-mail. */
+export const redefinirSenha = (token: string, novaSenha: string) => request<null>('/auth/redefinir-senha', { method: 'POST', body: { token, novaSenha } });

@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import React, { useState } from 'react';
-import {Flex,HStack,Text,Input,InputGroup,InputLeftElement,Image,Icon,IconButton,Badge,Button,Menu,MenuButton,MenuList,MenuItem,Box,useDisclosure, type IconProps } from '@chakra-ui/react';
+import {Flex,HStack,Text,Input,InputGroup,InputLeftElement,Image,Icon,IconButton,Badge,Button,Menu,MenuButton,MenuList,MenuItem,Box,useDisclosure,Drawer,DrawerBody,DrawerCloseButton,DrawerContent,DrawerHeader,DrawerOverlay,VStack, type IconProps } from '@chakra-ui/react';
 import { ContatoModal } from './ContatoModal';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/store/cartStore';
@@ -24,12 +24,28 @@ const ShoppingBagIcon = (props: IconProps) => (
   </Icon>
 );
 
+const MenuIcon = (props: IconProps) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
+    <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
+  </Icon>
+);
+
 export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () => void; onLogoClick?: () => void }) {
   const router = useRouter();
   const { totalItens, abrirCarrinho, limparCarrinho } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const account = useSession();
   const contato = useDisclosure();
+  const menuCelular = useDisclosure();
+  // Links principais: na barra (tablet/computador) e na gaveta do menu (celular)
+  const links: { rotulo: string; acao: () => void }[] = [
+    { rotulo: 'Home', acao: () => router.push('/home') },
+    { rotulo: 'Vitrine', acao: () => router.push('/vitrine') },
+    { rotulo: 'Peças & Catálogo', acao: () => router.push('/produtos') },
+    { rotulo: 'Artesãos', acao: () => (onArtisansClick ? onArtisansClick() : router.push('/vitrine#artistas')) },
+    { rotulo: 'Para artesãos', acao: () => router.push('/orientacao') },
+    { rotulo: 'Contato', acao: contato.onOpen },
+  ];
   // Contador de notificações não lidas (recarrega quando a sessão muda ou uma notificação é lida)
   const naoLidas = useCarregar(() => (account ? notificacaoService.naoLidas() : Promise.resolve({ success: true, data: [], error: null })), [account?.token]);
   const totalNaoLidas = account ? (naoLidas.meta?.totalItems ?? 0) : 0;
@@ -62,6 +78,16 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
         borderBottom="1px solid"
         borderColor="whiteAlpha.100"
       >
+        <IconButton
+          aria-label="Abrir menu"
+          icon={<MenuIcon boxSize={6} />}
+          display={{ base: 'flex', md: 'none' }}
+          variant="ghost"
+          color="white"
+          _hover={{ bg: 'whiteAlpha.200' }}
+          mr={2}
+          onClick={menuCelular.onOpen}
+        />
         <Flex
           align="center"
           cursor="pointer"
@@ -73,57 +99,11 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
         </Flex>
 
         <HStack spacing={{ base: 4, lg: 8 }} fontSize="md" display={{ base: 'none', md: 'flex' }}>
-          <Text
-            cursor="pointer"
-            transition="color 0.2s"
-            _hover={{ color: 'terra.500' }}
-            onClick={() => router.push('/home')}
-          >
-            Home
-          </Text>
-          <Text
-            cursor="pointer"
-            transition="color 0.2s"
-            _hover={{ color: 'terra.500' }}
-            onClick={() => router.push('/vitrine')}
-          >
-            Vitrine
-          </Text>
-          <Text
-            cursor="pointer"
-            transition="color 0.2s"
-            _hover={{ color: 'terra.500' }}
-            onClick={() => router.push('/produtos')}
-          >
-            Peças & Catálogo
-          </Text>
-          <Text
-            cursor="pointer"
-            transition="color 0.2s"
-            _hover={{ color: 'terra.500' }}
-            onClick={() => {
-              if (onArtisansClick) onArtisansClick();
-              else router.push('/vitrine#artistas');
-            }}
-          >
-            Artesãos
-          </Text>
-          <Text
-            cursor="pointer"
-            transition="color 0.2s"
-            _hover={{ color: 'terra.500' }}
-            onClick={() => router.push('/orientacao')}
-          >
-            Para artesãos
-          </Text>
-          <Text
-            cursor="pointer"
-            transition="color 0.2s"
-            _hover={{ color: 'terra.500' }}
-            onClick={contato.onOpen}
-          >
-            Contato
-          </Text>
+          {links.map(l => (
+            <Text key={l.rotulo} as="button" type="button" cursor="pointer" transition="color 0.2s" _hover={{ color: 'terra.500' }} onClick={l.acao}>
+              {l.rotulo}
+            </Text>
+          ))}
         </HStack>
 
         <InputGroup w={{ base: '160px', sm: '220px', md: '260px' }} size="md">
@@ -222,6 +202,36 @@ export function Navbar({ onArtisansClick, onLogoClick }: { onArtisansClick?: () 
 
       {(!account || account.role === 'comprador') && <CartDrawer />}
       <ContatoModal isOpen={contato.isOpen} onClose={contato.onClose} />
+      <Drawer isOpen={menuCelular.isOpen} onClose={menuCelular.onClose} placement="left">
+        <DrawerOverlay bg="blackAlpha.700" />
+        <DrawerContent bg="#1F1B19" color="white">
+          <DrawerCloseButton />
+          <DrawerHeader borderBottom="1px solid" borderColor="whiteAlpha.200">
+            <Image src="/logo.png" alt="Ponto da Terra" h="36px" objectFit="contain" />
+          </DrawerHeader>
+          <DrawerBody py={4}>
+            <VStack align="stretch" spacing={1}>
+              {links.map(l => (
+                <Button
+                  key={l.rotulo}
+                  variant="ghost"
+                  justifyContent="flex-start"
+                  color="white"
+                  fontWeight="normal"
+                  size="lg"
+                  _hover={{ bg: 'whiteAlpha.100', color: 'terra.500' }}
+                  onClick={() => {
+                    menuCelular.onClose();
+                    l.acao();
+                  }}
+                >
+                  {l.rotulo}
+                </Button>
+              ))}
+            </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

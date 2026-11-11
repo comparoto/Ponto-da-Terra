@@ -144,6 +144,10 @@ function LoginContent() {
             Entrar
           </Button>
           
+          <Link href="/esqueci-senha" color="whiteAlpha.800" fontSize="sm" textAlign="center" textDecoration="underline">
+            Esqueci minha senha
+          </Link>
+
           <Flex justify="space-between" mt={4} pt={4} borderTop="1px solid" borderColor="whiteAlpha.200">
             <Link href="/cadastro" color="terra.500" fontWeight="bold">Criar conta</Link>
             <Link href="/vitrine" color="whiteAlpha.700" fontSize="sm">Continuar como visitante</Link>

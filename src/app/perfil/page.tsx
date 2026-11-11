@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AlterarSenha } from '@/components/AlterarSenha';
 import { Avatar, Box, Button, Divider, Flex, Heading, HStack, Image, Input, Select, Stack, Text, Textarea, VStack } from '@chakra-ui/react';
 import { deleteAccount, Sessao, updateAccountProfile, uploadArtisanPhoto } from '@/services/authService';
 import { useHidratado, useSession } from '@/hooks/useSession';
@@ -224,6 +225,9 @@ function PerfilForm({ inicial }: { inicial: Sessao }) {
               <Button variant="outline" color="red.200" borderColor="red.400" _hover={{ bg: 'red.700', color: 'white' }} onClick={removeProfile}>Excluir conta</Button>
             )}
           </Flex>
+
+          <Divider borderColor="whiteAlpha.200" my={2} />
+          <AlterarSenha />
 
           <Divider borderColor="whiteAlpha.200" my={2} />
           <Flex gap={3} wrap="wrap" justify="flex-start">

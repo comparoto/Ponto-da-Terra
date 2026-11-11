@@ -22,6 +22,7 @@
     "test:cobertura": "jest --runInBand --coverage",
     "test:carga": "k6 run tests/carga/checkout-concorrente.k6.js",
     "test:carga:vitrine": "k6 run tests/carga/vitrine-cache.k6.js",
+    "limpar:testes": "tsx scripts/limpar-dados-teste.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -41,7 +42,9 @@
     "jsonwebtoken": "9.0.3",
     "morgan": "1.12.1",
     "multer": "2.5.0",
+    "nodemailer": "10.2.1",
     "qrcode": "1.5.4",
+    "sharp": "0.35.5",
     "zod": "3.25.76"
   },
   "devDependencies": {
@@ -52,6 +55,7 @@
     "@types/morgan": "1.9.10",
     "@types/multer": "2.3.0",
     "@types/node": "26.6.6",
+    "@types/nodemailer": "8.0.2",
     "@types/qrcode": "1.5.6",
     "@types/supertest": "7.2.1",
     "dotenv-cli": "11.1.0",

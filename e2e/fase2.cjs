@@ -181,6 +181,10 @@ const sair = page => page.evaluate(() => localStorage.removeItem('ponto_da_terra
   // e é reprovada, para não ficar na fila de curadoria do admin.
   await chamar(`/produtos/${peca.data.id}`, { token: artesao, method: 'PUT', body: { descricao: 'Peça criada pelo teste E2E.' } });
   await chamar(`/admin/produtos/${peca.data.id}/reprovar`, { token: admin, method: 'POST', body: { justificativa: 'Peça criada por teste automatizado (E2E).' } });
+  // O comprador de teste tem compras (não pode ser excluído pela API): fica inativo.
+  // Para apagar de vez as compras e contas de teste do banco: cd backend && npm run limpar:testes -- --apagar
+  const compradorTeste = (await chamar(`/admin/usuarios?busca=${encodeURIComponent(emailComprador)}`, { token: admin })).data?.[0];
+  if (compradorTeste) await chamar(`/admin/usuarios/${compradorTeste.id}/inativar`, { token: admin, method: 'POST', body: { motivo: 'Conta criada por teste automatizado (E2E)' } });
 
   const falhas = resultados.filter(r => !r.ok).length;
   console.log(`\n${resultados.length - falhas}/${resultados.length} verificações passaram`);

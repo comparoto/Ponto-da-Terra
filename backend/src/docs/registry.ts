@@ -33,6 +33,7 @@ export const erros = {
   403: respostaErro('Perfil sem permissão ou recurso de outro usuário'),
   404: respostaErro('Recurso não encontrado'),
   409: respostaErro('Conflito (ex.: e-mail já cadastrado)'),
+  429: respostaErro('Muitas tentativas: aguarde e tente de novo'),
 };
 
 type Doc = Omit<RouteConfig, 'responses'> & {

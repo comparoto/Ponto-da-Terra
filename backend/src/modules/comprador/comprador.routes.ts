@@ -90,7 +90,7 @@ const carrinhoResposta = z.object({ itens: z.array(z.object({ produto: produtoRe
 async function lerCarrinho(consumidorId: string) {
   const carrinho = await prisma.carrinho.findUnique({
     where: { consumidorId },
-    include: { itens: { include: { produto: { include: incluirProduto } }, orderBy: { id: 'asc' } } },
+    include: { itens: { include: { produto: { include: incluirProduto } }, orderBy: { posicao: 'asc' } } },
   });
   const visiveis = new Set(
     (await prisma.produto.findMany({ where: { id: { in: carrinho?.itens.map(i => i.produtoId) ?? [] }, ...visivelNaVitrine }, select: { id: true } })).map(p => p.id),
@@ -140,8 +140,10 @@ compradorRoutes.put('/carrinho', ...somente(TipoUsuario.CONSUMIDOR), validate({ 
   await prisma.$transaction(async tx => {
     const carrinho = await tx.carrinho.upsert({ where: { consumidorId }, create: { consumidorId }, update: {} });
     await tx.itemCarrinho.deleteMany({ where: { carrinhoId: carrinho.id } });
+    // Mantém a ordem enviada pelo comprador (a consulta ao banco devolve em qualquer ordem)
+    const ordem = [...quantidades.keys()];
     const itens = validos
-      .map(p => ({ carrinhoId: carrinho.id, produtoId: p.id, quantidade: Math.min(quantidades.get(p.id)!, p.estoque?.quantidadeDisponivel ?? 0) }))
+      .map(p => ({ carrinhoId: carrinho.id, produtoId: p.id, quantidade: Math.min(quantidades.get(p.id)!, p.estoque?.quantidadeDisponivel ?? 0), posicao: ordem.indexOf(p.id) }))
       .filter(i => i.quantidade > 0);
     if (itens.length) await tx.itemCarrinho.createMany({ data: itens });
     await tx.carrinho.update({ where: { id: carrinho.id }, data: { atualizadoEm: new Date() } });

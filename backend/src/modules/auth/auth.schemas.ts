@@ -63,3 +63,14 @@ export const perfilUsuario = z
   .openapi('PerfilUsuario');
 
 export const sessao = z.object({ token: z.string(), usuario: perfilUsuario }).openapi('Sessao');
+
+const novaSenha = z.string().min(6, 'A senha deve ter no mínimo 6 caracteres').max(72).openapi({ example: 'novaSenha123' });
+
+export const alterarSenhaBody = z
+  .object({ senhaAtual: z.string().min(1, 'Informe a senha atual'), novaSenha })
+  .refine(d => d.senhaAtual !== d.novaSenha, { path: ['novaSenha'], message: 'A nova senha deve ser diferente da atual' })
+  .openapi('AlterarSenha');
+
+export const esqueciSenhaBody = z.object({ email }).openapi('EsqueciSenha');
+
+export const redefinirSenhaBody = z.object({ token: z.string().min(20, 'Link inválido'), novaSenha }).openapi('RedefinirSenha');
