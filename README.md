@@ -210,7 +210,7 @@ A aplicação ficará disponível em `http://localhost:3000`. Se a API estiver e
 
 ### 6. Testes
 ```bash
-cd backend && npm test        # 123 testes de API (Jest), inclusive concorrência do checkout
+cd backend && npm test        # 133 testes de API (Jest), inclusive concorrência do checkout
 cd e2e && npm install && npm test   # segurança, fluxos, responsividade e acessibilidade (requer passos 3 a 5)
 ```
 Resultados da última execução: [`RELATORIO_TESTES.md`](RELATORIO_TESTES.md).
