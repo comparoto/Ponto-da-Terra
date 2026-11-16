@@ -225,8 +225,8 @@ Esta intervenção foi feita com o apoio do **Claude Code** (IA da Anthropic).
 |---|---|
 | Revisão do código e identificação do smell | IA, com a revisão do integrante |
 | Testes de caracterização, refatoração e este relatório | IA |
-| Execução dos testes, conferência do antes e depois, commit | _(nome do integrante)_ |
-| Apresentação e defesa das decisões | _(nome do integrante)_ |
+| Execução dos testes, conferência do antes e depois, commit | Pedro Henrique da Silva Marrocos |
+| Apresentação e defesa das decisões | Pedro Henrique da Silva Marrocos |
 
 ---
 
