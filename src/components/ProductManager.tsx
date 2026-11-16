@@ -4,60 +4,47 @@ import { Box, Button, Flex, Heading, HStack, Input, Image, Select, SimpleGrid, T
 import { Peca } from '@/types';
 import { produtoService } from '@/services/produtoService';
 import { readSession } from '@/services/demoAuth';
+import { useProductForm } from '@/hooks/useProductForm';
 
 const field = { bg: 'whiteAlpha.100', borderColor: 'whiteAlpha.300', color: 'white' };
 
 export function ProductManager({ artisanOnly = false }: { artisanOnly?: boolean }) {
- const session = readSession();
- const artisanId = session?.artisanId || '1';
- const defaultImage = 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=600&q=80';
- const [products, setProducts] = useState<Peca[]>([]);
- const [name, setName] = useState('');
- const [price, setPrice] = useState('');
- const [category, setCategory] = useState('Cerâmica & Barro');
- const [imageUrl, setImageUrl] = useState(defaultImage);
- const [message, setMessage] = useState('');
- const [editingId, setEditingId] = useState<string | null>(null);
- 
- const refresh = () => produtoService.getProdutos().then(setProducts);
- useEffect(() => { void refresh(); }, []);
- 
- const list = artisanOnly 
-  ? products.filter(p => p.artesaoId === artisanId) 
-  : products.filter(p => (p as any).status !== 'pendente'); 
+  const session = readSession();
+  const artisanId = session?.artisanId || '1';
+  const [products, setProducts] = useState<Peca[]>([]);
 
- function selectImage(file?: File) {
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { setMessage('Escolha um arquivo de imagem.'); return; }
-  if (file.size > 1_500_000) { setMessage('A imagem deve ter no máximo 1,5 MB.'); return; }
-  const reader = new FileReader();
-  reader.onload = () => {
-   if (typeof reader.result === 'string') { setImageUrl(reader.result); setMessage('Imagem pronta para salvar.'); }
-  };
-  reader.onerror = () => setMessage('Não foi possível abrir essa imagem. Tente outro arquivo.');
-  reader.readAsDataURL(file);
- }
+  const refresh = () => produtoService.getProdutos().then(setProducts);
+  useEffect(() => { void refresh(); }, []);
 
- function add() {
-  if (!name.trim() || Number(price) <= 0) { setMessage('Informe o nome da peça e um preço maior que zero.'); return; }
-  const existing = products.find(p => p.id === editingId);
-  produtoService.salvarProduto({
-   id: editingId || `demo-${Date.now()}`,
-   nome: name.trim(),
-   preco: Number(price),
-   categoria: category,
-   artesaoId: artisanOnly ? artisanId : existing?.artesaoId || artisanId,
-   artesaoNome: artisanOnly ? session?.name || 'Artesão Demonstração' : existing?.artesaoNome || 'Artesão Demonstração',
-   artesaoCidade: existing?.artesaoCidade || 'Caruaru - PE',
-   imagemUrl: imageUrl,
-   descricao: existing?.descricao || 'Peça cadastrada no painel de demonstração.',
-   emEstoque: true,
-   status: existing ? (existing as any).status : 'pendente' 
-  } as any); 
-  
-  setEditingId(null); setName(''); setPrice(''); setCategory('Cerâmica & Barro'); setImageUrl(defaultImage);
-  setMessage('Peça enviada para aprovação do administrador!'); void refresh();
- }
+  const {
+    defaultImage,
+    name,
+    setName,
+    price,
+    setPrice,
+    category,
+    setCategory,
+    imageUrl,
+    setImageUrl,
+    message,
+    setMessage,
+    editingId,
+    setEditingId,
+    selectImage,
+    add,
+  } = useProductForm({
+    products,
+    artisanOnly,
+    artisanId,
+    sessionName: session?.name,
+    onSaved: () => {
+      void refresh();
+    },
+  });
+
+  const list = artisanOnly
+    ? products.filter(p => p.artesaoId === artisanId)
+    : products.filter(p => (p as any).status !== 'pendente');
 
  function remove(id: string) { produtoService.excluirProduto(id); void refresh(); }
 
