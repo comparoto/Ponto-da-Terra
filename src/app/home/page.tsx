@@ -1,20 +1,43 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Box, Button, Flex, Heading, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, SimpleGrid, Spinner, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { Navbar } from '@/components/Navbar';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductModal } from '@/components/ProductModal';
 import { produtoService } from '@/services/produtoService';
 import type { Peca } from '@/types';
 import { DESTAQUES } from '@/data';
+import { lerHistoricoVisualizacao, observarHistorico, recomendarPecas } from '@/services/recomendacaoService';
+import { useFavoritos } from '@/store/favoritosStore';
 
 export default function HomePage() {
   const router = useRouter();
-  const [destaques, setDestaques] = useState<Peca[] | null>(null);
+  const [catalogo, setCatalogo] = useState<Peca[] | null>(null);
+  const destaques = catalogo?.slice(0, 4) ?? null;
+  const [historicoIds, setHistoricoIds] = useState<string[]>(() => lerHistoricoVisualizacao());
+  const [pecaSelecionada, setPecaSelecionada] = useState<Peca | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const favoritos = useFavoritos();
 
   useEffect(() => {
-    void produtoService.getProdutos().then(res => setDestaques(res.success ? (res.data ?? []).slice(0, 4) : []));
+    void produtoService.getProdutos().then(res => setCatalogo(res.success ? (res.data ?? []) : []));
   }, []);
+
+  useEffect(() => {
+    return observarHistorico(() => setHistoricoIds(lerHistoricoVisualizacao()));
+  }, []);
+
+  const recomendadas = useMemo(() => {
+    if (!catalogo) return [];
+    const favoritosIds = catalogo.filter(peca => favoritos.ehFavorito(peca.id)).map(peca => peca.id);
+    return recomendarPecas(catalogo, historicoIds, favoritosIds, destaques?.map(peca => peca.id) ?? []);
+  }, [catalogo, destaques, favoritos, historicoIds]);
+
+  const abrirDetalhe = (peca: Peca) => {
+    setPecaSelecionada(peca);
+    onOpen();
+  };
 
   return (
     <Box
@@ -64,6 +87,18 @@ export default function HomePage() {
           <Text color="#E8DFD7">Não foi possível carregar as peças agora. Tente novamente em instantes.</Text>
         )}
       </Box>
+      {destaques?.length && recomendadas.length > 0 && (
+        <Box maxW="1200px" mx="auto" w="100%" px={{ base: 4, md: 8 }} pb={16}>
+          <Flex justify="space-between" align="center" gap={4} mb={6} wrap="wrap">
+            <Heading size="lg">Feitas para você</Heading>
+            <Button variant="outline" color="white" onClick={() => router.push('/produtos')}>Explorar catálogo</Button>
+          </Flex>
+          <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
+            {recomendadas.map(peca => <ProductCard key={peca.id} peca={peca} onSelect={abrirDetalhe} />)}
+          </SimpleGrid>
+        </Box>
+      )}
+      <ProductModal peca={pecaSelecionada} isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 }

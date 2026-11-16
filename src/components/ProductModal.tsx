@@ -11,6 +11,7 @@ import NextLink from 'next/link';
 import { BotaoFavorito } from '@/components/BotaoFavorito';
 import { mensagemDeErro } from '@/services/http';
 import { avaliacaoService, mensagemService, type ResumoAvaliacoes } from '@/services/interacaoService';
+import { registrarVisualizacao } from '@/services/recomendacaoService';
 
 interface ProductModalProps {
   peca: Peca | null;
@@ -114,6 +115,11 @@ export function ProductModal({ peca, isOpen, onClose }: ProductModalProps) {
   const { adicionarAoCarrinho, quantidadeNoCarrinho } = useCart();
   const session = useSession();
   const canBuy = !session || session.role === 'comprador';
+  const produtoId = peca?.id;
+  useEffect(() => {
+    if (isOpen && produtoId) registrarVisualizacao(produtoId);
+  }, [isOpen, produtoId]);
+
   // Ao trocar de peça, a quantidade volta para 1 (ajuste de estado durante a renderização, sem efeito)
   const [pecaAtualId, setPecaAtualId] = useState(peca?.id);
   if (peca?.id !== pecaAtualId) {
