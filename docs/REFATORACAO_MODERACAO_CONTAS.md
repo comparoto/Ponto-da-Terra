@@ -166,7 +166,22 @@ adminExtrasRoutes.post('/admin/usuarios/:id/suspender', ...somente(ADMIN), valid
 
 ---
 
-## 6. Roteiro para a apresentação (3 a 5 minutos)
+## 6. Declaração de uso de IA
+
+Esta intervenção foi feita com o apoio do **Claude Code** (IA da Anthropic), com o uso autorizado pelo professor da disciplina.
+
+| | Quem fez |
+|---|---|
+| Revisão do código e identificação dos smells | IA, com a revisão do integrante |
+| Testes de caracterização, refatoração e este relatório | IA |
+| Leitura, entendimento e validação do resultado (rodar os testes, conferir o antes e o depois) | Paulo Marrocos |
+| Apresentação e defesa das decisões | Paulo Marrocos |
+
+A co-autoria também está declarada no commit `1668508`, na linha `Co-Authored-By` ao final da mensagem.
+
+---
+
+## 7. Roteiro para a apresentação (3 a 5 minutos)
 
 1. **Smell:** abrir `git show 4dc33a5:backend/src/modules/admin/usuarios.routes.ts` e mostrar `suspender` (linhas 77–92) ao lado de `inativar` (144–157). Mostrar que só mudam o status e as mensagens.
 2. **Impacto:** o exemplo do "bloquear também contas com pedido em andamento": hoje teria que ser feito em dois lugares.
