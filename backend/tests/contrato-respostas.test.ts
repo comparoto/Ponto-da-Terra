@@ -137,7 +137,8 @@ describe('Contrato · compra, pagamento, pedidos, avaliação e mensagens', () =
     const c2 = await checkout(comprador.token, [{ produtoId: peca.id, quantidade: 1 }]);
     const boleto = await pagar(comprador.token, c2.body.data.codigo, { metodo: 'BOLETO' });
     conferir(compraResposta, boleto.body.data, 'POST /compras/:codigo/pagamento (boleto)');
-    const pdf = await api().get(new URL(boleto.body.data.pagamento.boletoUrl).pathname);
+    // A URL é absoluta quando PUBLIC_URL está definida e relativa quando não está (como no CI)
+    const pdf = await api().get(new URL(boleto.body.data.pagamento.boletoUrl, 'http://localhost').pathname);
     expect(pdf.status).toBe(200);
     expect(pdf.headers['content-type']).toMatch(/application\/pdf/);
 
