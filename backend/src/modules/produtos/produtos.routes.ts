@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { TipoUsuario } from '@prisma/client';
 import { documentar } from '../../docs/registry';
+import { arquivoBinario } from '../../docs/respostas';
 import { ok } from '../../shared/api-result';
 import { artesaoIdDe, somente } from '../../shared/auth';
 import { salvarImagem, uploadImagem } from '../../shared/upload';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import {
   atualizarProdutoBody,
@@ -38,7 +39,7 @@ documentar({
   falhas: [400],
 });
 produtosRoutes.get('/produtos', validate({ query: vitrineQuery }), async (req, res) => {
-  const { itens, meta, cacheHit } = await produtosService.vitrine(req.valid!.query);
+  const { itens, meta, cacheHit } = await produtosService.vitrine(entrada(req, 'query', vitrineQuery));
   res.setHeader('X-Cache', cacheHit ? 'HIT' : 'MISS');
   res.json(ok(itens, meta));
 });
@@ -53,7 +54,7 @@ documentar({
   falhas: [400, 404],
 });
 produtosRoutes.get('/produtos/:id', validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await produtosService.detalhePublico(req.valid!.params.id)));
+  res.json(ok(await produtosService.detalhePublico(entrada(req, 'params', idParam).id)));
 });
 
 documentar({
@@ -80,7 +81,7 @@ documentar({
   falhas: [401, 403],
 });
 produtosRoutes.get('/artesao/produtos', ...somente(TipoUsuario.ARTESAO), validate({ query: meusProdutosQuery }), async (req, res) => {
-  const { itens, meta } = await produtosService.doArtesao(artesaoIdDe(req), req.valid!.query);
+  const { itens, meta } = await produtosService.doArtesao(artesaoIdDe(req), entrada(req, 'query', meusProdutosQuery));
   res.json(ok(itens, meta));
 });
 
@@ -95,7 +96,7 @@ documentar({
   falhas: [401, 403, 404],
 });
 produtosRoutes.get('/artesao/produtos/:id', ...somente(TipoUsuario.ARTESAO, TipoUsuario.ADMIN), validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await produtosService.detalheGestao(req.user!, req.valid!.params.id)));
+  res.json(ok(await produtosService.detalheGestao(req.user!, entrada(req, 'params', idParam).id)));
 });
 
 documentar({
@@ -110,7 +111,7 @@ documentar({
   falhas: [400, 401, 403],
 });
 produtosRoutes.post('/produtos', ...somente(TipoUsuario.ARTESAO), validate({ body: criarProdutoBody }), async (req, res) => {
-  res.status(201).json(ok(await produtosService.criar(artesaoIdDe(req), req.valid!.body)));
+  res.status(201).json(ok(await produtosService.criar(artesaoIdDe(req), entrada(req, 'body', criarProdutoBody))));
 });
 
 documentar({
@@ -124,7 +125,7 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 produtosRoutes.put('/produtos/:id', ...somente(TipoUsuario.ARTESAO), validate({ params: idParam, body: atualizarProdutoBody }), async (req, res) => {
-  res.json(ok(await produtosService.atualizar(artesaoIdDe(req), req.valid!.params.id, req.valid!.body)));
+  res.json(ok(await produtosService.atualizar(artesaoIdDe(req), entrada(req, 'params', idParam).id, entrada(req, 'body', atualizarProdutoBody))));
 });
 
 documentar({
@@ -138,7 +139,7 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 produtosRoutes.patch('/produtos/:id/estoque', ...somente(TipoUsuario.ARTESAO), validate({ params: idParam, body: estoqueBody }), async (req, res) => {
-  res.json(ok(await produtosService.ajustarEstoque(artesaoIdDe(req), req.valid!.params.id, req.valid!.body.quantidade)));
+  res.json(ok(await produtosService.ajustarEstoque(artesaoIdDe(req), entrada(req, 'params', idParam).id, entrada(req, 'body', estoqueBody).quantidade)));
 });
 
 documentar({
@@ -151,7 +152,7 @@ documentar({
   request: {
     params: idParam,
     query: imagemQuery,
-    body: { content: { 'multipart/form-data': { schema: z.object({ imagem: z.any().openapi({ type: 'string', format: 'binary' }) }) } } },
+    body: { content: { 'multipart/form-data': { schema: z.object({ imagem: arquivoBinario }) } } },
   },
   sucesso: { status: 201, descricao: 'Foto adicionada (peça volta para PENDENTE)', data: produtoGestaoResposta },
   falhas: [400, 401, 403, 404],
@@ -164,8 +165,8 @@ produtosRoutes.post(
   async (req, res) => {
     const artesaoId = artesaoIdDe(req);
     const url = await salvarImagem(req.file, 'imagem', 'produtos');
-    const substituir = req.valid!.query.substituir === 'true';
-    res.status(201).json(ok(await produtosService.adicionarImagem(artesaoId, req.valid!.params.id, url, substituir)));
+    const substituir = entrada(req, 'query', imagemQuery).substituir === 'true';
+    res.status(201).json(ok(await produtosService.adicionarImagem(artesaoId, entrada(req, 'params', idParam).id, url, substituir)));
   },
 );
 
@@ -180,6 +181,6 @@ documentar({
   falhas: [401, 403, 404, 409],
 });
 produtosRoutes.delete('/produtos/:id', ...somente(TipoUsuario.ARTESAO, TipoUsuario.ADMIN), validate({ params: idParam }), async (req, res) => {
-  await produtosService.remover(req.user!, req.valid!.params.id);
+  await produtosService.remover(req.user!, entrada(req, 'params', idParam).id);
   res.json(ok(null));
 });

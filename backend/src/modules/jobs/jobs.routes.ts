@@ -2,6 +2,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { Router, type RequestHandler } from 'express';
 import { env } from '../../config/env';
 import { documentar } from '../../docs/registry';
+import { eventoProcessadoResposta } from '../../docs/respostas';
 import { publicarPendentes, type EventoPublicado } from '../../jobs/outbox';
 import { processarEvento } from '../../jobs/processar-evento';
 import { assinaturaQStashValida, publicarViaQStash } from '../../jobs/serverless';
@@ -43,7 +44,7 @@ documentar({
   path: '/api/jobs/evento',
   tags,
   summary: 'Processa um evento da fila (chamado pelo QStash) — notificação + e-mail simulado',
-  sucesso: { status: 200, descricao: 'Evento processado', data: z.any() },
+  sucesso: { status: 200, descricao: 'Evento processado', data: eventoProcessadoResposta },
   falhas: [400, 401],
 });
 jobsRoutes.post('/jobs/evento', autenticarJob, async (req, res) => {

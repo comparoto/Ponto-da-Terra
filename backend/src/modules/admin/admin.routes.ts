@@ -4,7 +4,7 @@ import { documentar } from '../../docs/registry';
 import { ok } from '../../shared/api-result';
 import { somente } from '../../shared/auth';
 import { paginacaoQuery } from '../../shared/pagination';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { produtoGestaoResposta } from '../produtos/produtos.schemas';
 import { curadoriaService } from './curadoria.service';
@@ -38,7 +38,7 @@ documentar({
   falhas: [401, 403],
 });
 adminRoutes.get('/admin/curadoria', validate({ query: filaQuery }), async (req, res) => {
-  const { status, page, limit } = req.valid!.query as z.infer<typeof filaQuery>;
+  const { status, page, limit } = entrada(req, 'query', filaQuery);
   const { itens, meta } = await curadoriaService.fila(status, page, limit);
   res.json(ok(itens, meta));
 });
@@ -54,7 +54,7 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 adminRoutes.post('/admin/produtos/:id/aprovar', validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await curadoriaService.aprovar(req.valid!.params.id, req.user!.id)));
+  res.json(ok(await curadoriaService.aprovar(entrada(req, 'params', idParam).id, req.user!.id)));
 });
 
 documentar({
@@ -69,5 +69,5 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 adminRoutes.post('/admin/produtos/:id/reprovar', validate({ params: idParam, body: reprovarBody }), async (req, res) => {
-  res.json(ok(await curadoriaService.reprovar(req.valid!.params.id, req.user!.id, req.valid!.body.justificativa)));
+  res.json(ok(await curadoriaService.reprovar(entrada(req, 'params', idParam).id, req.user!.id, entrada(req, 'body', reprovarBody).justificativa)));
 });

@@ -2,13 +2,14 @@ import { Router } from 'express';
 import { Prisma, StatusCadastroArtesao, StatusUsuario, TipoEvento, TipoUsuario } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { documentar } from '../../docs/registry';
+import { cadastroArtesaoResposta, metricasAdminResposta, usuarioAdminResposta } from '../../docs/respostas';
 import { ok } from '../../shared/api-result';
 import { somente } from '../../shared/auth';
 import { invalidarCatalogo } from '../../shared/cache';
 import { badRequest, notFound } from '../../shared/errors';
 import { notificar } from '../../shared/eventos';
 import { metaPaginacao, paginacaoQuery, paginar } from '../../shared/pagination';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { periodoPadrao, periodoQuery, relatoriosService } from '../relatorios/relatorios.service';
 import { usuariosAdminService } from './usuarios.service';
@@ -34,11 +35,11 @@ documentar({
   summary: 'Lista compradores, artesãos e admins com filtros (HU16)',
   autenticado: true,
   request: { query: usuariosQuery },
-  sucesso: { status: 200, descricao: 'Usuários', data: z.any(), paginado: true },
+  sucesso: { status: 200, descricao: 'Usuários', data: z.array(usuarioAdminResposta), paginado: true },
   falhas: [401, 403],
 });
 adminExtrasRoutes.get('/admin/usuarios', ...somente(TipoUsuario.ADMIN), validate({ query: usuariosQuery }), async (req, res) => {
-  const { itens, meta } = await usuariosAdminService.listar(req.valid!.query as z.infer<typeof usuariosQuery>);
+  const { itens, meta } = await usuariosAdminService.listar(entrada(req, 'query', usuariosQuery));
   res.json(ok(itens, meta));
 });
 
@@ -49,11 +50,11 @@ documentar({
   summary: 'Suspende a conta com motivo formal: invalida as sessões e oculta as peças do artesão (HU16)',
   autenticado: true,
   request: { params: idParam, body: { content: { 'application/json': { schema: suspenderBody } } } },
-  sucesso: { status: 200, descricao: 'Conta suspensa', data: z.any() },
+  sucesso: { status: 200, descricao: 'Conta suspensa', data: usuarioAdminResposta },
   falhas: [400, 401, 403, 404],
 });
 adminExtrasRoutes.post('/admin/usuarios/:id/suspender', ...somente(TipoUsuario.ADMIN), validate({ params: idParam, body: suspenderBody }), async (req, res) => {
-  res.json(ok(await usuariosAdminService.suspender(req.valid!.params.id, req.valid!.body.motivo)));
+  res.json(ok(await usuariosAdminService.suspender(entrada(req, 'params', idParam).id, entrada(req, 'body', suspenderBody).motivo)));
 });
 
 documentar({
@@ -63,11 +64,11 @@ documentar({
   summary: 'Reativa uma conta suspensa — o acesso é restabelecido imediatamente (HU16)',
   autenticado: true,
   request: { params: idParam },
-  sucesso: { status: 200, descricao: 'Conta reativada', data: z.any() },
+  sucesso: { status: 200, descricao: 'Conta reativada', data: usuarioAdminResposta },
   falhas: [400, 401, 403, 404],
 });
 adminExtrasRoutes.post('/admin/usuarios/:id/reativar', ...somente(TipoUsuario.ADMIN), validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await usuariosAdminService.reativar(req.valid!.params.id)));
+  res.json(ok(await usuariosAdminService.reativar(entrada(req, 'params', idParam).id)));
 });
 
 documentar({
@@ -78,11 +79,11 @@ documentar({
   description: 'Período padrão: mês atual. As agregações rodam em paralelo (Promise.all).',
   autenticado: true,
   request: { query: periodoQuery },
-  sucesso: { status: 200, descricao: 'Métricas do período', data: z.any() },
+  sucesso: { status: 200, descricao: 'Métricas do período', data: metricasAdminResposta },
   falhas: [400, 401, 403],
 });
 adminExtrasRoutes.get('/admin/dashboard/metricas', ...somente(TipoUsuario.ADMIN), validate({ query: periodoQuery }), async (req, res) => {
-  const { de, ate } = req.valid!.query as z.infer<typeof periodoQuery>;
+  const { de, ate } = entrada(req, 'query', periodoQuery);
   res.json(ok(await relatoriosService.dashboardAdmin(periodoPadrao(de, ate))));
 });
 
@@ -97,11 +98,11 @@ documentar({
   summary: 'Inativa a conta (sem caráter punitivo): bloqueia o acesso e oculta as peças até ser reativada (HU16)',
   autenticado: true,
   request: { params: idParam, body: { content: { 'application/json': { schema: inativarBody } } } },
-  sucesso: { status: 200, descricao: 'Conta inativada', data: z.any() },
+  sucesso: { status: 200, descricao: 'Conta inativada', data: usuarioAdminResposta },
   falhas: [400, 401, 403, 404],
 });
 adminExtrasRoutes.post('/admin/usuarios/:id/inativar', ...somente(TipoUsuario.ADMIN), validate({ params: idParam, body: inativarBody }), async (req, res) => {
-  res.json(ok(await usuariosAdminService.inativar(req.valid!.params.id, req.valid!.body.motivo)));
+  res.json(ok(await usuariosAdminService.inativar(entrada(req, 'params', idParam).id, entrada(req, 'body', inativarBody).motivo)));
 });
 
 // ───────────── HU8 · Aprovação do cadastro de novos artesãos ─────────────
@@ -138,11 +139,11 @@ documentar({
   summary: 'Fila de cadastros de artesãos (padrão: PENDENTE) — HU8',
   autenticado: true,
   request: { query: cadastrosQuery },
-  sucesso: { status: 200, descricao: 'Cadastros', data: z.any(), paginado: true },
+  sucesso: { status: 200, descricao: 'Cadastros', data: z.array(cadastroArtesaoResposta), paginado: true },
   falhas: [401, 403],
 });
 adminExtrasRoutes.get('/admin/cadastros', ...somente(TipoUsuario.ADMIN), validate({ query: cadastrosQuery }), async (req, res) => {
-  const { status, page, limit } = req.valid!.query as z.infer<typeof cadastrosQuery>;
+  const { status, page, limit } = entrada(req, 'query', cadastrosQuery);
   const where = { statusCadastro: status };
   const [total, itens] = await prisma.$transaction([
     prisma.artesao.count({ where }),
@@ -185,11 +186,11 @@ documentar({
   summary: 'Aprova o cadastro do artesão: o perfil e as peças aprovadas passam a aparecer na vitrine (HU8)',
   autenticado: true,
   request: { params: idParam },
-  sucesso: { status: 200, descricao: 'Cadastro aprovado', data: z.any() },
+  sucesso: { status: 200, descricao: 'Cadastro aprovado', data: cadastroArtesaoResposta },
   falhas: [400, 401, 403, 404],
 });
 adminExtrasRoutes.post('/admin/artesaos/:id/aprovar-cadastro', ...somente(TipoUsuario.ADMIN), validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await decidirCadastro(req.valid!.params.id, true)));
+  res.json(ok(await decidirCadastro(entrada(req, 'params', idParam).id, true)));
 });
 
 documentar({
@@ -199,7 +200,7 @@ documentar({
   summary: 'Reprova o cadastro do artesão com motivo; o artesão é notificado (HU8)',
   autenticado: true,
   request: { params: idParam, body: { content: { 'application/json': { schema: reprovarCadastroBody } } } },
-  sucesso: { status: 200, descricao: 'Cadastro reprovado', data: z.any() },
+  sucesso: { status: 200, descricao: 'Cadastro reprovado', data: cadastroArtesaoResposta },
   falhas: [400, 401, 403, 404],
 });
 adminExtrasRoutes.post(
@@ -207,6 +208,6 @@ adminExtrasRoutes.post(
   ...somente(TipoUsuario.ADMIN),
   validate({ params: idParam, body: reprovarCadastroBody }),
   async (req, res) => {
-    res.json(ok(await decidirCadastro(req.valid!.params.id, false, req.valid!.body.motivo)));
+    res.json(ok(await decidirCadastro(entrada(req, 'params', idParam).id, false, entrada(req, 'body', reprovarCadastroBody).motivo)));
   },
 );

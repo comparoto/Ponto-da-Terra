@@ -2,11 +2,12 @@ import { timingSafeEqual } from 'node:crypto';
 import { Router } from 'express';
 import { MetodoPagamento, TipoUsuario } from '@prisma/client';
 import { env } from '../../config/env';
-import { documentar } from '../../docs/registry';
+import { documentar, erros, registry } from '../../docs/registry';
+import { arquivoBinario, compraResposta } from '../../docs/respostas';
 import { ok } from '../../shared/api-result';
 import { somente } from '../../shared/auth';
 import { forbidden, unauthorized } from '../../shared/errors';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { UFS } from '../auth/auth.schemas';
 import { comprasService } from './compras.service';
@@ -61,7 +62,6 @@ const pagamentoBody = z
 
 const codigoParam = z.object({ codigo: z.string().trim().min(3).max(40) });
 const webhookBody = z.object({ codigoTransacao: z.string().min(3), status: z.literal('APROVADO') }).openapi('WebhookPagamento');
-const compraResposta = z.any().openapi({ description: 'Compra com pedidos e pagamento' });
 
 documentar({
   method: 'post',
@@ -77,7 +77,7 @@ documentar({
   falhas: [400, 401, 403],
 });
 comprasRoutes.post('/checkout', ...somente(TipoUsuario.CONSUMIDOR), validate({ body: checkoutBody }), async (req, res) => {
-  const { itens, endereco } = req.valid!.body as z.infer<typeof checkoutBody>;
+  const { itens, endereco } = entrada(req, 'body', checkoutBody);
   res.status(201).json(ok(await comprasService.checkout(consumidorIdDe(req), itens, endereco)));
 });
 
@@ -92,7 +92,7 @@ documentar({
   falhas: [401, 403, 404],
 });
 comprasRoutes.get('/compras/:codigo', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: codigoParam }), async (req, res) => {
-  res.json(ok(await comprasService.detalhe(consumidorIdDe(req), req.valid!.params.codigo)));
+  res.json(ok(await comprasService.detalhe(consumidorIdDe(req), entrada(req, 'params', codigoParam).codigo)));
 });
 
 documentar({
@@ -107,8 +107,8 @@ documentar({
   falhas: [400, 401, 403, 404, 409],
 });
 comprasRoutes.post('/compras/:codigo/pagamento', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: codigoParam, body: pagamentoBody }), async (req, res) => {
-  const { metodo, parcelas, cartao } = req.valid!.body as z.infer<typeof pagamentoBody>;
-  res.status(201).json(ok(await comprasService.pagar(consumidorIdDe(req), req.valid!.params.codigo, metodo, parcelas, cartao)));
+  const { metodo, parcelas, cartao } = entrada(req, 'body', pagamentoBody);
+  res.status(201).json(ok(await comprasService.pagar(consumidorIdDe(req), entrada(req, 'params', codigoParam).codigo, metodo, parcelas, cartao)));
 });
 
 documentar({
@@ -122,7 +122,7 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 comprasRoutes.post('/compras/:codigo/simular-pagamento', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: codigoParam }), async (req, res) => {
-  res.json(ok(await comprasService.simularPagamento(consumidorIdDe(req), req.valid!.params.codigo)));
+  res.json(ok(await comprasService.simularPagamento(consumidorIdDe(req), entrada(req, 'params', codigoParam).codigo)));
 });
 
 documentar({
@@ -139,17 +139,20 @@ comprasRoutes.post('/pagamentos/webhook', validate({ body: webhookBody }), async
   const recebido = Buffer.from(String(req.headers['x-webhook-secret'] ?? ''));
   const esperado = Buffer.from(env.WEBHOOK_SECRET);
   if (recebido.length !== esperado.length || !timingSafeEqual(recebido, esperado)) throw unauthorized('Assinatura do webhook inválida');
-  res.json(ok(await comprasService.confirmarPagamento(req.valid!.body.codigoTransacao)));
+  res.json(ok(await comprasService.confirmarPagamento(entrada(req, 'body', webhookBody).codigoTransacao)));
 });
 
-documentar({
+// Resposta em PDF (não é o envelope JSON das demais rotas), então é registrada direto no Swagger
+registry.registerPath({
   method: 'get',
   path: '/api/pagamentos/{codigoTransacao}/boleto.pdf',
   tags,
   summary: 'PDF do boleto simulado (link enviado ao comprador)',
   request: { params: z.object({ codigoTransacao: z.string() }) },
-  sucesso: { status: 200, descricao: 'PDF' },
-  falhas: [404],
+  responses: {
+    200: { description: 'Boleto em PDF', content: { 'application/pdf': { schema: arquivoBinario } } },
+    404: erros[404],
+  },
 });
 comprasRoutes.get('/pagamentos/:codigoTransacao/boleto.pdf', async (req, res) => {
   const { pagamento, valor } = await comprasService.boletoPdf(String(req.params.codigoTransacao));

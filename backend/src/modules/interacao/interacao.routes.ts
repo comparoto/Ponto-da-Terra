@@ -2,13 +2,14 @@ import { Router } from 'express';
 import { Prisma, StatusPedido, TipoEvento, TipoUsuario } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { documentar } from '../../docs/registry';
+import { avaliacaoCriadaResposta, avaliacoesProdutoResposta, mensagemEnviadaResposta, mensagemRecebidaResposta } from '../../docs/respostas';
 import { ok } from '../../shared/api-result';
 import { artesaoIdDe, somente } from '../../shared/auth';
 import { invalidarCatalogo } from '../../shared/cache';
 import { conflict, forbidden, notFound } from '../../shared/errors';
 import { notificar } from '../../shared/eventos';
 import { metaPaginacao, paginacaoQuery, paginar } from '../../shared/pagination';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { visivelNaVitrine } from '../produtos/produtos.service';
 
@@ -19,6 +20,8 @@ const consumidorIdDe = (req: Express.Request) => {
   if (!req.user?.consumidorId) throw forbidden();
   return req.user.consumidorId;
 };
+
+const paginacao = z.object(paginacaoQuery);
 
 // ───────────── HU17 · Avaliações ─────────────
 
@@ -38,12 +41,12 @@ documentar({
   summary: 'Avalia uma peça recebida (nota 1–5). Só para quem tem pedido ENTREGUE dessa peça (HU17)',
   autenticado: true,
   request: { body: { content: { 'application/json': { schema: avaliacaoBody } } } },
-  sucesso: { status: 201, descricao: 'Avaliação registrada; médias do produto e do artesão recalculadas', data: z.any() },
+  sucesso: { status: 201, descricao: 'Avaliação registrada; médias do produto e do artesão recalculadas', data: avaliacaoCriadaResposta },
   falhas: [400, 401, 403, 409],
 });
 interacaoRoutes.post('/avaliacoes', ...somente(TipoUsuario.CONSUMIDOR), validate({ body: avaliacaoBody }), async (req, res) => {
   const consumidorId = consumidorIdDe(req);
-  const { produtoId, nota, comentario } = req.valid!.body as z.infer<typeof avaliacaoBody>;
+  const { produtoId, nota, comentario } = entrada(req, 'body', avaliacaoBody);
 
   const compraVerificada = await prisma.itemPedido.findFirst({
     where: { produtoId, pedido: { consumidorId, status: StatusPedido.ENTREGUE } },
@@ -79,13 +82,13 @@ documentar({
   path: '/api/produtos/{id}/avaliacoes',
   tags: ['Avaliações'],
   summary: 'Avaliações públicas de uma peça',
-  request: { params: produtoParam, query: z.object(paginacaoQuery) },
-  sucesso: { status: 200, descricao: 'Avaliações e média', data: z.any(), paginado: true },
+  request: { params: produtoParam, query: paginacao },
+  sucesso: { status: 200, descricao: 'Avaliações e média', data: avaliacoesProdutoResposta, paginado: true },
   falhas: [400],
 });
-interacaoRoutes.get('/produtos/:id/avaliacoes', validate({ params: produtoParam, query: z.object(paginacaoQuery) }), async (req, res) => {
-  const { id } = req.valid!.params;
-  const { page, limit } = req.valid!.query as { page: number; limit: number };
+interacaoRoutes.get('/produtos/:id/avaliacoes', validate({ params: produtoParam, query: paginacao }), async (req, res) => {
+  const { id } = entrada(req, 'params', produtoParam);
+  const { page, limit } = entrada(req, 'query', paginacao);
   const where = { produtoId: id };
   const [total, itens, media] = await prisma.$transaction([
     prisma.avaliacao.count({ where }),
@@ -129,14 +132,14 @@ documentar({
   summary: 'Envia uma dúvida ao artesão sobre a peça; gera notificação no painel dele (HU14)',
   autenticado: true,
   request: { params: produtoParam, body: { content: { 'application/json': { schema: mensagemBody } } } },
-  sucesso: { status: 201, descricao: 'Mensagem enviada', data: z.any() },
+  sucesso: { status: 201, descricao: 'Mensagem enviada', data: mensagemEnviadaResposta },
   falhas: [400, 401, 403, 404],
 });
 interacaoRoutes.post('/produtos/:id/mensagens', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: produtoParam, body: mensagemBody }), async (req, res) => {
   const consumidorId = consumidorIdDe(req);
-  const produto = await prisma.produto.findFirst({ where: { id: req.valid!.params.id, ...visivelNaVitrine }, select: { id: true, titulo: true, artesaoId: true } });
+  const produto = await prisma.produto.findFirst({ where: { id: entrada(req, 'params', produtoParam).id, ...visivelNaVitrine }, select: { id: true, titulo: true, artesaoId: true } });
   if (!produto) throw notFound('Produto não encontrado');
-  const texto = req.valid!.body.mensagem as string;
+  const texto = entrada(req, 'body', mensagemBody).mensagem as string;
 
   const mensagem = await prisma.$transaction(async tx => {
     const criada = await tx.mensagemContato.create({ data: { consumidorId, artesaoId: produto.artesaoId, produtoId: produto.id, mensagem: texto } });
@@ -158,12 +161,12 @@ documentar({
   tags: ['Contato com o produtor'],
   summary: 'Dúvidas recebidas pelo artesão (HU14)',
   autenticado: true,
-  request: { query: z.object(paginacaoQuery) },
-  sucesso: { status: 200, descricao: 'Mensagens', data: z.any(), paginado: true },
+  request: { query: paginacao },
+  sucesso: { status: 200, descricao: 'Mensagens', data: z.array(mensagemRecebidaResposta), paginado: true },
   falhas: [401, 403],
 });
-interacaoRoutes.get('/artesao/mensagens', ...somente(TipoUsuario.ARTESAO), validate({ query: z.object(paginacaoQuery) }), async (req, res) => {
-  const { page, limit } = req.valid!.query as { page: number; limit: number };
+interacaoRoutes.get('/artesao/mensagens', ...somente(TipoUsuario.ARTESAO), validate({ query: paginacao }), async (req, res) => {
+  const { page, limit } = entrada(req, 'query', paginacao);
   const where = { artesaoId: artesaoIdDe(req) };
   const [total, itens] = await prisma.$transaction([
     prisma.mensagemContato.count({ where }),

@@ -6,7 +6,7 @@ import { ok } from '../../shared/api-result';
 import { somente } from '../../shared/auth';
 import { forbidden, notFound } from '../../shared/errors';
 import { incluirProduto, produtoPublico } from '../../shared/serializers';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { visivelNaVitrine } from '../produtos/produtos.service';
 import { produtoResposta } from '../produtos/produtos.schemas';
@@ -52,7 +52,7 @@ documentar({
 });
 compradorRoutes.post('/favoritos/:produtoId', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: produtoParam }), async (req, res) => {
   const consumidorId = consumidorIdDe(req);
-  const { produtoId } = req.valid!.params;
+  const { produtoId } = entrada(req, 'params', produtoParam);
   const produto = await prisma.produto.findFirst({ where: { id: produtoId, ...visivelNaVitrine }, select: { id: true } });
   if (!produto) throw notFound('Produto não encontrado');
   await prisma.favorito.upsert({ where: { consumidorId_produtoId: { consumidorId, produtoId } }, create: { consumidorId, produtoId }, update: {} });
@@ -70,7 +70,7 @@ documentar({
   falhas: [401, 403],
 });
 compradorRoutes.delete('/favoritos/:produtoId', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: produtoParam }), async (req, res) => {
-  await prisma.favorito.deleteMany({ where: { consumidorId: consumidorIdDe(req), produtoId: req.valid!.params.produtoId } });
+  await prisma.favorito.deleteMany({ where: { consumidorId: consumidorIdDe(req), produtoId: entrada(req, 'params', produtoParam).produtoId } });
   res.json(ok(null));
 });
 
@@ -129,7 +129,7 @@ compradorRoutes.put('/carrinho', ...somente(TipoUsuario.CONSUMIDOR), validate({ 
   const consumidorId = consumidorIdDe(req);
   // Agrupa repetidos e mantém só peças que estão na vitrine
   const quantidades = new Map<string, number>();
-  for (const { produtoId, quantidade } of req.valid!.body.itens as { produtoId: string; quantidade: number }[]) {
+  for (const { produtoId, quantidade } of entrada(req, 'body', carrinhoBody).itens as { produtoId: string; quantidade: number }[]) {
     quantidades.set(produtoId, Math.min(100, (quantidades.get(produtoId) ?? 0) + quantidade));
   }
   const validos = await prisma.produto.findMany({

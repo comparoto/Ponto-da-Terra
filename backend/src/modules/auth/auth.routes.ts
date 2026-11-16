@@ -3,7 +3,7 @@ import { documentar } from '../../docs/registry';
 import { ok } from '../../shared/api-result';
 import { autenticar } from '../../shared/auth';
 import { limitarPedidosDeSenha, limitarTentativasDeLogin } from '../../shared/rate-limit';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { alterarSenhaBody, atualizarMeBody, cadastroBody, esqueciSenhaBody, loginBody, perfilUsuario, redefinirSenhaBody, sessao } from './auth.schemas';
 import { authService } from './auth.service';
@@ -21,7 +21,7 @@ documentar({
   falhas: [400, 409],
 });
 authRoutes.post('/auth/cadastro', validate({ body: cadastroBody }), async (req, res) => {
-  res.status(201).json(ok(await authService.cadastrar(req.valid!.body)));
+  res.status(201).json(ok(await authService.cadastrar(entrada(req, 'body', cadastroBody))));
 });
 
 documentar({
@@ -35,7 +35,7 @@ documentar({
   falhas: [400, 401, 403, 429],
 });
 authRoutes.post('/auth/login', limitarTentativasDeLogin, validate({ body: loginBody }), async (req, res) => {
-  res.json(ok(await authService.login(req.valid!.body)));
+  res.json(ok(await authService.login(entrada(req, 'body', loginBody))));
 });
 
 documentar({
@@ -76,7 +76,7 @@ documentar({
   falhas: [400, 401],
 });
 authRoutes.put('/me', autenticar, validate({ body: atualizarMeBody }), async (req, res) => {
-  res.json(ok(await authService.atualizar(req.user!.id, req.valid!.body)));
+  res.json(ok(await authService.atualizar(req.user!.id, entrada(req, 'body', atualizarMeBody))));
 });
 
 documentar({
@@ -91,7 +91,7 @@ documentar({
   falhas: [400, 401],
 });
 authRoutes.put('/me/senha', autenticar, validate({ body: alterarSenhaBody }), async (req, res) => {
-  res.json(ok(await authService.alterarSenha(req.user!.id, req.valid!.body)));
+  res.json(ok(await authService.alterarSenha(req.user!.id, entrada(req, 'body', alterarSenhaBody))));
 });
 
 documentar({
@@ -105,7 +105,7 @@ documentar({
   falhas: [400, 429],
 });
 authRoutes.post('/auth/esqueci-senha', limitarPedidosDeSenha, validate({ body: esqueciSenhaBody }), async (req, res) => {
-  await authService.esqueciSenha(req.valid!.body);
+  await authService.esqueciSenha(entrada(req, 'body', esqueciSenhaBody));
   res.json(ok({ mensagem: 'Se houver uma conta com esse e-mail, enviamos um link para criar uma nova senha.' }));
 });
 
@@ -120,7 +120,7 @@ documentar({
   falhas: [400, 429],
 });
 authRoutes.post('/auth/redefinir-senha', limitarPedidosDeSenha, validate({ body: redefinirSenhaBody }), async (req, res) => {
-  await authService.redefinirSenha(req.valid!.body);
+  await authService.redefinirSenha(entrada(req, 'body', redefinirSenhaBody));
   res.json(ok(null));
 });
 

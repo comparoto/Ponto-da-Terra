@@ -13,7 +13,7 @@ const erroCampo = z.object({ campo: z.string(), mensagem: z.string() });
 const meta = z.object({ page: z.number(), limit: z.number(), totalItems: z.number(), totalPages: z.number() });
 
 /** Envelope ApiResult<T> para a documentação. */
-export const envelope = (data: z.ZodTypeAny = z.any(), paginado = false) =>
+export const envelope = (data: z.ZodTypeAny, paginado = false) =>
   z.object({
     success: z.boolean(),
     data: data.nullable(),
@@ -37,7 +37,7 @@ export const erros = {
 };
 
 type Doc = Omit<RouteConfig, 'responses'> & {
-  sucesso: { status: number; descricao: string; data?: z.ZodTypeAny; paginado?: boolean };
+  sucesso: { status: number; descricao: string; data: z.ZodTypeAny; paginado?: boolean };
   falhas?: (keyof typeof erros)[];
   autenticado?: boolean;
 };

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { documentar } from '../../docs/registry';
 import { ok } from '../../shared/api-result';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { calcularCarrinho } from './carrinho.service';
 import { calculadoraFrete } from './frete';
@@ -61,7 +61,7 @@ documentar({
   falhas: [400],
 });
 carrinhoRoutes.post('/carrinho/calcular', validate({ body: calcularBody }), async (req, res) => {
-  const { itens, cep: cepDestino } = req.valid!.body as z.infer<typeof calcularBody>;
+  const { itens, cep: cepDestino } = entrada(req, 'body', calcularBody);
   res.json(ok(await calcularCarrinho(itens, cepDestino)));
 });
 
@@ -79,6 +79,6 @@ documentar({
   falhas: [400],
 });
 carrinhoRoutes.get('/frete', validate({ query: freteQuery }), (req, res) => {
-  const { cep: cepDestino, quantidade } = req.valid!.query as z.infer<typeof freteQuery>;
+  const { cep: cepDestino, quantidade } = entrada(req, 'query', freteQuery);
   res.json(ok(calculadoraFrete.calcular(cepDestino, quantidade)));
 });

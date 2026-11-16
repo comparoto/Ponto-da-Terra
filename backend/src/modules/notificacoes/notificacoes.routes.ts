@@ -2,11 +2,12 @@ import { Router } from 'express';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { documentar } from '../../docs/registry';
+import { payloadNotificacao } from '../../docs/respostas';
 import { ok } from '../../shared/api-result';
 import { autenticar } from '../../shared/auth';
 import { notFound } from '../../shared/errors';
 import { metaPaginacao, paginacaoQuery, paginar } from '../../shared/pagination';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import type { UsuarioAutenticado } from '../../types/express';
 
@@ -20,7 +21,7 @@ const notificacaoResposta = z
   .object({
     id: z.string(),
     tipoEvento: z.string(),
-    payload: z.any(),
+    payload: payloadNotificacao,
     lida: z.boolean(),
     dataEnvio: z.string(),
   })
@@ -42,7 +43,7 @@ documentar({
   falhas: [401],
 });
 notificacoesRoutes.get('/notificacoes', autenticar, validate({ query: listaQuery }), async (req, res) => {
-  const q = req.valid!.query as z.infer<typeof listaQuery>;
+  const q = entrada(req, 'query', listaQuery);
   const where = { ...doUsuario(req.user!), ...(q.naoLidas === 'true' ? { lida: false } : {}) };
   const [total, itens] = await prisma.$transaction([
     prisma.notificacaoLog.count({ where }),
@@ -76,7 +77,7 @@ documentar({
   falhas: [401, 404],
 });
 notificacoesRoutes.patch('/notificacoes/:id/lida', autenticar, validate({ params: idParam }), async (req, res) => {
-  const { id } = req.valid!.params;
+  const { id } = entrada(req, 'params', idParam);
   const { count } = await prisma.notificacaoLog.updateMany({ where: { id, ...doUsuario(req.user!) }, data: { lida: true } });
   if (!count) throw notFound('Notificação não encontrada');
   res.json(ok(await prisma.notificacaoLog.findUniqueOrThrow({ where: { id }, select: selecao })));

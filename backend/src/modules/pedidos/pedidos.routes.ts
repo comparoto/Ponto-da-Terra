@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { StatusPedido, TipoUsuario } from '@prisma/client';
 import { documentar } from '../../docs/registry';
+import { pedidoResposta } from '../../docs/respostas';
 import { ok } from '../../shared/api-result';
 import { artesaoIdDe, autenticar, somente } from '../../shared/auth';
 import { forbidden } from '../../shared/errors';
 import { paginacaoQuery } from '../../shared/pagination';
-import { validate } from '../../shared/validate';
+import { entrada, validate } from '../../shared/validate';
 import { z } from '../../shared/zod';
 import { pedidosService } from './pedidos.service';
 
@@ -28,7 +29,6 @@ const statusBody = z
 const intervencaoBody = z
   .object({ nota: z.string().trim().min(5, 'Descreva a intervenção (mínimo de 5 caracteres)').max(2000) })
   .openapi('IntervencaoPedido');
-const pedidoResposta = z.any().openapi({ description: 'Pedido com itens, entrega, linha do tempo e histórico' });
 
 const consumidorIdDe = (req: Express.Request) => {
   if (!req.user?.consumidorId) throw forbidden();
@@ -48,7 +48,7 @@ documentar({
   falhas: [401, 403],
 });
 pedidosRoutes.get('/comprador/pedidos', ...somente(TipoUsuario.CONSUMIDOR), validate({ query: listaQuery }), async (req, res) => {
-  const { page, limit } = req.valid!.query as z.infer<typeof listaQuery>;
+  const { page, limit } = entrada(req, 'query', listaQuery);
   const { itens, meta } = await pedidosService.doComprador(consumidorIdDe(req), page, limit);
   res.json(ok(itens, meta));
 });
@@ -64,7 +64,7 @@ documentar({
   falhas: [401, 404],
 });
 pedidosRoutes.get('/pedidos/:id', autenticar, validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await pedidosService.detalhe(req.user!, req.valid!.params.id)));
+  res.json(ok(await pedidosService.detalhe(req.user!, entrada(req, 'params', idParam).id)));
 });
 
 documentar({
@@ -78,7 +78,7 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 pedidosRoutes.post('/pedidos/:id/confirmar-recebimento', ...somente(TipoUsuario.CONSUMIDOR), validate({ params: idParam }), async (req, res) => {
-  res.json(ok(await pedidosService.confirmarRecebimento(consumidorIdDe(req), req.valid!.params.id)));
+  res.json(ok(await pedidosService.confirmarRecebimento(consumidorIdDe(req), entrada(req, 'params', idParam).id)));
 });
 
 // ───── Artesão ─────
@@ -94,7 +94,7 @@ documentar({
   falhas: [401, 403],
 });
 pedidosRoutes.get('/artesao/pedidos', ...somente(TipoUsuario.ARTESAO), validate({ query: artesaoQuery }), async (req, res) => {
-  const { status, page, limit } = req.valid!.query as z.infer<typeof artesaoQuery>;
+  const { status, page, limit } = entrada(req, 'query', artesaoQuery);
   const { itens, meta } = await pedidosService.doArtesao(artesaoIdDe(req), status, page, limit);
   res.json(ok(itens, meta));
 });
@@ -110,8 +110,8 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 pedidosRoutes.patch('/artesao/pedidos/:id/status', ...somente(TipoUsuario.ARTESAO), validate({ params: idParam, body: statusBody }), async (req, res) => {
-  const { status, codigoRastreio } = req.valid!.body as z.infer<typeof statusBody>;
-  res.json(ok(await pedidosService.atualizarStatusArtesao(artesaoIdDe(req), req.valid!.params.id, status, codigoRastreio)));
+  const { status, codigoRastreio } = entrada(req, 'body', statusBody);
+  res.json(ok(await pedidosService.atualizarStatusArtesao(artesaoIdDe(req), entrada(req, 'params', idParam).id, status, codigoRastreio)));
 });
 
 // ───── Admin (HU10) — a proteção de /api/admin/* está em admin.routes ─────
@@ -127,7 +127,7 @@ documentar({
   falhas: [401, 403],
 });
 pedidosRoutes.get('/admin/pedidos', ...somente(TipoUsuario.ADMIN), validate({ query: adminQuery }), async (req, res) => {
-  const { filtro, page, limit } = req.valid!.query as z.infer<typeof adminQuery>;
+  const { filtro, page, limit } = entrada(req, 'query', adminQuery);
   const { itens, meta } = await pedidosService.todos(filtro, page, limit);
   res.json(ok(itens, meta));
 });
@@ -143,5 +143,5 @@ documentar({
   falhas: [400, 401, 403, 404],
 });
 pedidosRoutes.post('/admin/pedidos/:id/intervencoes', ...somente(TipoUsuario.ADMIN), validate({ params: idParam, body: intervencaoBody }), async (req, res) => {
-  res.status(201).json(ok(await pedidosService.registrarIntervencao(req.user!.id, req.valid!.params.id, req.valid!.body.nota)));
+  res.status(201).json(ok(await pedidosService.registrarIntervencao(req.user!.id, entrada(req, 'params', idParam).id, entrada(req, 'body', intervencaoBody).nota)));
 });

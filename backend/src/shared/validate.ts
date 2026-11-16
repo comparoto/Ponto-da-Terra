@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import type { Request, RequestHandler } from 'express';
 import type { ZodTypeAny, z } from 'zod';
 import { badRequest } from './errors';
 
@@ -30,5 +30,15 @@ export const validate =
     next();
   };
 
-/** Helper de tipagem para ler os dados validados no handler. */
-export const valid = <S extends ZodTypeAny>(v: unknown, _schema: S) => v as z.infer<S>;
+type Parte = 'body' | 'query' | 'params';
+
+/**
+ * Lê a parte da requisição que o `validate` já conferiu, com o tipo exato do schema.
+ * O schema é passado só para dar o tipo (a validação em si já aconteceu no middleware);
+ * pedir uma parte que a rota não validou é erro de programação e falha na hora.
+ */
+export function entrada<S extends ZodTypeAny>(req: Request, parte: Parte, _schema: S): z.infer<S> {
+  const valor = req.valid?.[parte];
+  if (valor === undefined) throw new Error(`A rota não validou "${parte}" antes de usá-la`);
+  return valor as z.infer<S>;
+}
