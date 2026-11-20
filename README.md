@@ -1,3 +1,5 @@
+> **Módulo de IA (entrega AV2):** o módulo de recomendação "Descubra Mais", com dados, funções de acesso, log e resumo, está em [`modulo-recomendacao-pronto/modulo-recomendacao/`](modulo-recomendacao-pronto/modulo-recomendacao/). As instruções de instalação, execução e verificação estão no [README do módulo](modulo-recomendacao-pronto/modulo-recomendacao/README.md).
+
 <div align="center">
 
 <img src="logo-pdt-png.png" alt="Logo Origem: Ponto da Terra" width="180">

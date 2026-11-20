@@ -279,27 +279,21 @@ Nunca consultados: nenhum
 **(a) Qual dado o módulo mais usa?**
 O **catálogo de produtos**: 33 das 45 chamadas (73%) leem `produtos.json`, e
 `buscar_produto` é a função mais chamada (18 vezes), porque toda recomendação começa
-lendo a peça de referência. As peças mais consultadas são 1, 2, 3 e 4. As peças 1, 3
-e 4 lideram porque são **destaques** e aparecem em todo fallback; a 2 lidera por ser a
-vizinha mais próxima do Vaso de Barro e por ter sido usada nos eventos.
+pela peça de referência. As peças 1, 3 e 4 estão entre as mais consultadas por serem
+**destaques**, que aparecem em todo fallback.
 
 **(b) Algum dado nunca foi usado? O que isso sugere?**
-Toda peça foi lida pelo menos uma vez, mas duas **nunca foram oferecidas como
-recomendação**. Uma é o **Colar de Renda (10)**: não divide categoria, técnica nem
-região com nenhuma outra peça, então só aparece se alguém pedir por ela. Isso mostra
-uma lacuna no catálogo (falta mais renda) ou na regra, que poderia usar outro sinal,
-como faixa de preço. A outra é a **Luminária de Palha (14)**, que está inativa e só
-aparece como referência porque ficou no histórico do usuário 105. Isso indica que o
-histórico guarda peças fora de linha e que vale tratá-las, por exemplo sugerindo uma
-substituta do mesmo artesão.
+Toda peça foi lida, mas duas **nunca foram oferecidas como recomendação**: o **Colar de
+Renda (10)**, que não divide categoria, técnica nem região com nenhuma outra peça, e a
+**Luminária de Palha (14)**, que está inativa e só aparece porque ficou no histórico do
+usuário 105. Isso sugere uma lacuna no catálogo (falta mais renda, ou a regra precisa
+de outro sinal, como faixa de preço) e que o histórico precisa tratar peças fora de linha.
 
 **(c) Houve erro? Por quê?**
-Sim, **4 erros**, todos provocados de propósito para testar as entradas inválidas. Foram
-a peça **999** e o usuário **999**, que não existem; o tipo de evento **"curtida"**, que
-não é aceito; e um evento para a peça **77**, que não existe. Nenhum foi falha do
-módulo: cada um virou uma resposta 404 ou 400 com mensagem clara e ficou registrado no
-log com o motivo. Em produção, ver o mesmo id inexistente se repetir no log indicaria
-um link quebrado no site.
+Sim, **4 erros**, todos provocados de propósito: peça **999** e usuário **999**, que não
+existem, evento do tipo **"curtida"**, que não é aceito, e evento para a peça **77**, que
+não existe. Nenhum foi falha do módulo: cada um virou resposta 404 ou 400 com mensagem
+clara e ficou registrado no log com o motivo.
 
 ---
 
