@@ -1,0 +1,17 @@
+[
+  {"id": 1,  "nome": "Vaso de Barro Decorativo",     "categoria": "Cerâmica", "tecnica": "Modelagem",   "regiao": "Caruaru",    "artesao_id": 1, "artesao": "Ana Artesã",        "preco": 89.90,  "ativo": true,  "destaque": true},
+  {"id": 2,  "nome": "Tigela de Cerâmica",           "categoria": "Cerâmica", "tecnica": "Modelagem",   "regiao": "Caruaru",    "artesao_id": 2, "artesao": "João do Barro",     "preco": 45.00,  "ativo": true,  "destaque": false},
+  {"id": 3,  "nome": "Boneca de Pano",               "categoria": "Têxtil",   "tecnica": "Costura",     "regiao": "Recife",     "artesao_id": 3, "artesao": "Maria do Pano",     "preco": 60.00,  "ativo": true,  "destaque": true},
+  {"id": 4,  "nome": "Cesto de Palha",               "categoria": "Cestaria", "tecnica": "Trançado",    "regiao": "Petrolina",  "artesao_id": 4, "artesao": "José da Palha",     "preco": 75.50,  "ativo": true,  "destaque": true},
+  {"id": 5,  "nome": "Bolsa de Palha Artesanal",     "categoria": "Cestaria", "tecnica": "Trançado",    "regiao": "Petrolina",  "artesao_id": 4, "artesao": "José da Palha",     "preco": 120.00, "ativo": true,  "destaque": false},
+  {"id": 6,  "nome": "Escultura em Madeira",         "categoria": "Madeira",  "tecnica": "Entalhe",     "regiao": "Olinda",     "artesao_id": 5, "artesao": "Carlos da Madeira", "preco": 210.00, "ativo": true,  "destaque": true},
+  {"id": 7,  "nome": "Jogo de Panelas de Barro",     "categoria": "Cerâmica", "tecnica": "Modelagem",   "regiao": "Caruaru",    "artesao_id": 1, "artesao": "Ana Artesã",        "preco": 180.00, "ativo": true,  "destaque": false},
+  {"id": 8,  "nome": "Quadro Decorativo em Madeira", "categoria": "Madeira",  "tecnica": "Entalhe",     "regiao": "Olinda",     "artesao_id": 6, "artesao": "Pedro do Entalhe",  "preco": 150.00, "ativo": true,  "destaque": false},
+  {"id": 9,  "nome": "Toalha Bordada",               "categoria": "Têxtil",   "tecnica": "Bordado",     "regiao": "Recife",     "artesao_id": 7, "artesao": "Lúcia do Bordado",  "preco": 95.00,  "ativo": true,  "destaque": true},
+  {"id": 10, "nome": "Colar de Renda",               "categoria": "Renda",    "tecnica": "Renda",       "regiao": "Igarassu",   "artesao_id": 8, "artesao": "Rosa da Renda",     "preco": 70.00,  "ativo": true,  "destaque": false},
+  {"id": 11, "nome": "Carranca de Madeira",          "categoria": "Madeira",  "tecnica": "Entalhe",     "regiao": "Petrolina",  "artesao_id": 9, "artesao": "Severino Carranqueiro", "preco": 260.00, "ativo": true, "destaque": false},
+  {"id": 12, "nome": "Rede de Dormir Bordada",       "categoria": "Têxtil",   "tecnica": "Bordado",     "regiao": "Recife",     "artesao_id": 7, "artesao": "Lúcia do Bordado",  "preco": 230.00, "ativo": true,  "destaque": false},
+  {"id": 13, "nome": "Moringa de Barro",             "categoria": "Cerâmica", "tecnica": "Modelagem",   "regiao": "Tracunhaém", "artesao_id": 10, "artesao": "Dona Cida do Barro", "preco": 55.00, "ativo": true,  "destaque": false},
+  {"id": 14, "nome": "Luminária de Palha",           "categoria": "Cestaria", "tecnica": "Trançado",    "regiao": "Petrolina",  "artesao_id": 4, "artesao": "José da Palha",     "preco": 99.00,  "ativo": false, "destaque": false},
+  {"id": 15, "nome": "Xilogravura de Cordel",        "categoria": "Gravura",  "tecnica": "Xilogravura", "regiao": "Caruaru",    "artesao_id": 11, "artesao": "Mestre Zé da Goiva", "preco": 40.00, "ativo": true,  "destaque": false}
+]

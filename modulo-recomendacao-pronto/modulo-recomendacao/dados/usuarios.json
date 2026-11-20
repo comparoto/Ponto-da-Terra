@@ -1,0 +1,7 @@
+[
+  {"id": 101, "historico": [1, 7],  "cadastrado_em": "2026-08-02"},
+  {"id": 102, "historico": [3],     "cadastrado_em": "2026-08-15"},
+  {"id": 103, "historico": [],      "cadastrado_em": "2026-11-01"},
+  {"id": 104, "historico": [6, 4],  "cadastrado_em": "2026-09-10"},
+  {"id": 105, "historico": [14],    "cadastrado_em": "2026-09-28"}
+]

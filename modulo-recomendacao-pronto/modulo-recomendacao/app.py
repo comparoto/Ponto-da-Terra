@@ -1,80 +1,31 @@
+"""Serviço HTTP (BentoML) do módulo de recomendação "Descubra Mais".
+
+As rotas NÃO abrem arquivos: chegam aos dados só pelas funções de
+acesso_dados.py, informando quem está chamando (`chamador`), e isso fica
+registrado em logs/uso_dados.jsonl. A regra de pontuação está em recomendador.py.
+"""
+
 import bentoml
-from bentoml.io import JSON
 
-from produtos import PRODUTOS
+import acesso_dados as dados
+import recomendador
 
-
-# Eventos recebidos pelo módulo durante a execução.
-EVENTOS = []
+LIMITE_MAXIMO = 20
 
 
-def recomendar_produtos(produto_id: int, limite: int = 5):
-    """Recomenda produtos usando um ranking simples e explicável.
-
-    Pontuação do mock:
-    +3 mesma categoria
-    +2 mesma técnica
-    +1 mesma região
-    """
-    produto_atual = next(
-        (produto for produto in PRODUTOS if produto["id"] == produto_id),
-        None,
-    )
-
-    if produto_atual is None:
-        return None
-
-    resultados = []
-
-    for produto in PRODUTOS:
-        if produto["id"] == produto_id:
-            continue
-
-        score = 0
-        motivos = []
-
-        if produto["categoria"] == produto_atual["categoria"]:
-            score += 3
-            motivos.append("mesma categoria")
-
-        if produto["tecnica"] == produto_atual["tecnica"]:
-            score += 2
-            motivos.append("mesma técnica artesanal")
-
-        if produto["regiao"] == produto_atual["regiao"]:
-            score += 1
-            motivos.append("mesma região")
-
-        if score > 0:
-            resultados.append(
-                {
-                    "produto_id": produto["id"],
-                    "nome": produto["nome"],
-                    "categoria": produto["categoria"],
-                    "tecnica": produto["tecnica"],
-                    "regiao": produto["regiao"],
-                    "artesao": produto["artesao"],
-                    "score": score,
-                    "motivo": ", ".join(motivos),
-                }
-            )
-
-    resultados.sort(key=lambda item: item["score"], reverse=True)
-
-    return resultados[:limite]
+def _erro(ctx: bentoml.Context, status: int, mensagem: str) -> dict:
+    ctx.response.status_code = status
+    return {"sucesso": False, "erro": mensagem}
 
 
-def recomendar_fallback(limite: int = 5):
-    """Fallback simples para visitante sem histórico."""
+def _limite_invalido(limite: int) -> bool:
+    return not 1 <= limite <= LIMITE_MAXIMO
+
+
+def _destaques(limite: int, chamador: str) -> list[dict]:
     return [
-        {
-            "produto_id": produto["id"],
-            "nome": produto["nome"],
-            "categoria": produto["categoria"],
-            "regiao": produto["regiao"],
-            "motivo": "produto em destaque para visitante sem histórico",
-        }
-        for produto in PRODUTOS[:limite]
+        recomendador.formatar(p, motivo="produto em destaque no catálogo")
+        for p in dados.listar_destaques(limite, chamador=chamador)
     ]
 
 
@@ -82,106 +33,99 @@ def recomendar_fallback(limite: int = 5):
 class RecomendacaoService:
 
     @bentoml.api
-    def health(self):
+    def health(self) -> dict:
         return {
             "status": "ok",
             "servico": "Descubra Mais",
             "mensagem": "Módulo de recomendação funcionando",
         }
 
-    @bentoml.api(input=JSON, output=JSON)
-    def recomendar_produto(self, dados: dict):
-        produto_id = dados.get("produto_id")
-        limite = dados.get("limite", 5)
+    @bentoml.api
+    def recomendar_produto(self, produto_id: int, ctx: bentoml.Context, limite: int = 5) -> dict:
+        """RF-01/RF-02: produtos (e artesãos) semelhantes a um produto."""
+        chamador = "rota:/recomendar_produto"
+        if _limite_invalido(limite):
+            return _erro(ctx, 400, f"limite deve estar entre 1 e {LIMITE_MAXIMO}")
+        try:
+            base = dados.buscar_produto(produto_id, chamador=chamador)
+        except dados.RegistroNaoEncontrado:
+            return _erro(ctx, 404, f"Produto {produto_id} não encontrado")
 
-        if not isinstance(produto_id, int):
-            return {
-                "sucesso": False,
-                "erro": "produto_id deve ser um número inteiro",
-            }
-
-        resultado = recomendar_produtos(produto_id, limite)
-
-        if resultado is None:
-            return {
-                "sucesso": False,
-                "erro": "Produto não encontrado",
-            }
+        candidatos = dados.listar_produtos_relacionados(produto_id, chamador=chamador)
+        recomendacoes = recomendador.ranquear(base, candidatos, limite)
+        if recomendacoes:
+            tipo = "similares"
+        else:
+            # Produto sem nenhum semelhante (ex.: id 10): mostra os destaques.
+            tipo = "sem_similares_fallback"
+            recomendacoes = _destaques(limite, chamador)
 
         return {
             "sucesso": True,
             "produto_id": produto_id,
-            "recomendacoes": resultado,
+            "tipo": tipo,
+            "recomendacoes": recomendacoes,
         }
 
-    @bentoml.api(input=JSON, output=JSON)
-    def recomendar_usuario(self, dados: dict):
-        usuario_id = dados.get("usuario_id")
-        historico = dados.get("historico", [])
+    @bentoml.api
+    def recomendar_usuario(self, usuario_id: int, ctx: bentoml.Context, limite: int = 5) -> dict:
+        """Recomendação pelo histórico salvo do usuário; RF-04 se ele não tiver histórico."""
+        chamador = "rota:/recomendar_usuario"
+        if _limite_invalido(limite):
+            return _erro(ctx, 400, f"limite deve estar entre 1 e {LIMITE_MAXIMO}")
+        try:
+            usuario = dados.buscar_usuario(usuario_id, chamador=chamador)
+        except dados.RegistroNaoEncontrado:
+            return _erro(ctx, 404, f"Usuário {usuario_id} não encontrado")
 
-        # Mock: sem histórico suficiente, usa RF-04 (fallback/cold start).
-        if not historico:
-            return {
-                "sucesso": True,
-                "usuario_id": usuario_id,
-                "tipo": "fallback",
-                "recomendacoes": recomendar_fallback(),
-            }
+        historico = usuario["historico"]
+        rankings = []
+        for produto_id in historico:
+            try:
+                base = dados.buscar_produto(produto_id, chamador=chamador)
+            except dados.RegistroNaoEncontrado:
+                continue  # produto removido do catálogo: o log registra o erro
+            candidatos = dados.listar_produtos_relacionados(produto_id, chamador=chamador)
+            rankings.append(recomendador.ranquear(base, candidatos, LIMITE_MAXIMO, excluir=set(historico)))
 
-        # Mock de personalização: usa o último produto visualizado.
-        ultimo_produto = historico[-1]
-
-        if not isinstance(ultimo_produto, int):
-            return {
-                "sucesso": False,
-                "erro": "Os itens do historico devem ser IDs inteiros",
-            }
-
-        resultado = recomendar_produtos(ultimo_produto)
-
-        if resultado is None:
-            return {
-                "sucesso": False,
-                "erro": "Produto do histórico não encontrado",
-            }
+        recomendacoes = recomendador.combinar(rankings, limite)
+        if recomendacoes:
+            tipo = "personalizado"
+        else:
+            tipo = "fallback"  # RF-04: cold start
+            recomendacoes = _destaques(limite, chamador)
 
         return {
             "sucesso": True,
             "usuario_id": usuario_id,
-            "tipo": "personalizado_mock",
-            "recomendacoes": resultado,
-        }
-
-    @bentoml.api(input=JSON, output=JSON)
-    def registrar_evento(self, dados: dict):
-        evento = {
-            "tipo_evento": dados.get("tipo_evento"),
-            "usuario_id": dados.get("usuario_id"),
-            "produto_id": dados.get("produto_id"),
-        }
-
-        EVENTOS.append(evento)
-
-        return {
-            "sucesso": True,
-            "mensagem": "Evento registrado com sucesso",
-            "evento": evento,
-            "total_eventos": len(EVENTOS),
+            "tipo": tipo,
+            "historico_considerado": historico,
+            "recomendacoes": recomendacoes,
         }
 
     @bentoml.api
-    def metricas(self):
-        cliques = sum(
-            1 for evento in EVENTOS
-            if evento.get("tipo_evento") == "clique_recomendacao"
-        )
-        compras = sum(
-            1 for evento in EVENTOS
-            if evento.get("tipo_evento") == "compra"
-        )
+    def registrar_evento(self, tipo_evento: str, usuario_id: int, produto_id: int,
+                         ctx: bentoml.Context) -> dict:
+        """RF-06: grava visualização, clique em recomendação ou compra."""
+        chamador = "rota:/registrar_evento"
+        try:
+            dados.buscar_produto(produto_id, chamador=chamador)
+            evento = dados.registrar_evento(tipo_evento, usuario_id, produto_id, chamador=chamador)
+        except dados.RegistroNaoEncontrado:
+            return _erro(ctx, 404, f"Produto {produto_id} não encontrado")
+        except dados.DadoInvalido as erro:
+            return _erro(ctx, 400, str(erro))
+        return {"sucesso": True, "mensagem": "Evento registrado com sucesso", "evento": evento}
 
+    @bentoml.api
+    def metricas(self) -> dict:
+        eventos = dados.listar_eventos(chamador="rota:/metricas")
+        por_tipo = {tipo: 0 for tipo in sorted(dados.TIPOS_DE_EVENTO)}
+        for evento in eventos:
+            por_tipo[evento["tipo_evento"]] += 1
         return {
-            "total_eventos": len(EVENTOS),
-            "cliques": cliques,
-            "conversoes": compras,
+            "total_eventos": len(eventos),
+            "visualizacoes": por_tipo["visualizacao"],
+            "cliques": por_tipo["clique_recomendacao"],
+            "conversoes": por_tipo["compra"],
         }
