@@ -3,7 +3,7 @@
 - **Status:** Aceita
 - **Data:** 2026-11-21
 - **Autor:** PEDRO HENRIQUE DA SILVA MARROCOS (phsm3@cesar.school)
-- **Turma:** Embarque (segundas)
+- **Turma:** Embarque Digital
 - **Projeto:** Origem · marketplace da economia criativa e do artesanato de Pernambuco
 
 ## Contexto
