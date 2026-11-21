@@ -4,11 +4,11 @@
 - **Data:** 2026-11-21
 - **Autor:** PEDRO HENRIQUE DA SILVA MARROCOS (phsm3@cesar.school)
 - **Turma:** Embarque Digital
-- **Projeto:** Origem · marketplace da economia criativa e do artesanato de Pernambuco
+- **Projeto:** Ponto da Terra · marketplace da economia criativa e do artesanato de Pernambuco
 
 ## Contexto
 
-O Origem vende peças artesanais que muitas vezes têm só 1 ou 2 unidades, e vários compradores podem finalizar a mesma peça ao mesmo tempo. A equipe é pequena, o prazo é de um semestre e a stack já está acordada: Express, Prisma e PostgreSQL. As regras RN17 e RN18 exigem que o estoque nunca fique negativo e que a recusa seja "Item esgotado durante a finalização".
+O Ponto da Terra vende peças artesanais que muitas vezes têm só 1 ou 2 unidades, e vários compradores podem finalizar a mesma peça ao mesmo tempo. A equipe é pequena, o prazo é de um semestre e a stack já está acordada: Express, Prisma e PostgreSQL. As regras RN17 e RN18 exigem que o estoque nunca fique negativo e que a recusa seja "Item esgotado durante a finalização".
 
 ## Preocupações
 
