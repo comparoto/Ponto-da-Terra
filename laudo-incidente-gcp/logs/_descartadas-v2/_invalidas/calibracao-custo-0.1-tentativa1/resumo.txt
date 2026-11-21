@@ -1,0 +1,8 @@
+Rodada calibracao-custo-0.1  (estratégia: sem_backoff)  INVALIDA: cliente ficou 2.174 s sem enviar
+  tempo até a falha ............ 2 s   [cliente.jsonl]
+  tempo até a recuperação ...... 1 s   [cliente.jsonl]
+  % de erro (total) ............ 19.56% de 3400 requisições   [cliente.jsonl]
+  % de erro por fase ........... {'antes': 0.0, 'falha': 95.17, 'pos_red_button': 3.88}   [cliente.jsonl]
+  réplicas prontas após o botão  12/12   [service-control-*.jsonl]
+  crashes das réplicas ......... 112   [service-control-*.jsonl]
+  banco após o red-button ...... {'recebidas': 691, 'atendidas': 693, 'desperdicadas': 0, 'rejeitadas_503': 0, 'fila_max': 1}   [banco.jsonl]

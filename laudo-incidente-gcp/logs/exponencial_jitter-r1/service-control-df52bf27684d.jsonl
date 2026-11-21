@@ -1,0 +1,22 @@
+{"t": 1795223337.1912, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223337.4618, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.27, "versao": 1}
+{"t": 1795223337.4619, "evento": "pronta", "versao": 1}
+{"t": 1795223338.1915, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223353.9492, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.253, "versao": 2}
+{"t": 1795223353.9493, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223353.9952, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223354.5525, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223355.5526, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223356.5529, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795223357.5533, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223358.5536, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223359.5538, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223360.5541, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223362.5545, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223363.5548, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223366.5554, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223367.5557, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223368.556, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223373.5127, "evento": "carga_ok", "tentativas": 12, "duracao_s": 18.96, "versao": 3}
+{"t": 1795223373.5128, "evento": "pronta", "versao": 3}
+{"t": 1795223373.557, "evento": "tentativas_no_segundo", "carga_tentada": 1}

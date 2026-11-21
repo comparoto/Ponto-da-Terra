@@ -1,0 +1,26 @@
+{"t": 1795222057.773, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795222058.2114, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.375, "versao": 1}
+{"t": 1795222058.2176, "evento": "pronta", "versao": 1}
+{"t": 1795222058.7733, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795222075.8299, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795222076.8424, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795222077.9683, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795222079.0077, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795222080.3106, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795222081.3242, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795222082.3299, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795222086.3365, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795222087.3447, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795222088.3512, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795222092.9667, "evento": "carga_ok", "tentativas": 10, "duracao_s": 17.442, "versao": 2}
+{"t": 1795222093.2066, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222093.4254, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795222093.6395, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222095.8995, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795222096.2742, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.348, "versao": 2}
+{"t": 1795222096.2934, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222096.6223, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222098.1763, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795222098.5776, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.374, "versao": 3}
+{"t": 1795222098.5874, "evento": "pronta", "versao": 3}
+{"t": 1795222099.1753, "evento": "tentativas_no_segundo", "carga_tentada": 1}

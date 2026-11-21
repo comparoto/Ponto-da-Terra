@@ -1,0 +1,25 @@
+{"t": 1795223340.5259, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223340.7939, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.268, "versao": 1}
+{"t": 1795223340.794, "evento": "pronta", "versao": 1}
+{"t": 1795223341.5261, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223354.5283, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223354.559, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.502, "versao": 2}
+{"t": 1795223354.5592, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223354.6399, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223355.3089, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223355.5782, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.269, "versao": 2}
+{"t": 1795223355.5783, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223355.6154, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223356.0226, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223357.0228, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223358.0231, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795223359.0233, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223360.0236, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223361.0239, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223362.0242, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223363.0246, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223364.0249, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223367.0255, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223369.763, "evento": "carga_ok", "tentativas": 10, "duracao_s": 13.74, "versao": 3}
+{"t": 1795223369.7631, "evento": "pronta", "versao": 3}
+{"t": 1795223370.0262, "evento": "tentativas_no_segundo", "carga_tentada": 1}

@@ -1,0 +1,32 @@
+{"t": 1795222313.4797, "evento": "banco_iniciado", "vagas": 2, "custo_carga_s": 0.1, "fila_max": 100}
+{"t": 1795222314.4798, "evento": "segundo", "recebidas": 0, "atendidas": 0, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 0, "em_fila": 0}
+{"t": 1795222315.4854, "evento": "segundo", "recebidas": 0, "atendidas": 0, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 0, "em_fila": 0}
+{"t": 1795222316.4887, "evento": "segundo", "recebidas": 0, "atendidas": 0, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 0, "em_fila": 0}
+{"t": 1795222317.4946, "evento": "segundo", "recebidas": 1, "atendidas": 1, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222318.5002, "evento": "segundo", "recebidas": 1, "atendidas": 1, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222319.5054, "evento": "segundo", "recebidas": 4, "atendidas": 4, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222320.5091, "evento": "segundo", "recebidas": 6, "atendidas": 6, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222321.5124, "evento": "segundo", "recebidas": 7, "atendidas": 7, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222322.5159, "evento": "segundo", "recebidas": 8, "atendidas": 8, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222323.5198, "evento": "segundo", "recebidas": 8, "atendidas": 8, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222324.5229, "evento": "segundo", "recebidas": 9, "atendidas": 8, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222325.5257, "evento": "segundo", "recebidas": 10, "atendidas": 10, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222326.5285, "evento": "segundo", "recebidas": 11, "atendidas": 11, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222327.5318, "evento": "segundo", "recebidas": 11, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222328.5348, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222329.5375, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222330.5412, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222331.5446, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222332.5476, "evento": "segundo", "recebidas": 12, "atendidas": 11, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222333.5511, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222334.5544, "evento": "segundo", "recebidas": 11, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222335.5572, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222336.5641, "evento": "segundo", "recebidas": 12, "atendidas": 12, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222337.4425, "evento": "politica_com_campo_vazio_inserida", "versao": 2}
+{"t": 1795222337.5682, "evento": "segundo", "recebidas": 14, "atendidas": 13, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222338.5714, "evento": "segundo", "recebidas": 21, "atendidas": 21, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 2, "em_fila": 0}
+{"t": 1795222339.5801, "evento": "segundo", "recebidas": 7, "atendidas": 7, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222340.5876, "evento": "segundo", "recebidas": 4, "atendidas": 5, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 1, "em_fila": 0}
+{"t": 1795222341.5964, "evento": "segundo", "recebidas": 0, "atendidas": 0, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 0, "em_fila": 0}
+{"t": 1795222342.6002, "evento": "segundo", "recebidas": 0, "atendidas": 0, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 0, "em_fila": 0}
+{"t": 1795222343.6119, "evento": "segundo", "recebidas": 0, "atendidas": 0, "desperdicadas": 0, "rejeitadas": 0, "fila_max": 0, "em_fila": 0}

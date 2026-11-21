@@ -1,0 +1,8 @@
+Rodada exponencial-r2  (estratégia: exponencial)  VALIDA
+  tempo até a falha ............ 3 s   [cliente.jsonl]
+  tempo até a recuperação ...... 2 s   [cliente.jsonl]
+  % de erro (total) ............ 11.44% de 3400 requisições   [cliente.jsonl]
+  % de erro por fase ........... {'antes': 0.0, 'falha': 58.5, 'pos_red_button': 1.58}   [cliente.jsonl]
+  réplicas prontas após o botão  12/12   [service-control-*.jsonl]
+  crashes das réplicas ......... 13   [service-control-*.jsonl]
+  banco após o red-button ...... {'recebidas': 708, 'atendidas': 710, 'desperdicadas': 0, 'rejeitadas_503': 0, 'fila_max': 3}   [banco.jsonl]

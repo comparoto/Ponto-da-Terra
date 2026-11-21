@@ -1,0 +1,5 @@
+logs/manual/
+logs/_invalidas/
+__pycache__/
+# a .gitignore da raiz ignora README.md; aqui ele precisa ir para o repositório
+!README.md

@@ -1,0 +1,23 @@
+{"t": 1795223001.0112, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223001.2748, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.263, "versao": 1}
+{"t": 1795223001.2748, "evento": "pronta", "versao": 1}
+{"t": 1795223002.0115, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223014.629, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.252, "versao": 2}
+{"t": 1795223014.6291, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223014.6811, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223015.1449, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223015.4493, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.304, "versao": 2}
+{"t": 1795223015.4494, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223015.5421, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223016.1072, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223017.1074, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223018.1078, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795223019.108, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223020.1083, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223021.1086, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223022.1089, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223023.1092, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223026.1099, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223031.1108, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223031.1912, "evento": "carga_ok", "tentativas": 8, "duracao_s": 15.084, "versao": 3}
+{"t": 1795223031.1913, "evento": "pronta", "versao": 3}

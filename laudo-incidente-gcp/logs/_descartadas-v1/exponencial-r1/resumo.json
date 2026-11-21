@@ -1,0 +1,61 @@
+{
+  "rodada": "exponencial-r1",
+  "estrategia": "exponencial",
+  "banco_custo_carga_s": 0.25,
+  "arquivos": {
+    "requisicoes": "cliente.jsonl",
+    "banco": "banco.jsonl",
+    "replicas": [
+      "service-control-0a1e56fbfa91.jsonl",
+      "service-control-10313fa1f04a.jsonl",
+      "service-control-1880f9af6bfd.jsonl",
+      "service-control-1e12a9aec220.jsonl",
+      "service-control-2c9f66478809.jsonl",
+      "service-control-3025d7ba47d2.jsonl",
+      "service-control-3034101d02d3.jsonl",
+      "service-control-3ab5a07adc03.jsonl",
+      "service-control-70c756bd2fc0.jsonl",
+      "service-control-86b7b654d418.jsonl",
+      "service-control-a5885c76a28d.jsonl",
+      "service-control-aa5952b63f27.jsonl"
+    ]
+  },
+  "tempo_ate_falha_s": 3,
+  "tempo_ate_primeiro_erro_s": 0.825,
+  "tempo_ate_recuperacao_s": 2,
+  "recuperou": true,
+  "janela_observada_apos_red_button_s": 61.5,
+  "requisicoes_total": 3400,
+  "erro_pct_total": 11.47,
+  "erro_pct_por_fase": {
+    "antes": 0.0,
+    "falha": 57.83,
+    "pos_red_button": 1.79
+  },
+  "requisicoes_por_fase": {
+    "antes": 400,
+    "falha": 600,
+    "pos_red_button": 2400
+  },
+  "status_das_requisicoes": {
+    "200": 3010,
+    "conexao_recusada": 26,
+    "503": 364
+  },
+  "replicas_prontas_apos_red_button": 12,
+  "replicas_total": 12,
+  "crashes_das_replicas": 13,
+  "tentativas_de_carga": 131,
+  "banco_apos_red_button": {
+    "recebidas": 708,
+    "atendidas": 709,
+    "desperdicadas": 0,
+    "rejeitadas_503": 0,
+    "fila_max": 2
+  },
+  "banco_durante_falha": {
+    "desperdicadas": 102,
+    "rejeitadas_503": 0,
+    "fila_max": 26
+  }
+}

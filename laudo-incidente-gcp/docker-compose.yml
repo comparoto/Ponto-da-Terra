@@ -1,0 +1,73 @@
+# Miniatura do incidente Google Cloud (12/06/2025): política com campo em branco
+# derruba o Service Control; as réplicas voltam todas juntas e afogam o banco.
+#
+# Rodar uma vez (estratégia padrão = sem_backoff, como no incidente):
+#   docker compose up --abort-on-container-exit --exit-code-from cliente
+# Trocar a estratégia: variável ESTRATEGIA = sem_backoff | exponencial | exponencial_jitter
+# (os scripts rodar.ps1 / rodar.sh fazem isso e organizam as pastas de log)
+
+name: miniatura-gcp
+
+x-python: &python
+  image: python:3.12-slim
+  working_dir: /app
+  volumes:
+    - ./app:/app:ro
+    - ./logs:/logs
+  environment: &ambiente
+    RODADA: ${RODADA:-manual}
+    ESTRATEGIA: ${ESTRATEGIA:-sem_backoff}
+    PYTHONDONTWRITEBYTECODE: "1"
+
+services:
+  # Spanner regional: tabela de políticas, com capacidade limitada
+  banco:
+    <<: *python
+    command: ["python", "-u", "banco.py"]
+    environment:
+      <<: *ambiente
+      BANCO_VAGAS: "2"
+      BANCO_CUSTO_CARGA_S: ${BANCO_CUSTO_CARGA_S:-0.25}
+      BANCO_FILA_MAX: "100"
+    networks: [rede-dados]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/saude', timeout=2)"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  # Service Control: 12 réplicas, cada uma com um supervisor que a reinicia na hora
+  service-control:
+    <<: *python
+    command: ["python", "-u", "supervisor.py"]
+    deploy:
+      replicas: 12
+    environment:
+      <<: *ambiente
+      TIMEOUT_CARGA_S: "0.5"
+    networks: [rede-dados, rede-api]
+    depends_on:
+      banco:
+        condition: service_healthy
+
+  # Clientes da API + operador (insere a política e aciona o red-button) + medição
+  cliente:
+    <<: *python
+    command: ["python", "-u", "cliente.py"]
+    environment:
+      <<: *ambiente
+      REPLICAS: "12"
+      TAXA_RPS: "40"
+      AQUECIMENTO_S: "10"
+      ATE_RED_BUTTON_S: "15"
+      OBSERVAR_S: "60"
+    networks: [rede-api, rede-dados]
+    depends_on:
+      banco:
+        condition: service_healthy
+      service-control:
+        condition: service_started
+
+networks:
+  rede-api: {}
+  rede-dados: {}

@@ -1,0 +1,8 @@
+Rodada exponencial_jitter-r2  (estratégia: exponencial_jitter)  VALIDA
+  tempo até a falha ............ 12 s   [cliente.jsonl]
+  tempo até a recuperação ...... 11 s   [cliente.jsonl]
+  % de erro (total) ............ 16.74% de 3400 requisições   [cliente.jsonl]
+  % de erro por fase ........... {'antes': 0.0, 'falha': 53.67, 'pos_red_button': 10.3}   [cliente.jsonl]
+  réplicas prontas após o botão  12/12   [service-control-*.jsonl]
+  crashes das réplicas ......... 36   [service-control-*.jsonl]
+  banco após o red-button ...... {'recebidas': 691, 'atendidas': 623, 'desperdicadas': 73, 'rejeitadas_503': 0, 'fila_max': 18}   [banco.jsonl]

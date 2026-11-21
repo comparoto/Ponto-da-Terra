@@ -1,0 +1,25 @@
+{"t": 1795219148.9204, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795219149.1968, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.27, "versao": 1}
+{"t": 1795219149.2026, "evento": "pronta", "versao": 1}
+{"t": 1795219149.9206, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219168.9263, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219169.9312, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795219170.9446, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795219171.9479, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795219172.9534, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795219174.9568, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795219177.9602, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219178.2701, "evento": "carga_ok", "tentativas": 7, "duracao_s": 9.768, "versao": 2}
+{"t": 1795219178.2726, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795219178.3272, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795219178.8691, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795219179.8693, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795219180.8725, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795219181.8752, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795219182.7779, "evento": "carga_ok", "tentativas": 5, "duracao_s": 3.896, "versao": 2}
+{"t": 1795219182.7803, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795219182.8328, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795219183.2338, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795219183.5975, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.361, "versao": 3}
+{"t": 1795219183.6005, "evento": "pronta", "versao": 3}
+{"t": 1795219184.2339, "evento": "tentativas_no_segundo", "carga_tentada": 1}

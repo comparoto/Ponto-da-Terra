@@ -1,0 +1,23 @@
+{"t": 1795223338.1208, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223338.3849, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.264, "versao": 1}
+{"t": 1795223338.385, "evento": "pronta", "versao": 1}
+{"t": 1795223339.1211, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223353.7572, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.252, "versao": 2}
+{"t": 1795223353.7574, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223353.8118, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223354.3063, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223354.8269, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.52, "versao": 2}
+{"t": 1795223354.827, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223354.9112, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223355.4945, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223356.494, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223357.4942, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795223358.4944, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223359.4946, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223360.4949, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223363.4954, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223364.4956, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223368.4963, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223371.4969, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223371.5463, "evento": "carga_ok", "tentativas": 9, "duracao_s": 16.052, "versao": 3}
+{"t": 1795223371.5464, "evento": "pronta", "versao": 3}

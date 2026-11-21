@@ -1,0 +1,43 @@
+{"t": 1795222169.3165, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222169.4433, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.12, "versao": 1}
+{"t": 1795222169.4462, "evento": "pronta", "versao": 1}
+{"t": 1795222170.3166, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795222188.7148, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.106, "versao": 2}
+{"t": 1795222188.7214, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222188.8483, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222190.1856, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222190.4064, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.202, "versao": 2}
+{"t": 1795222190.4296, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222190.6045, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222191.8621, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222192.0159, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.14, "versao": 2}
+{"t": 1795222192.0236, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222192.1769, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222193.8368, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222194.034, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.178, "versao": 2}
+{"t": 1795222194.0407, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222194.2982, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222195.636, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222195.798, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.139, "versao": 2}
+{"t": 1795222195.8088, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222196.0164, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222197.5436, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222197.7232, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.175, "versao": 2}
+{"t": 1795222197.7388, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222197.9296, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222199.4952, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222199.729, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.224, "versao": 2}
+{"t": 1795222199.7457, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222199.9136, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222201.5426, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222201.791, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.231, "versao": 2}
+{"t": 1795222201.7963, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222202.0148, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222203.2142, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222203.3646, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.142, "versao": 2}
+{"t": 1795222203.3699, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795222203.576, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795222205.2764, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795222205.462, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.18, "versao": 3}
+{"t": 1795222205.4748, "evento": "pronta", "versao": 3}
+{"t": 1795222206.2741, "evento": "tentativas_no_segundo", "carga_tentada": 1}

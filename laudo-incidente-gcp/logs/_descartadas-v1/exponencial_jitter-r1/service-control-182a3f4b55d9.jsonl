@@ -1,0 +1,25 @@
+{"t": 1795219501.9382, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795219502.2128, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.271, "versao": 1}
+{"t": 1795219502.2157, "evento": "pronta", "versao": 1}
+{"t": 1795219502.9383, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219516.8454, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.363, "versao": 2}
+{"t": 1795219516.8517, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795219516.992, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795219517.691, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795219518.6911, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795219519.6943, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795219520.6977, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795219521.7015, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795219522.7046, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795219524.711, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219525.7145, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795219526.7179, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219527.7215, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795219530.7248, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219530.7985, "evento": "carga_ok", "tentativas": 9, "duracao_s": 13.104, "versao": 2}
+{"t": 1795219530.801, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795219530.8668, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795219531.5084, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795219532.4486, "evento": "carga_ok", "tentativas": 2, "duracao_s": 0.936, "versao": 3}
+{"t": 1795219532.4521, "evento": "pronta", "versao": 3}
+{"t": 1795219532.5086, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}

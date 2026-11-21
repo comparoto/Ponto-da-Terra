@@ -1,0 +1,20 @@
+{"t": 1795219497.0774, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795219497.3596, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.275, "versao": 1}
+{"t": 1795219497.3658, "evento": "pronta", "versao": 1}
+{"t": 1795219498.0775, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219517.0854, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219517.2768, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.275, "versao": 2}
+{"t": 1795219517.2832, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795219517.3817, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795219517.9537, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795219518.9538, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795219519.9587, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795219520.9617, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795219521.9656, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795219522.9684, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795219523.9717, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795219524.9787, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795219526.9829, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795219531.3819, "evento": "carga_ok", "tentativas": 9, "duracao_s": 13.424, "versao": 3}
+{"t": 1795219531.3857, "evento": "pronta", "versao": 3}
+{"t": 1795219531.9867, "evento": "tentativas_no_segundo", "carga_tentada": 1}

@@ -1,0 +1,22 @@
+{"t": 1795223223.6581, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223223.9264, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.268, "versao": 1}
+{"t": 1795223223.9266, "evento": "pronta", "versao": 1}
+{"t": 1795223224.6582, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223242.6611, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223243.6614, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795223244.6616, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223245.6619, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223246.6621, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223248.6626, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223252.31, "evento": "carga_ok", "tentativas": 7, "duracao_s": 9.81, "versao": 2}
+{"t": 1795223252.3107, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223252.3912, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223253.1935, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223254.1936, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223255.194, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795223256.1942, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223257.1945, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223258.1948, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223259.1951, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223259.3269, "evento": "carga_ok", "tentativas": 6, "duracao_s": 6.133, "versao": 3}
+{"t": 1795223259.327, "evento": "pronta", "versao": 3}

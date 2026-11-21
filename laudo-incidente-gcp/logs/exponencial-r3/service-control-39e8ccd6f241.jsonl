@@ -1,0 +1,24 @@
+{"t": 1795223227.6977, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223227.9599, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.262, "versao": 1}
+{"t": 1795223227.96, "evento": "pronta", "versao": 1}
+{"t": 1795223228.6978, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223242.7001, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223243.7004, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795223244.7007, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223245.7009, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223246.7012, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223248.7017, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223252.0585, "evento": "carga_ok", "tentativas": 7, "duracao_s": 9.568, "versao": 2}
+{"t": 1795223252.0586, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223252.1374, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223252.8775, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795223253.8777, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223254.8779, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795223255.8782, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223256.8785, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223257.8787, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223258.879, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223259.8792, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223262.4638, "evento": "carga_ok", "tentativas": 7, "duracao_s": 9.586, "versao": 3}
+{"t": 1795223262.4639, "evento": "pronta", "versao": 3}
+{"t": 1795223262.8798, "evento": "tentativas_no_segundo", "carga_tentada": 1}

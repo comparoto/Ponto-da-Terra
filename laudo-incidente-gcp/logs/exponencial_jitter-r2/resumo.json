@@ -1,0 +1,74 @@
+{
+  "rodada": "exponencial_jitter-r2",
+  "estrategia": "exponencial_jitter",
+  "banco_custo_carga_s": 0.25,
+  "arquivos": {
+    "requisicoes": "cliente.jsonl",
+    "banco": "banco.jsonl",
+    "replicas": [
+      "service-control-047e44355a55.jsonl",
+      "service-control-176c7dd5e318.jsonl",
+      "service-control-29314883a471.jsonl",
+      "service-control-485aa0837e9e.jsonl",
+      "service-control-69897659127c.jsonl",
+      "service-control-69dd1500729d.jsonl",
+      "service-control-784c09e191b7.jsonl",
+      "service-control-7daebfcd93e2.jsonl",
+      "service-control-9da09f654c0d.jsonl",
+      "service-control-b0ebe9605a16.jsonl",
+      "service-control-df5de6729958.jsonl",
+      "service-control-ee0491caeb9f.jsonl"
+    ]
+  },
+  "tempo_ate_falha_s": 12,
+  "tempo_ate_primeiro_erro_s": 0.298,
+  "tempo_ate_recuperacao_s": 11,
+  "recuperou": true,
+  "janela_observada_apos_red_button_s": 60.0,
+  "atraso_do_operador": {
+    "injecao_s": 0.002,
+    "red_button_s": 0.007
+  },
+  "maior_pausa_no_envio_s": 0.032,
+  "requisicoes_esperadas": 3400,
+  "valida": true,
+  "requisicoes_total": 3400,
+  "erro_pct_total": 16.74,
+  "erro_pct_por_fase": {
+    "antes": 0.0,
+    "falha": 53.67,
+    "pos_red_button": 10.3
+  },
+  "requisicoes_por_fase": {
+    "antes": 401,
+    "falha": 600,
+    "pos_red_button": 2399
+  },
+  "status_das_requisicoes": {
+    "200": 2831,
+    "conexao_recusada": 106,
+    "503": 463
+  },
+  "replicas_prontas_apos_red_button": 12,
+  "replicas_total": 12,
+  "crashes_das_replicas": 36,
+  "tentativas_de_carga": 166,
+  "primeiro_crash_das_replicas_s": {
+    "replicas_que_quebraram": 12,
+    "mais_cedo": 0.27,
+    "mais_tarde": 13.0
+  },
+  "banco_atendidas_com_fila_cheia_apos_red_button": 0,
+  "banco_apos_red_button": {
+    "recebidas": 691,
+    "atendidas": 623,
+    "desperdicadas": 73,
+    "rejeitadas_503": 0,
+    "fila_max": 18
+  },
+  "banco_durante_falha": {
+    "desperdicadas": 94,
+    "rejeitadas_503": 0,
+    "fila_max": 32
+  }
+}

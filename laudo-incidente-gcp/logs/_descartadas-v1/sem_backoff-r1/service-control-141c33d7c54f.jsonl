@@ -1,0 +1,60 @@
+{"t": 1795218812.215, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795218812.491, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.268, "versao": 1}
+{"t": 1795218812.4944, "evento": "pronta", "versao": 1}
+{"t": 1795218813.2151, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795218826.2205, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795218826.2487, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.501, "versao": 2}
+{"t": 1795218826.2545, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795218826.3598, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795218827.1645, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795218828.1646, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795218829.1685, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795218830.1716, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795218831.175, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795218832.1781, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795218833.1825, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795218834.1853, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 9, "carga_falhou:HTTPError": 7}
+{"t": 1795218835.1908, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 40, "carga_falhou:HTTPError": 38}
+{"t": 1795218836.1976, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 93, "carga_tentada": 93}
+{"t": 1795218837.2035, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 98, "carga_tentada": 98}
+{"t": 1795218838.2098, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 11, "carga_tentada": 12, "carga_falhou:TimeoutError": 1}
+{"t": 1795218839.2162, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 87, "carga_falhou:HTTPError": 86}
+{"t": 1795218840.2206, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 99, "carga_tentada": 99}
+{"t": 1795218841.2271, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 91, "carga_tentada": 91}
+{"t": 1795218842.2337, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 96, "carga_tentada": 96}
+{"t": 1795218843.246, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 46, "carga_tentada": 47, "carga_falhou:TimeoutError": 1}
+{"t": 1795218844.2526, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 91, "carga_tentada": 90}
+{"t": 1795218845.2595, "evento": "tentativas_no_segundo", "carga_tentada": 55, "carga_falhou:HTTPError": 54}
+{"t": 1795218846.2661, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 80, "carga_falhou:HTTPError": 79}
+{"t": 1795218847.2719, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 28, "carga_tentada": 29, "carga_falhou:TimeoutError": 1}
+{"t": 1795218848.2789, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 57, "carga_falhou:HTTPError": 56}
+{"t": 1795218849.2844, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 92, "carga_tentada": 92}
+{"t": 1795218850.2899, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 122, "carga_tentada": 122}
+{"t": 1795218851.296, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 100, "carga_falhou:HTTPError": 99}
+{"t": 1795218852.3011, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 33, "carga_falhou:HTTPError": 31}
+{"t": 1795218853.196, "evento": "carga_ok", "tentativas": 1378, "duracao_s": 26.024, "versao": 3}
+{"t": 1795218853.2004, "evento": "pronta", "versao": 3}
+{"t": 1795218853.3085, "evento": "tentativas_no_segundo", "carga_falhou:HTTPError": 35, "carga_tentada": 36, "carga_falhou:TimeoutError": 1}
+{"t": 1795218854.3121, "evento": "tentativas_no_segundo", "versao_falhou:HTTPError": 1}
+{"t": 1795218856.3159, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218857.3187, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218859.3216, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218860.3254, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218862.3298, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218863.338, "evento": "tentativas_no_segundo", "versao_falhou:HTTPError": 1}
+{"t": 1795218864.3409, "evento": "tentativas_no_segundo", "versao_falhou:HTTPError": 1}
+{"t": 1795218865.3435, "evento": "tentativas_no_segundo", "versao_falhou:HTTPError": 1}
+{"t": 1795218866.3462, "evento": "tentativas_no_segundo", "versao_falhou:HTTPError": 1}
+{"t": 1795218867.3489, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218869.3524, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218870.3551, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218872.3585, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218873.3645, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218875.368, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218876.3713, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218878.3751, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218879.378, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218881.381, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218882.3837, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218884.391, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}
+{"t": 1795218885.3934, "evento": "tentativas_no_segundo", "versao_falhou:TimeoutError": 1}

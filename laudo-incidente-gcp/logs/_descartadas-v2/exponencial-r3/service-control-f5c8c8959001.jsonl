@@ -1,0 +1,25 @@
+{"t": 1795221055.2159, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795221055.4902, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.269, "versao": 1}
+{"t": 1795221055.4939, "evento": "pronta", "versao": 1}
+{"t": 1795221056.216, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795221075.2241, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795221076.2282, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795221077.2322, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795221078.2427, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795221079.2458, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795221081.2511, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795221082.2599, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795221084.7545, "evento": "carga_ok", "tentativas": 7, "duracao_s": 9.575, "versao": 2}
+{"t": 1795221084.7605, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795221084.861, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795221085.5464, "evento": "processo_iniciado", "estrategia": "exponencial"}
+{"t": 1795221086.5465, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795221087.5502, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795221088.5734, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795221089.5779, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795221090.5849, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795221091.5886, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795221092.5953, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795221095.1679, "evento": "carga_ok", "tentativas": 7, "duracao_s": 9.612, "versao": 3}
+{"t": 1795221095.176, "evento": "pronta", "versao": 3}
+{"t": 1795221095.6049, "evento": "tentativas_no_segundo", "carga_tentada": 1}

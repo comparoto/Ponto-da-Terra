@@ -1,0 +1,47 @@
+{"t": 1795220088.4122, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220088.53, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.114, "versao": 1}
+{"t": 1795220088.5328, "evento": "pronta", "versao": 1}
+{"t": 1795220089.4123, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795220100.7486, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.104, "versao": 2}
+{"t": 1795220100.7542, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220100.903, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220102.4808, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220102.7691, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.266, "versao": 2}
+{"t": 1795220102.7925, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220103.0471, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220104.8979, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220105.1022, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.192, "versao": 2}
+{"t": 1795220105.1129, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220105.4079, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220107.4922, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220107.6633, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.16, "versao": 2}
+{"t": 1795220107.6771, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220107.9256, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220109.7375, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220109.9233, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.173, "versao": 2}
+{"t": 1795220109.9408, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220110.2004, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220112.0653, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220112.302, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.232, "versao": 2}
+{"t": 1795220112.3165, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220112.5507, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220114.3213, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220114.5464, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.207, "versao": 2}
+{"t": 1795220114.5707, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220114.889, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220117.2111, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220117.4982, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.232, "versao": 2}
+{"t": 1795220117.5195, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220117.7326, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220119.642, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220119.8449, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.179, "versao": 2}
+{"t": 1795220119.8499, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220120.1425, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220121.5816, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220121.8296, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.216, "versao": 2}
+{"t": 1795220121.8486, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795220122.0765, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795220123.3122, "evento": "processo_iniciado", "estrategia": "sem_backoff"}
+{"t": 1795220123.5138, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.196, "versao": 3}
+{"t": 1795220123.5162, "evento": "pronta", "versao": 3}
+{"t": 1795220124.3123, "evento": "tentativas_no_segundo", "carga_tentada": 1}

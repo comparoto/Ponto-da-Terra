@@ -1,0 +1,16 @@
+{"t": 1795223336.5191, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223336.9165, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.397, "versao": 1}
+{"t": 1795223336.9166, "evento": "pronta", "versao": 1}
+{"t": 1795223337.5192, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223355.522, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223356.5222, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795223357.5225, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223358.5228, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223359.5231, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223360.5234, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223364.5241, "evento": "tentativas_no_segundo", "carga_tentada": 1, "carga_falhou:TimeoutError": 1}
+{"t": 1795223366.5246, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223367.5248, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223369.5254, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223369.6008, "evento": "carga_ok", "tentativas": 10, "duracao_s": 15.031, "versao": 3}
+{"t": 1795223369.6009, "evento": "politica_aplicada", "versao": 3}

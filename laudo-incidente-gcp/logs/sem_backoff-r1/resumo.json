@@ -1,0 +1,74 @@
+{
+  "rodada": "sem_backoff-r1",
+  "estrategia": "sem_backoff",
+  "banco_custo_carga_s": 0.25,
+  "arquivos": {
+    "requisicoes": "cliente.jsonl",
+    "banco": "banco.jsonl",
+    "replicas": [
+      "service-control-070bc430a94c.jsonl",
+      "service-control-3656f5c81e34.jsonl",
+      "service-control-3db3fad14f8c.jsonl",
+      "service-control-4500a8e2f5c9.jsonl",
+      "service-control-54c6cefa4d08.jsonl",
+      "service-control-67655f54c5ed.jsonl",
+      "service-control-690fad3989b8.jsonl",
+      "service-control-6e39bac799c9.jsonl",
+      "service-control-8429701c0962.jsonl",
+      "service-control-845efc626006.jsonl",
+      "service-control-cf8c66c9d054.jsonl",
+      "service-control-f4dc2dd1d57a.jsonl"
+    ]
+  },
+  "tempo_ate_falha_s": 2,
+  "tempo_ate_primeiro_erro_s": 0.622,
+  "tempo_ate_recuperacao_s": null,
+  "recuperou": false,
+  "janela_observada_apos_red_button_s": 60.0,
+  "atraso_do_operador": {
+    "injecao_s": 0.003,
+    "red_button_s": 0.011
+  },
+  "maior_pausa_no_envio_s": 0.046,
+  "requisicoes_esperadas": 3400,
+  "valida": true,
+  "requisicoes_total": 3400,
+  "erro_pct_total": 55.32,
+  "erro_pct_por_fase": {
+    "antes": 0.0,
+    "falha": 72.67,
+    "pos_red_button": 60.23
+  },
+  "requisicoes_por_fase": {
+    "antes": 401,
+    "falha": 600,
+    "pos_red_button": 2399
+  },
+  "status_das_requisicoes": {
+    "200": 1519,
+    "conexao_recusada": 43,
+    "503": 1838
+  },
+  "replicas_prontas_apos_red_button": 5,
+  "replicas_total": 12,
+  "crashes_das_replicas": 16,
+  "tentativas_de_carga": 48095,
+  "primeiro_crash_das_replicas_s": {
+    "replicas_que_quebraram": 11,
+    "mais_cedo": 0.45,
+    "mais_tarde": 14.83
+  },
+  "banco_atendidas_com_fila_cheia_apos_red_button": 4,
+  "banco_apos_red_button": {
+    "recebidas": 44484,
+    "atendidas": 4,
+    "desperdicadas": 475,
+    "rejeitadas_503": 44005,
+    "fila_max": 100
+  },
+  "banco_durante_falha": {
+    "desperdicadas": 103,
+    "rejeitadas_503": 4642,
+    "fila_max": 100
+  }
+}

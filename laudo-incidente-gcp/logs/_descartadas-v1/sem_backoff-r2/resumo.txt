@@ -1,0 +1,8 @@
+Rodada sem_backoff-r2  (estratégia: sem_backoff)
+  tempo até a falha ............ 2 s   [cliente.jsonl]
+  tempo até a recuperação ...... não recuperou em 61.5 s   [cliente.jsonl]
+  % de erro (total) ............ 58.03% de 3400 requisições   [cliente.jsonl]
+  % de erro por fase ........... {'antes': 0.0, 'falha': 62.17, 'pos_red_button': 66.67}   [cliente.jsonl]
+  réplicas prontas após o botão  0/12   [service-control-*.jsonl]
+  crashes das réplicas ......... 9   [service-control-*.jsonl]
+  banco após o red-button ...... {'recebidas': 44246, 'atendidas': 0, 'desperdicadas': 481, 'rejeitadas_503': 43765, 'fila_max': 100}   [banco.jsonl]

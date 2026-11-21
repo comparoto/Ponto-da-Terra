@@ -1,0 +1,23 @@
+{"t": 1795223340.4149, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223340.6817, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.267, "versao": 1}
+{"t": 1795223340.6819, "evento": "pronta", "versao": 1}
+{"t": 1795223341.415, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223354.0406, "evento": "carga_ok", "tentativas": 1, "duracao_s": 0.256, "versao": 2}
+{"t": 1795223354.0407, "evento": "crash", "erro": "TypeError: 'NoneType' object is not subscriptable"}
+{"t": 1795223354.1042, "evento": "processo_reiniciado", "codigo_saida": 1}
+{"t": 1795223354.69, "evento": "processo_iniciado", "estrategia": "exponencial_jitter"}
+{"t": 1795223355.6901, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223356.6904, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 2}
+{"t": 1795223357.6907, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 2, "carga_tentada": 1}
+{"t": 1795223358.691, "evento": "tentativas_no_segundo", "carga_tentada": 2, "carga_falhou:TimeoutError": 1}
+{"t": 1795223359.6912, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223360.6915, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223361.6918, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223363.6923, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223364.6925, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223367.693, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223368.6933, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1, "carga_tentada": 1}
+{"t": 1795223369.6935, "evento": "tentativas_no_segundo", "carga_falhou:TimeoutError": 1}
+{"t": 1795223372.6939, "evento": "tentativas_no_segundo", "carga_tentada": 1}
+{"t": 1795223372.7684, "evento": "carga_ok", "tentativas": 12, "duracao_s": 18.078, "versao": 3}
+{"t": 1795223372.7685, "evento": "pronta", "versao": 3}

@@ -1,0 +1,74 @@
+{
+  "rodada": "calibracao-custo-0.1",
+  "estrategia": "sem_backoff",
+  "banco_custo_carga_s": 0.1,
+  "arquivos": {
+    "requisicoes": "cliente.jsonl",
+    "banco": "banco.jsonl",
+    "replicas": [
+      "service-control-153f5cfd7ab1.jsonl",
+      "service-control-1f0d2144c26a.jsonl",
+      "service-control-2046cd1831bf.jsonl",
+      "service-control-3da3e8141463.jsonl",
+      "service-control-5277016533ef.jsonl",
+      "service-control-7286fe220a9a.jsonl",
+      "service-control-819b8e9f7c32.jsonl",
+      "service-control-908989f6173e.jsonl",
+      "service-control-aa384e0c740f.jsonl",
+      "service-control-d389b871b2ea.jsonl",
+      "service-control-e005f4639f56.jsonl",
+      "service-control-fcb4f73896db.jsonl"
+    ]
+  },
+  "tempo_ate_falha_s": 2,
+  "tempo_ate_primeiro_erro_s": 0.273,
+  "tempo_ate_recuperacao_s": 1,
+  "recuperou": true,
+  "janela_observada_apos_red_button_s": 60.0,
+  "atraso_do_operador": {
+    "injecao_s": 0.003,
+    "red_button_s": 0.015
+  },
+  "maior_pausa_no_envio_s": 0.044,
+  "requisicoes_esperadas": 3400,
+  "valida": true,
+  "requisicoes_total": 3400,
+  "erro_pct_total": 17.85,
+  "erro_pct_por_fase": {
+    "antes": 0.0,
+    "falha": 96.0,
+    "pos_red_button": 1.29
+  },
+  "requisicoes_por_fase": {
+    "antes": 401,
+    "falha": 600,
+    "pos_red_button": 2399
+  },
+  "status_das_requisicoes": {
+    "200": 2793,
+    "conexao_recusada": 533,
+    "503": 74
+  },
+  "replicas_prontas_apos_red_button": 12,
+  "replicas_total": 12,
+  "crashes_das_replicas": 101,
+  "tentativas_de_carga": 24,
+  "primeiro_crash_das_replicas_s": {
+    "replicas_que_quebraram": 12,
+    "mais_cedo": 0.11,
+    "mais_tarde": 1.09
+  },
+  "banco_atendidas_com_fila_cheia_apos_red_button": 0,
+  "banco_apos_red_button": {
+    "recebidas": 702,
+    "atendidas": 703,
+    "desperdicadas": 0,
+    "rejeitadas_503": 0,
+    "fila_max": 1
+  },
+  "banco_durante_falha": {
+    "desperdicadas": 0,
+    "rejeitadas_503": 0,
+    "fila_max": 2
+  }
+}
