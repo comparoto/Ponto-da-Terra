@@ -13,7 +13,7 @@ Esta rodada repete os mesmos 16 casos de teste (TC01 a TC16) da 1ª rodada, de 0
 | **Versão testada** | Plano v3. Código da branch `integracao-backend`, commit `5abf3e7` (frontend Next.js 16.4.6, API Express 5 com Prisma 7 e PostgreSQL 16) |
 | **Data de execução** | 22/11/2026 |
 | **Ambiente** | Local: Windows 11, Node 24, PostgreSQL 16 e Redis 7 em Docker, API, worker de filas e site rodando, Microsoft Edge (Playwright) e k6 (Docker) |
-| **Tipo de execução** | Automatizada (Jest com Supertest, Playwright e k6). Na 1ª rodada, a execução foi manual |
+| **Tipo de execução** | Automatizada (Jest com Supertest, Playwright e k6). A 1ª rodada combinou execução manual e automatizada (Playwright, com auxílio de IA) |
 | **Responsável** | Paulo César da Silva Marrocos, com apoio do Claude Code |
 | **Base de comparação** | Relatório da 1ª rodada (09/11/2026): 3 aprovados, 3 reprovados e 10 bloqueados |
 
@@ -69,7 +69,7 @@ Nenhum defeito aberto nesta rodada. Os defeitos encontrados e corrigidos durante
 
 ## Limites desta rodada
 
-- **Execução automatizada, não manual.** A 1ª rodada foi manual, e esta foi feita por scripts. Eles repetem, de forma automática, o que o relatório anterior apontava como falha, mas não substituem uma rodada manual da equipe em sala.
+- **Execução totalmente automatizada.** Esta rodada foi feita por scripts. Eles repetem, de forma automática, o que o relatório anterior apontava como falha, mas não substituem uma rodada manual da equipe em sala.
 - **Ambiente local.** O código testado é o da branch `integracao-backend`, rodando na máquina de desenvolvimento. A versão publicada na Vercel passou pelos mesmos roteiros em 11/11/2026, e os resultados estão no `RELATORIO_TESTES.md`.
 - **Critérios do plano.** Cada caso foi avaliado contra o que o relatório da 1ª rodada apontava como falha e contra os requisitos do projeto. O texto completo do plano v3 não foi reaberto para esta rodada, então vale a equipe conferir, caso a caso, se algum critério adicional do plano ficou de fora.
 - **Pagamentos e frete são simulados**, conforme a restrição de escopo do projeto: não há gateway real nem integração com os Correios.
