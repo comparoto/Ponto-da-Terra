@@ -2,7 +2,7 @@
 
 > **Arquivo gerado automaticamente** a partir de `backend/prisma/schema.prisma` (`cd backend && npm run docs:diagrama`). Não edite à mão: mude o schema e gere de novo.
 
-Este diagrama mostra o modelo de dados **como está implementado** (24 classes e 9 enumerações). Ele atualiza o diagrama de classes da 1ª unidade com os ajustes que a implementação exigiu: a tabela "Ajustes em relação ao diagrama da 1ª unidade", mais abaixo, vem dos comentários `AJUSTE` do próprio schema e se liga aos conflitos C2, C3, C8 e C9 do [documento de requisitos](../REQUISITOS_BACKEND.md) (seção 5).
+Este diagrama mostra o modelo de dados **como está implementado** (24 classes e 9 enumerações). Ele atualiza o diagrama de classes da 1ª unidade com os ajustes que a implementação exigiu: a tabela "Ajustes em relação ao diagrama da 1ª unidade", mais abaixo, vem dos comentários `AJUSTE` do próprio schema e se liga aos conflitos C2, C3, C8 e C9 do [documento de requisitos](REQUISITOS_BACKEND.md) (seção 5).
 
 **Como ler:** `*` = muitos, `1` = exatamente um, `0..1` = opcional. A seta sai da classe que guarda a chave estrangeira. O rótulo é o nome do campo de relação.
 
@@ -459,7 +459,7 @@ classDiagram
 
 ## Ajustes em relação ao diagrama da 1ª unidade
 
-Vêm dos comentários `AJUSTE` do schema. Os códigos C2, C3, C8, C9 e D5 referem-se ao quadro de conflitos e decisões do [documento de requisitos](../REQUISITOS_BACKEND.md).
+Vêm dos comentários `AJUSTE` do schema. Os códigos C2, C3, C8, C9 e D5 referem-se ao quadro de conflitos e decisões do [documento de requisitos](REQUISITOS_BACKEND.md).
 
 | Onde | Ajuste |
 |---|---|

@@ -23,7 +23,7 @@ Este documento declara como a IA generativa foi usada no desenvolvimento da 2ª 
 ## O que não é da IA
 
 - **Escolha do tema, escopo, requisitos e histórias de usuário:** vêm da equipe, na 1ª unidade e nas definições do documento de requisitos.
-- **Decisões de produto e de arquitetura:** as decisões estão registradas (conflitos C1 a C11 e decisões D1 a D9 em [REQUISITOS_BACKEND.md](../REQUISITOS_BACKEND.md)) e foram tomadas pela equipe. A IA propôs alternativas e implementou a escolhida.
+- **Decisões de produto e de arquitetura:** as decisões estão registradas (conflitos C1 a C11 e decisões D1 a D9 em [REQUISITOS_BACKEND.md](REQUISITOS_BACKEND.md)) e foram tomadas pela equipe. A IA propôs alternativas e implementou a escolhida.
 - **Operação em produção:** publicação na Vercel, variáveis de ambiente, credenciais e apagar dados do banco de produção foram feitos pelo autor. A IA não recebeu acesso a essas credenciais.
 - **Trabalho dos outros integrantes:** a IA não alterou o que outros integrantes entregaram em suas atividades individuais.
 

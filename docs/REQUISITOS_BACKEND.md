@@ -876,7 +876,7 @@ O `data/mockData.ts` vira o **`prisma/seed.ts`**.
 | D6 | **"IA" exigida pelo Notion** | Ex.: gerar descrição da peça a partir do título/técnica; busca semântica; moderação automática de imagem/texto na curadoria | Confirmar com o professor. Sugestão: **pré-curadoria por IA** (sinaliza descrição/imagem suspeita para o admin), rodando **na fila** (cumpre IA e fila ao mesmo tempo) |
 | D7 | **Storage de imagens** | Cloudinary, Supabase Storage, S3 | Cloudinary ou Supabase (plano gratuito) |
 | D8 | **Token** | Bearer no header (como nos TCs) vs. cookie httpOnly | Bearer: é o que os casos de teste descrevem |
-| D9 | **Ajustes nos documentos** | Atualizar diagrama de classes (C2, C3, C8), TC09 (C1), TC02 (C7) | **Parcial.** O diagrama de classes atualizado está em [docs/DIAGRAMA_DE_CLASSES.md](docs/DIAGRAMA_DE_CLASSES.md), gerado do schema. Pendentes: o diagrama original no Drive e os casos TC09 e TC02 do plano de testes (documentos externos) |
+| D9 | **Ajustes nos documentos** | Atualizar diagrama de classes (C2, C3, C8), TC09 (C1), TC02 (C7) | **Parcial.** O diagrama de classes atualizado está em [docs/DIAGRAMA_DE_CLASSES.md](DIAGRAMA_DE_CLASSES.md), gerado do schema. Pendentes: o diagrama original no Drive e os casos TC09 e TC02 do plano de testes (documentos externos) |
 
 ---
 
@@ -893,7 +893,7 @@ A rodada teve **3 aprovados, 3 reprovados e 10 bloqueados**, com recomendação 
 | **TC01** (bloqueado) | O bloqueio do painel admin era "só uma verificação no navegador, fácil de burlar" | O middleware `somente(ADMIN)` roda no servidor para todo `/api/admin/*`: 401 sem token, 403 para outro perfil |
 | **TC05, TC06, TC07** (bloqueados) | Não havia endpoint, paginação nem JWT | Implementados e cobertos por testes automatizados |
 
-**Situação atual:** os 16 casos de teste deixaram de estar bloqueados. Todos têm teste automatizado de API, e os fluxos de tela (TC04, TC08, TC09, TC12, TC14, TC15, TC16) também têm teste no navegador. O mapeamento caso a caso está em [`backend/README.md`](backend/README.md#testes).
+**Situação atual:** os 16 casos de teste deixaram de estar bloqueados. Todos têm teste automatizado de API, e os fluxos de tela (TC04, TC08, TC09, TC12, TC14, TC15, TC16) também têm teste no navegador. O mapeamento caso a caso está em [`backend/README.md`](../backend/README.md#testes).
 
 **Para a 2ª rodada:**
 - **Reexecutar os 16 casos.** Use o site, o Swagger em `/api/docs` ou o Postman, e anexe como evidência a saída de `npm test` (backend) e de `npm test` (e2e).

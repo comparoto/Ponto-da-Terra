@@ -1,7 +1,7 @@
 # API · Origem: Ponto da Terra
 
 Backend REST do marketplace, que substituiu a Fake API do frontend. Tem dois processos: a **API HTTP** e um **worker** de filas.
-Requisitos, decisões e roadmap: [`../REQUISITOS_BACKEND.md`](../REQUISITOS_BACKEND.md).
+Requisitos, decisões e roadmap: [`../docs/REQUISITOS_BACKEND.md`](../docs/REQUISITOS_BACKEND.md).
 
 **Stack:** Node.js + TypeScript · Express 5 · Prisma 7 (driver `pg`) · PostgreSQL 16 · Redis 7 + BullMQ · Zod 4 · JWT · Swagger · Nodemailer (SMTP) · sharp · Jest + Supertest · k6
 
@@ -133,7 +133,7 @@ São 69 operações em 60 caminhos, todas documentadas no Swagger. Principais gr
 - **Limpar dados de teste:** os roteiros E2E criam contas `@teste.com` e peças "Peça de teste E2E". `npm run limpar:testes` lista o que eles deixaram no banco do `DATABASE_URL`; `npm run limpar:testes -- --apagar` remove tudo numa transação (contas de demonstração e peças reais não são tocadas).
 - **Carga (k6):** `npm run test:carga`, com a API rodando. Se o k6 não estiver instalado, use o Docker:
   `docker run --rm -i -e API=http://host.docker.internal:3333/api grafana/k6 run - < tests/carga/checkout-concorrente.k6.js`
-- **Navegador e segurança:** pasta [`../e2e`](../e2e): 89 verificações de fluxo, 39 de responsividade e acessibilidade e 20 ataques de segurança. Resultados em [`../RELATORIO_TESTES.md`](../RELATORIO_TESTES.md).
+- **Navegador e segurança:** pasta [`../e2e`](../e2e): 89 verificações de fluxo, 39 de responsividade e acessibilidade e 20 ataques de segurança. Resultados em [`../RELATORIO_TESTES.md`](../docs/RELATORIO_TESTES.md).
 - **CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) roda typecheck, testes e build da API e lint, typecheck e build do frontend em todo push e PR.
 
 | Caso (plano v3) | 1ª rodada (09/11) | Coberto por |

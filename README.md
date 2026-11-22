@@ -59,7 +59,7 @@ O projeto integra três frentes acadêmicas:
 
 **Testar a API no Swagger:** abra a página, rode `POST /api/auth/login` com *Try it out* (por exemplo `comprador@pontodaterra.com` e `comprador123`), copie o `token` da resposta, clique em **Authorize** e cole só o token. As rotas com cadeado passam a funcionar.
 
-Configuração e publicação na nuvem: [`DEPLOY_VERCEL.md`](DEPLOY_VERCEL.md).
+Configuração e publicação na nuvem: [`docs/DEPLOY_VERCEL.md`](docs/DEPLOY_VERCEL.md).
 
 ---
 
@@ -293,13 +293,15 @@ type ApiResult<T> = {
 <details>
 <summary><b>📘 Segunda unidade (atual)</b></summary>
 
+> Índice de todos os documentos: [docs/README.md](docs/README.md).
+
 - **Desenvolvimento Web:**
   - [Aplicação full stack (deploy)](https://ponto-da-terra-eight.vercel.app) · [Swagger](https://ponto-da-terra-api.vercel.app/api/docs)
-  - [Documentação do backend](backend/README.md) · [Guia de deploy na Vercel](DEPLOY_VERCEL.md)
+  - [Documentação do backend](backend/README.md) · [Guia de deploy na Vercel](docs/DEPLOY_VERCEL.md)
 - **Requisitos, Projeto de Software e Validação:**
-  - [Requisitos, decisões e roadmap do backend](REQUISITOS_BACKEND.md)
+  - [Requisitos, decisões e roadmap do backend](docs/REQUISITOS_BACKEND.md)
   - [Diagrama de classes atualizado (gerado do schema)](docs/DIAGRAMA_DE_CLASSES.md)
-  - [Relatório de testes · 2ª rodada](docs/RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](RELATORIO_TESTES.md)
+  - [Relatório de testes · 2ª rodada](docs/RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](docs/RELATORIO_TESTES.md)
   - [Evidências da Avaliação 2](docs/EVIDENCIAS_AVALIACAO_2.md)
   - [Uso de IA na 2ª unidade](docs/USO_DE_IA_2A_UNIDADE.md)
   - [Refatoração de code smells: moderação de contas](docs/REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](docs/REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](docs/ANALISE_CODE_SMELLS.md)

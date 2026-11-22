@@ -7,7 +7,7 @@ Este documento reúne as evidências pedidas nos "Entregáveis da Avaliação 2"
 | Entregável | Onde está | Situação |
 |---|---|---|
 | Repositório GitHub final | [github.com/comparoto/Ponto-da-Terra](https://github.com/comparoto/Ponto-da-Terra), branch `integracao-backend` ([README](../README.md)) | Frontend, backend e instruções de execução. Ainda não está na `main` |
-| Deploy final | [Site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) ([DEPLOY_VERCEL.md](../DEPLOY_VERCEL.md)) | No ar. A versão publicada **não tem** o código da recomendação, que só existe no repositório até o próximo deploy |
+| Deploy final | [Site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) ([DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)) | No ar. A versão publicada **não tem** o código da recomendação, que só existe no repositório até o próximo deploy |
 | Vídeo ou screencast | Link do README (1ª entrega) | **Pendente:** é preciso gravar um novo, com o *Network* do navegador aberto |
 | Documentação da API | [Swagger](https://ponto-da-terra-api.vercel.app/api/docs) · [backend/README.md](../backend/README.md) | 69 operações em 60 caminhos, com teste de contrato que compara as respostas com a documentação |
 | README atualizado | [README.md](../README.md) | Arquitetura, execução, tecnologias e deploy |
@@ -143,7 +143,7 @@ Com cache, a API atendeu **cerca de 5 vezes mais requisições por segundo** e c
 
 **Limites desta medição, para falar com clareza:**
 - Foi feita numa máquina de desenvolvimento, com outras aplicações abertas e o banco em Docker. Vale como **comparação entre os dois cenários**, não como capacidade de produção.
-- Os valores absolutos ficaram abaixo dos medidos em 11/11/2026 e registrados no [RELATORIO_TESTES.md](../RELATORIO_TESTES.md) (naquela data, com cache: 282 req/s e mediana de 158 ms; sem cache: 152 req/s e mediana de 298 ms). Não investiguei a causa da diferença. A comparação (o cache é bem mais rápido) se mantém nas duas medições.
+- Os valores absolutos ficaram abaixo dos medidos em 11/11/2026 e registrados no [RELATORIO_TESTES.md](RELATORIO_TESTES.md) (naquela data, com cache: 282 req/s e mediana de 158 ms; sem cache: 152 req/s e mediana de 298 ms). Não investiguei a causa da diferença. A comparação (o cache é bem mais rápido) se mantém nas duas medições.
 - A versão do mesmo teste em **k6 via Docker**, rodada hoje nesta máquina, **reprovou nos limites** em duas execuções (tempos altos e algumas falhas com 50 usuários simultâneos; na 1ª, as falhas foram erros 500 por tempo esgotado de transação no banco). Uma medição direta com Node, no mesmo momento, não teve nenhum erro. O k6 em Docker no Windows pode estar limitado por essa máquina. Não repeti em outra.
 
 **Como repetir:** com a API rodando, `cd backend && node tests/carga/vitrine-cache.mjs`. Versão em k6: `npm run test:carga:vitrine`.

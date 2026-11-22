@@ -1,5 +1,5 @@
 // Schema do Ponto da Terra — baseado no Diagrama de Classes da equipe.
-// Ajustes em relação ao diagrama estão documentados em REQUISITOS_BACKEND.md §5 e marcados com "AJUSTE".
+// Ajustes em relação ao diagrama estão documentados em docs/REQUISITOS_BACKEND.md §5 e marcados com "AJUSTE".
 
 generator client {
   provider = "prisma-client-js"

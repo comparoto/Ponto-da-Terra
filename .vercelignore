@@ -2,7 +2,6 @@
 backend
 e2e
 .github
-RELATORIO_TESTES.md
-REQUISITOS_BACKEND.md
+docs
 .env.local
 .vercel
