@@ -7,7 +7,7 @@
 
 | Tipo de teste | Ferramenta | Resultado |
 |---|---|---|
-| Testes automatizados da API (unidade + integração) | Jest + Supertest | **143 / 143** passaram |
+| Testes automatizados da API (unidade + integração) | Jest + Supertest | **144 / 144** passaram |
 | Cobertura de código da API | Jest (`npm run test:cobertura`) | **91,5 %** das instruções · **95,2 %** das linhas · 72,4 % dos desvios |
 | Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **68 / 68** verificações (18 + 23 + 17 + 10) |
 | Responsividade (celular 375 px, tablet 768 px, desktop 1366 px) | Playwright | **39 / 39** combinações (13 telas × 3 tamanhos) sem rolagem horizontal e sem erros de JavaScript |
@@ -132,7 +132,7 @@ As 47 respostas MISS no cenário com cache são as primeiras requisições simul
 
 ```bash
 # Infra + API + worker + frontend (ver README da raiz)
-cd backend && npm test                     # 143 testes da API
+cd backend && npm test                     # 144 testes da API
 cd backend && npm run test:cobertura       # relatório de cobertura (backend/coverage/index.html)
 cd backend && npm run test:carga           # k6 (ou via Docker, ver backend/README.md)
 cd e2e && npm install && npm test          # segurança + 3 roteiros de fluxo + responsividade/acessibilidade
