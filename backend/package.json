@@ -24,6 +24,7 @@
     "test:carga": "k6 run tests/carga/checkout-concorrente.k6.js",
     "test:carga:vitrine": "k6 run tests/carga/vitrine-cache.k6.js",
     "limpar:testes": "tsx scripts/limpar-dados-teste.ts",
+    "docs:diagrama": "tsx scripts/gerar-diagrama-de-classes.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

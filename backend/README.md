@@ -108,7 +108,7 @@ backend/
 
 ## Rotas
 
-São 60 rotas, todas documentadas no Swagger. Principais grupos:
+São 69 operações em 60 caminhos, todas documentadas no Swagger. Principais grupos:
 
 | Área | Rotas |
 |---|---|
