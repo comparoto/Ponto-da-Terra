@@ -41,9 +41,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 README.md
-# O README do backend faz parte da documentação do projeto (a linha acima o ignoraria)
-!backend/README.md
-!docs/README.md
+# Todos os documentos .md ficam em docs/md/ (a linha acima ignoraria os README)
+!docs/md/*.md
 
-# O next dev recria o AGENTS.md na raiz; a versão versionada fica em docs/agentes/
+# O next dev recria o AGENTS.md na raiz; a versão versionada fica em docs/md/
 /AGENTS.md

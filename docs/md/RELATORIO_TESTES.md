@@ -3,7 +3,7 @@
 **Data da execução:** 11/11/2026 · **Versão:** integração completa (branch `integracao-backend`) · Next.js 16.4.6
 **Ambiente:** Windows 11, Node 24, PostgreSQL 16 e Redis 7 em Docker, Microsoft Edge (Playwright). A API rodou em modo de desenvolvimento e o frontend em build de produção (`next start`).
 
-> **2ª rodada dos 16 casos do plano v3 (22/11/2026):** os 16 passaram, contra 3 aprovados, 3 reprovados e 10 bloqueados na 1ª rodada. O relatório caso a caso, no mesmo formato da 1ª rodada, está em [`docs/RELATORIO_2A_RODADA_TESTES.md`](RELATORIO_2A_RODADA_TESTES.md).
+> **2ª rodada dos 16 casos do plano v3 (22/11/2026):** os 16 passaram, contra 3 aprovados, 3 reprovados e 10 bloqueados na 1ª rodada. O relatório caso a caso, no mesmo formato da 1ª rodada, está em [`docs/md/RELATORIO_2A_RODADA_TESTES.md`](RELATORIO_2A_RODADA_TESTES.md).
 
 ## Resumo
 
@@ -136,6 +136,6 @@ As 47 respostas MISS no cenário com cache são as primeiras requisições simul
 # Infra + API + worker + frontend (ver README da raiz)
 cd backend && npm test                     # 143 testes da API
 cd backend && npm run test:cobertura       # relatório de cobertura (backend/coverage/index.html)
-cd backend && npm run test:carga           # k6 (ou via Docker, ver backend/README.md)
+cd backend && npm run test:carga           # k6 (ou via Docker, ver docs/md/README_BACKEND.md)
 cd e2e && npm install && npm test          # segurança + 3 roteiros de fluxo + responsividade/acessibilidade
 ```

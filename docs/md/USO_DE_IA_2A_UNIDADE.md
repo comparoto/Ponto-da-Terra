@@ -1,6 +1,6 @@
 # Uso de IA na 2ª unidade
 
-Este documento declara como a IA generativa foi usada no desenvolvimento da 2ª unidade do **Origem: Ponto da Terra** (integração do frontend com o backend, testes e documentação). Complementa o log de uso de IA da 1ª unidade, listado no [README](../README.md).
+Este documento declara como a IA generativa foi usada no desenvolvimento da 2ª unidade do **Origem: Ponto da Terra** (integração do frontend com o backend, testes e documentação). Complementa o log de uso de IA da 1ª unidade, listado no [README](README.md).
 
 ## Ferramenta e forma de uso
 

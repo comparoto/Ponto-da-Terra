@@ -6,12 +6,12 @@ Este documento reúne as evidências pedidas nos "Entregáveis da Avaliação 2"
 
 | Entregável | Onde está | Situação |
 |---|---|---|
-| Repositório GitHub final | [github.com/comparoto/Ponto-da-Terra](https://github.com/comparoto/Ponto-da-Terra), branch `integracao-backend` ([README](../README.md)) | Frontend, backend e instruções de execução. Ainda não está na `main` |
+| Repositório GitHub final | [github.com/comparoto/Ponto-da-Terra](https://github.com/comparoto/Ponto-da-Terra), branch `integracao-backend` ([README](README.md)) | Frontend, backend e instruções de execução. Ainda não está na `main` |
 | Deploy final | [Site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) ([DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)) | No ar. A versão publicada **não tem** o código da recomendação, que só existe no repositório até o próximo deploy |
 | Vídeo ou screencast | Link do README (1ª entrega) | **Pendente:** é preciso gravar um novo, com o *Network* do navegador aberto |
-| Documentação da API | [Swagger](https://ponto-da-terra-api.vercel.app/api/docs) · [backend/README.md](../backend/README.md) | 69 operações em 60 caminhos, com teste de contrato que compara as respostas com a documentação |
-| README atualizado | [README.md](../README.md) | Arquitetura, execução, tecnologias e deploy |
-| `.env.example` | [.env.example](../.env.example) e [backend/.env.example](../backend/.env.example) | Só valores de exemplo; tokens e chaves ficam vazios |
+| Documentação da API | [Swagger](https://ponto-da-terra-api.vercel.app/api/docs) · [docs/md/README_BACKEND.md](README_BACKEND.md) | 69 operações em 60 caminhos, com teste de contrato que compara as respostas com a documentação |
+| README atualizado | [README.md](README.md) | Arquitetura, execução, tecnologias e deploy |
+| `.env.example` | [.env.example](../../.env.example) e [backend/.env.example](../../backend/.env.example) | Só valores de exemplo; tokens e chaves ficam vazios |
 | Evidência de banco de dados | [Seção 1](#1-evidência-de-banco-de-dados) | Abaixo |
 | Evidência de recomendação | [Seção 2](#2-evidência-de-recomendação) | Abaixo |
 | Evidência de assíncrono | [Seção 3](#3-evidência-de-assíncrono) | Abaixo |
@@ -58,7 +58,7 @@ Os dados continuam depois do reinício, porque estão gravados no volume do Post
 
 ## 2. Evidência de recomendação
 
-**O que é.** A seção **"Feitas para você"** da página inicial sugere peças a partir do que o comprador **visualizou** e **favoritou**. Código: [`src/services/recomendacaoService.ts`](../src/services/recomendacaoService.ts), usado em [`src/app/home/page.tsx`](../src/app/home/page.tsx).
+**O que é.** A seção **"Feitas para você"** da página inicial sugere peças a partir do que o comprador **visualizou** e **favoritou**. Código: [`src/services/recomendacaoService.ts`](../../src/services/recomendacaoService.ts), usado em [`src/app/home/page.tsx`](../../src/app/home/page.tsx).
 
 **Como funciona (conforme o código):**
 - Cada peça aberta no detalhe (modal) entra no histórico de visualização, guardado no `localStorage` do navegador (até 20 peças).
@@ -72,12 +72,12 @@ Os dados continuam depois do reinício, porque estão gravados no volume do Post
 1. Antes de ver qualquer peça, a seção mostra a ordem padrão do catálogo.
 2. O comprador abre a peça **Vaso Bojudo Terracota Esculpido** (técnica: barro, polo: Tracunhaém):
 
-   ![Peça aberta no detalhe](evidencias/recomendacao-2-peca-visualizada.png)
+   ![Peça aberta no detalhe](../evidencias/recomendacao-2-peca-visualizada.png)
 
 3. O histórico registrado no navegador passou a conter o identificador dessa peça (`ponto-da-terra:pecas-visualizadas`).
 4. De volta à página inicial, as quatro peças recomendadas são **todas da mesma técnica (barro)** que a peça vista:
 
-   ![Seção Feitas para você](evidencias/recomendacao-3-depois.png)
+   ![Seção Feitas para você](../evidencias/recomendacao-3-depois.png)
 
    Recomendadas: *Painel Decorativo Floral em Terracota*, *Moringa de Barro Polida*, *Trio Nordestino em Barro Figurativo* e *Pote Tradicional de Barro com Tampa*.
 
@@ -89,7 +89,7 @@ Os dados continuam depois do reinício, porque estão gravados no volume do Post
 
 **O que é.** Quando um comprador faz um pedido, o aviso ao artesão **não é gerado dentro da requisição**: ele passa por uma fila e é processado por um processo separado, o worker.
 
-**Fluxo ([backend/README.md](../backend/README.md)):**
+**Fluxo ([docs/md/README_BACKEND.md](README_BACKEND.md)):**
 1. O checkout grava a compra, os pedidos e um registro em `EventoOutbox` **na mesma transação do banco** (padrão Transactional Outbox). Se a transação falhar, não sobra evento solto.
 2. Um *relay* publica os eventos pendentes na fila (BullMQ com Redis localmente; QStash na Vercel).
 3. O **worker** consome o evento e grava a notificação em `NotificacaoLog`. O consumo é **idempotente**: o `eventoId` é único, então um evento repetido não gera notificação duplicada.
@@ -113,7 +113,7 @@ e2866abf-2a0f-4df0-a6be-4239670e097e | NOVO_PEDIDO | t                 | NOVO_PE
 
 A conta do artesão (Mestre Severino Ramos) passou de 19 para 20 notificações, e a nova aparece no topo, com o contador de não lidas no sino:
 
-![Notificação do artesão](evidencias/assincrono-notificacao-do-artesao.png)
+![Notificação do artesão](../evidencias/assincrono-notificacao-do-artesao.png)
 
 **Como repetir:** subir API e worker (`npm run dev` e `npm run dev:worker`, em `backend/`) e rodar `node evidencias-avaliacao-2.cjs` em `e2e/`. Sem o worker, a API funciona, mas os avisos não são gerados (veja o README do backend).
 
@@ -121,18 +121,18 @@ A conta do artesão (Mestre Severino Ramos) passou de 19 para 20 notificações,
 
 ## 4. Evidência de cache
 
-**Onde foi aplicado.** No **catálogo da vitrine** (`GET /api/produtos`, em [`produtos.service.ts`](../backend/src/modules/produtos/produtos.service.ts)), nas **categorias** e nas **páginas de artesãos** (lista e perfil público, em `artesaos.routes.ts`). Cache no **Redis** (Upstash em produção).
+**Onde foi aplicado.** No **catálogo da vitrine** (`GET /api/produtos`, em [`produtos.service.ts`](../../backend/src/modules/produtos/produtos.service.ts)), nas **categorias** e nas **páginas de artesãos** (lista e perfil público, em `artesaos.routes.ts`). Cache no **Redis** (Upstash em produção).
 
 **Por que.** A vitrine é a página mais acessada e a consulta é cara: junta peças, artesões, categorias e estoque, com filtros e paginação. O catálogo muda pouco em relação à frequência de leitura, então vale guardar a resposta.
 
-**Como funciona ([`shared/cache.ts`](../backend/src/shared/cache.ts)):**
+**Como funciona ([`shared/cache.ts`](../../backend/src/shared/cache.ts)):**
 - A chave depende da consulta feita (filtros, página, ordenação).
 - O tempo de vida é de **60 segundos** (`CACHE_TTL_SECONDS`).
 - **Invalidação por versão:** qualquer mudança que afete a vitrine (aprovação ou reprovação na curadoria, edição de peça, mudança de estoque por compra ou por devolução, alterações de conta de artesão) aumenta o número da versão no Redis. As chaves antigas deixam de ser lidas e expiram sozinhas.
 - Se o Redis falhar, a API responde direto do banco, sem cache.
 - A resposta traz o cabeçalho **`X-Cache: HIT`** (veio do cache) ou **`MISS`** (veio do banco). Primeiras requisições nesta coleta: `MISS`, depois `HIT`.
 
-**Medição.** 50 usuários simultâneos por 15 s em cada cenário, com o script [`vitrine-cache.mjs`](../backend/tests/carga/vitrine-cache.mjs):
+**Medição.** 50 usuários simultâneos por 15 s em cada cenário, com o script [`vitrine-cache.mjs`](../../backend/tests/carga/vitrine-cache.mjs):
 
 | Cenário | Requisições | Por segundo | Mediana | p95 | Erros |
 |---|---|---|---|---|---|

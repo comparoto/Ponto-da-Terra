@@ -1,5 +1,5 @@
 /**
- * Gera docs/DIAGRAMA_DE_CLASSES.md a partir do schema do banco (backend/prisma/schema.prisma).
+ * Gera docs/md/DIAGRAMA_DE_CLASSES.md a partir do schema do banco (backend/prisma/schema.prisma).
  *
  * O diagrama sai do código, então não fica desatualizado: ao mudar o schema, rode
  *   npm run docs:diagrama      (na pasta backend/)
@@ -11,7 +11,7 @@ import { resolve } from 'node:path';
 
 const RAIZ = resolve(__dirname, '..', '..');
 const SCHEMA = resolve(RAIZ, 'backend', 'prisma', 'schema.prisma');
-const SAIDA = resolve(RAIZ, 'docs', 'DIAGRAMA_DE_CLASSES.md');
+const SAIDA = resolve(RAIZ, 'docs', 'md', 'DIAGRAMA_DE_CLASSES.md');
 
 const ESCALARES = new Set(['String', 'Int', 'Float', 'Decimal', 'Boolean', 'DateTime', 'Json', 'BigInt', 'Bytes']);
 

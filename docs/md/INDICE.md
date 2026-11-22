@@ -1,6 +1,6 @@
 # Documentação do projeto
 
-Índice dos documentos do **Origem: Ponto da Terra**. O [README principal](../README.md) apresenta o projeto, e o [README do backend](../backend/README.md) detalha a API.
+Índice dos documentos do **Origem: Ponto da Terra**. O [README principal](README.md) apresenta o projeto, e o [README do backend](README_BACKEND.md) detalha a API.
 
 ## Requisitos e modelagem
 
@@ -15,7 +15,7 @@
 |---|---|
 | [RELATORIO_2A_RODADA_TESTES.md](RELATORIO_2A_RODADA_TESTES.md) | 2ª rodada dos 16 casos de teste do plano v3, com status e observação de cada caso |
 | [RELATORIO_TESTES.md](RELATORIO_TESTES.md) | Histórico dos testes durante o desenvolvimento: defeitos encontrados e corrigidos, segurança, carga e desempenho do cache |
-| [EVIDENCIAS_AVALIACAO_2.md](EVIDENCIAS_AVALIACAO_2.md) | Evidências da Avaliação 2: banco de dados, recomendação, assíncrono e cache. As capturas ficam em [`evidencias/`](evidencias) |
+| [EVIDENCIAS_AVALIACAO_2.md](EVIDENCIAS_AVALIACAO_2.md) | Evidências da Avaliação 2: banco de dados, recomendação, assíncrono e cache. As capturas ficam em [`evidencias/`](../evidencias) |
 
 ## Qualidade de código e uso de IA
 
@@ -30,8 +30,8 @@
 
 | Documento | O que traz |
 |---|---|
-| [agentes/AGENTS.md](agentes/AGENTS.md) | Instruções para agentes de código sobre o Next.js usado no projeto (gerado pelo `next dev`) |
-| [agentes/CLAUDE.md](agentes/CLAUDE.md) | Arquivo de instruções do Claude Code, que importa o `AGENTS.md` |
+| [AGENTS.md](AGENTS.md) | Instruções para agentes de código sobre o Next.js usado no projeto (gerado pelo `next dev`) |
+| [CLAUDE.md](CLAUDE.md) | Arquivo de instruções do Claude Code, que importa o `AGENTS.md` |
 
 ## Publicação
 

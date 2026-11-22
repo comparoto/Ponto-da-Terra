@@ -83,7 +83,7 @@ cd backend && npm run dev:worker                    # worker de filas
 npm run build && npx next start -p 3002             # site, na raiz do projeto
 
 cd backend && npm test                              # 143 testes de API
-cd backend && npm run test:carga                    # k6, TC02 (ou via Docker, ver backend/README.md)
+cd backend && npm run test:carga                    # k6, TC02 (ou via Docker, ver docs/md/README_BACKEND.md)
 cd e2e && FRONT_URL=http://localhost:3002 npm test  # segurança, fluxos, telas e responsividade
 cd backend && npm run limpar:testes -- --apagar     # remove os dados criados pelos roteiros
 ```
