@@ -26,6 +26,13 @@
 | [ANALISE_CODE_SMELLS.md](ANALISE_CODE_SMELLS.md) | Análise de code smells do código |
 | [USO_DE_IA_2A_UNIDADE.md](USO_DE_IA_2A_UNIDADE.md) | Declaração de uso de IA na 2ª unidade: onde foi usada, como foi verificada e erros corrigidos |
 
+## Instruções para agentes de IA
+
+| Documento | O que traz |
+|---|---|
+| [agentes/AGENTS.md](agentes/AGENTS.md) | Instruções para agentes de código sobre o Next.js usado no projeto (gerado pelo `next dev`) |
+| [agentes/CLAUDE.md](agentes/CLAUDE.md) | Arquivo de instruções do Claude Code, que importa o `AGENTS.md` |
+
 ## Publicação
 
 | Documento | O que traz |
