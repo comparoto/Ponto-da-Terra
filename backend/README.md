@@ -133,7 +133,7 @@ São 60 rotas, todas documentadas no Swagger. Principais grupos:
 - **Limpar dados de teste:** os roteiros E2E criam contas `@teste.com` e peças "Peça de teste E2E". `npm run limpar:testes` lista o que eles deixaram no banco do `DATABASE_URL`; `npm run limpar:testes -- --apagar` remove tudo numa transação (contas de demonstração e peças reais não são tocadas).
 - **Carga (k6):** `npm run test:carga`, com a API rodando. Se o k6 não estiver instalado, use o Docker:
   `docker run --rm -i -e API=http://host.docker.internal:3333/api grafana/k6 run - < tests/carga/checkout-concorrente.k6.js`
-- **Navegador e segurança:** pasta [`../e2e`](../e2e): 68 verificações de fluxo, 39 de responsividade e acessibilidade e 20 ataques de segurança. Resultados em [`../RELATORIO_TESTES.md`](../RELATORIO_TESTES.md).
+- **Navegador e segurança:** pasta [`../e2e`](../e2e): 89 verificações de fluxo, 39 de responsividade e acessibilidade e 20 ataques de segurança. Resultados em [`../RELATORIO_TESTES.md`](../RELATORIO_TESTES.md).
 - **CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) roda typecheck, testes e build da API e lint, typecheck e build do frontend em todo push e PR.
 
 | Caso (plano v3) | 1ª rodada (09/11) | Coberto por |

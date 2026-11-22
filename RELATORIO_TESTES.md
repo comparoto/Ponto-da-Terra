@@ -3,13 +3,15 @@
 **Data da execução:** 11/11/2026 · **Versão:** integração completa (branch `integracao-backend`) · Next.js 16.4.6
 **Ambiente:** Windows 11, Node 24, PostgreSQL 16 e Redis 7 em Docker, Microsoft Edge (Playwright). A API rodou em modo de desenvolvimento e o frontend em build de produção (`next start`).
 
+> **2ª rodada dos 16 casos do plano v3 (22/11/2026):** os 16 passaram, contra 3 aprovados, 3 reprovados e 10 bloqueados na 1ª rodada. O relatório caso a caso, no mesmo formato da 1ª rodada, está em [`docs/RELATORIO_2A_RODADA_TESTES.md`](docs/RELATORIO_2A_RODADA_TESTES.md).
+
 ## Resumo
 
 | Tipo de teste | Ferramenta | Resultado |
 |---|---|---|
 | Testes automatizados da API (unidade + integração) | Jest + Supertest | **143 / 143** passaram |
 | Cobertura de código da API | Jest (`npm run test:cobertura`) | **91,5 %** das instruções · **95,2 %** das linhas · 72,4 % dos desvios |
-| Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **68 / 68** verificações (18 + 23 + 17 + 10) |
+| Fluxos ponta a ponta no navegador | Playwright (`e2e/`) | **89 / 89** verificações (18 + 23 + 18 + 10 + 20) |
 | Responsividade (celular 375 px, tablet 768 px, desktop 1366 px) | Playwright | **39 / 39** combinações (13 telas × 3 tamanhos) sem rolagem horizontal e sem erros de JavaScript |
 | Acessibilidade (WCAG 2 A e AA) | axe-core 4.14 | **0 violações** nas 12 telas × 3 tamanhos (depois das correções abaixo) |
 | Segurança caixa-preta | script próprio (`e2e/seguranca.mjs`) | **20 / 20** ataques bloqueados (depois da correção abaixo) |
