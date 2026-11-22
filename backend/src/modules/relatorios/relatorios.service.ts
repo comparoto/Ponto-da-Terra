@@ -107,14 +107,18 @@ export const relatoriosService = {
 
     // Série mensal com zeros nos meses sem venda (HU18 cenário 2)
     const meses: { mes: string; receita: number; pedidos: number }[] = [];
+    const dadosPorMes = new Map(
+      porMes.map(({ mes, receita, pedidos }) => {
+        const dataMes = new Date(mes);
+        const chave = `${dataMes.getUTCFullYear()}-${String(dataMes.getUTCMonth() + 1).padStart(2, '0')}`;
+        return [chave, { receita, pedidos }] as const;
+      }),
+    );
     const cursor = new Date(Date.UTC(de.getUTCFullYear(), de.getUTCMonth(), 1));
     while (cursor <= ate) {
       const chave = `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, '0')}`;
-      const achado = porMes.find(m => {
-        const d = new Date(m.mes);
-        return d.getUTCFullYear() === cursor.getUTCFullYear() && d.getUTCMonth() === cursor.getUTCMonth();
-      });
-      meses.push({ mes: chave, receita: dinheiro(achado?.receita), pedidos: achado?.pedidos ?? 0 });
+      const dados = dadosPorMes.get(chave);
+      meses.push({ mes: chave, receita: dinheiro(dados?.receita), pedidos: dados?.pedidos ?? 0 });
       cursor.setUTCMonth(cursor.getUTCMonth() + 1);
     }
 

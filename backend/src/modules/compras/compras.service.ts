@@ -146,6 +146,130 @@ async function cancelarCompra(tx: Tx, compraId: string, motivo: 'EXPIRADA' | 'PA
   return true;
 }
 
+// ───────────── Etapas do checkout (na ordem em que `checkout` as executa) ─────────────
+
+type Carrinho = { ids: string[]; quantidades: Map<string, number>; indiceOriginal: Map<string, number> };
+type ProdutoVendavel = { id: string; titulo: string; preco: Prisma.Decimal; artesaoId: string };
+type LinhaPedido = { produtoId: string; titulo: string; preco: Prisma.Decimal; quantidade: number };
+type Orcamento = ReturnType<typeof orcarPorArtesao>;
+
+/**
+ * 1. Soma as quantidades de um mesmo produto e guarda a posição em que ele apareceu primeiro
+ *    (os erros apontam `itens.<posição>`). Os ids saem ordenados: é a ordem de lock que evita deadlock.
+ */
+function consolidarItens(itens: ItemCheckout[]): Carrinho {
+  const quantidades = new Map<string, number>();
+  const indiceOriginal = new Map<string, number>();
+  itens.forEach(({ produtoId, quantidade }, i) => {
+    quantidades.set(produtoId, (quantidades.get(produtoId) ?? 0) + quantidade);
+    if (!indiceOriginal.has(produtoId)) indiceOriginal.set(produtoId, i);
+  });
+  return { ids: [...quantidades.keys()].sort(), quantidades, indiceOriginal };
+}
+
+/** 2. Carrega as peças visíveis na vitrine. Qualquer id ausente → 400 com o campo de cada item inválido. */
+async function buscarProdutosVendaveis(tx: Tx, { ids, indiceOriginal }: Carrinho): Promise<Map<string, ProdutoVendavel>> {
+  const produtos = await tx.produto.findMany({
+    where: { id: { in: ids }, ...visivelNaVitrine },
+    select: { id: true, titulo: true, preco: true, artesaoId: true },
+  });
+  const porId = new Map(produtos.map(p => [p.id, p]));
+  const invalidos: ErroCampo[] = ids
+    .filter(id => !porId.has(id))
+    .map(id => ({ campo: `itens.${indiceOriginal.get(id)}.produtoId`, mensagem: 'Peça indisponível ou inexistente' }));
+  if (invalidos.length) throw badRequest('Carrinho contém itens inválidos', invalidos);
+  return porId;
+}
+
+/** 3. Reserva atômica, linha a linha, em ordem de id. Se uma peça esgotar, o erro desfaz a transação inteira. */
+async function reservarEstoque(tx: Tx, { ids, quantidades, indiceOriginal }: Carrinho, produtos: Map<string, ProdutoVendavel>) {
+  for (const id of ids) {
+    const qtd = quantidades.get(id)!;
+    const afetadas = await tx.$executeRaw`
+      UPDATE "Estoque" SET "quantidadeDisponivel" = "quantidadeDisponivel" - ${qtd}, "versao" = "versao" + 1
+      WHERE "produtoId" = ${id} AND "quantidadeDisponivel" >= ${qtd}`;
+    if (afetadas === 0) {
+      throw badRequest(MSG_ESGOTADO, [{ campo: `itens.${indiceOriginal.get(id)}.quantidade`, mensagem: `${produtos.get(id)!.titulo}: ${MSG_ESGOTADO}` }]);
+    }
+  }
+}
+
+/** 4. Cada artesão recebe o seu pedido. */
+function agruparPorArtesao({ ids, quantidades }: Carrinho, produtos: Map<string, ProdutoVendavel>): Map<string, LinhaPedido[]> {
+  const grupos = new Map<string, LinhaPedido[]>();
+  for (const id of ids) {
+    const p = produtos.get(id)!;
+    grupos.set(p.artesaoId, [...(grupos.get(p.artesaoId) ?? []), { produtoId: id, titulo: p.titulo, preco: p.preco, quantidade: quantidades.get(id)! }]);
+  }
+  return grupos;
+}
+
+/** 5. Cota o frete de cada artesão (valida o CEP) e calcula os valores de cada pedido e da compra. */
+function orcarPorArtesao(grupos: Map<string, LinhaPedido[]>, cep: string) {
+  const unidades = new Map([...grupos.entries()].map(([a, itens]) => [a, itens.reduce((s, i) => s + i.quantidade, 0)]));
+  const frete = cotarPorArtesao(cep, unidades);
+  const fretePorArtesao = new Map(frete.porArtesao.map(f => [f.artesaoId, f]));
+
+  const pedidos = [...grupos.entries()].map(([artesaoId, itens]) => {
+    const valorProdutos = itens.reduce((s, i) => s.add(i.preco.mul(i.quantidade)), new Prisma.Decimal(0));
+    const f = fretePorArtesao.get(artesaoId)!;
+    return { artesaoId, itens, valorProdutos, valorFrete: new Prisma.Decimal(f.valor), prazoDias: f.prazoDias };
+  });
+  const valorProdutos = pedidos.reduce((s, p) => s.add(p.valorProdutos), new Prisma.Decimal(0));
+  const valorFrete = pedidos.reduce((s, p) => s.add(p.valorFrete), new Prisma.Decimal(0));
+  return { cep: frete.cep, pedidos, valorProdutos, valorFrete };
+}
+
+/** 6. Grava a compra com um pedido por artesão (itens, entrega prevista e primeiro registro do histórico). */
+function criarCompra(tx: Tx, consumidorId: string, enderecoId: string, { pedidos, valorProdutos, valorFrete }: Orcamento) {
+  return tx.compra.create({
+    data: {
+      codigo: novoCodigoCompra(),
+      consumidor: { connect: { id: consumidorId } },
+      endereco: { connect: { id: enderecoId } },
+      valorProdutos,
+      valorFrete,
+      valorTotal: valorProdutos.add(valorFrete),
+      reservaExpiraEm: new Date(Date.now() + env.RESERVA_MINUTOS * 60_000),
+      pedidos: {
+        create: pedidos.map(p => ({
+          consumidor: { connect: { id: consumidorId } },
+          artesao: { connect: { id: p.artesaoId } },
+          status: StatusPedido.AGUARDANDO_PAGAMENTO,
+          valorProdutos: p.valorProdutos,
+          valorFrete: p.valorFrete,
+          valorTotal: p.valorProdutos.add(p.valorFrete),
+          itens: {
+            create: p.itens.map(i => ({
+              produto: { connect: { id: i.produtoId } },
+              artesao: { connect: { id: p.artesaoId } },
+              tituloProduto: i.titulo,
+              quantidade: i.quantidade,
+              precoUnitario: i.preco,
+            })),
+          },
+          entrega: { create: { endereco: { connect: { id: enderecoId } }, dataPrevista: somarDiasUteis(new Date(), p.prazoDias) } },
+          historico: { create: { status: StatusPedido.AGUARDANDO_PAGAMENTO } },
+        })),
+      },
+    },
+    include: incluirCompra,
+  });
+}
+
+/** 7. HU12: o evento "Novo Pedido" é gravado na mesma transação e publicado na fila pelo worker. */
+async function registrarNovosPedidos(tx: Tx, compra: CompraCompleta) {
+  for (const pedido of compra.pedidos) {
+    await registrarEvento(tx, TipoEvento.NOVO_PEDIDO, {
+      pedidoId: pedido.id,
+      artesaoId: pedido.artesaoId,
+      codigoCompra: compra.codigo,
+      valorTotal: dinheiro(pedido.valorTotal),
+      itens: pedido.itens.map(i => `${i.quantidade}x ${i.tituloProduto}`),
+    });
+  }
+}
+
 // ───────────── API do serviço ─────────────
 
 export const comprasService = {
@@ -159,100 +283,15 @@ export const comprasService = {
    * O CHECK (quantidadeDisponivel >= 0) da migration é a segunda barreira.
    */
   async checkout(consumidorId: string, itensEntrada: ItemCheckout[], endereco: EnderecoCheckout) {
-    const quantidades = new Map<string, number>();
-    const indiceOriginal = new Map<string, number>();
-    itensEntrada.forEach(({ produtoId, quantidade }, i) => {
-      quantidades.set(produtoId, (quantidades.get(produtoId) ?? 0) + quantidade);
-      if (!indiceOriginal.has(produtoId)) indiceOriginal.set(produtoId, i);
-    });
-    const ids = [...quantidades.keys()].sort();
+    const carrinho = consolidarItens(itensEntrada);
 
     const compra = await prisma.$transaction(async tx => {
-      const produtos = await tx.produto.findMany({
-        where: { id: { in: ids }, ...visivelNaVitrine },
-        select: { id: true, titulo: true, preco: true, artesaoId: true },
-      });
-      const porId = new Map(produtos.map(p => [p.id, p]));
-      const invalidos: ErroCampo[] = ids
-        .filter(id => !porId.has(id))
-        .map(id => ({ campo: `itens.${indiceOriginal.get(id)}.produtoId`, mensagem: 'Peça indisponível ou inexistente' }));
-      if (invalidos.length) throw badRequest('Carrinho contém itens inválidos', invalidos);
-
-      // Reserva atômica, linha a linha
-      for (const id of ids) {
-        const qtd = quantidades.get(id)!;
-        const afetadas = await tx.$executeRaw`
-          UPDATE "Estoque" SET "quantidadeDisponivel" = "quantidadeDisponivel" - ${qtd}, "versao" = "versao" + 1
-          WHERE "produtoId" = ${id} AND "quantidadeDisponivel" >= ${qtd}`;
-        if (afetadas === 0) {
-          throw badRequest(MSG_ESGOTADO, [{ campo: `itens.${indiceOriginal.get(id)}.quantidade`, mensagem: `${porId.get(id)!.titulo}: ${MSG_ESGOTADO}` }]);
-        }
-      }
-
-      // Agrupa por artesão: cada artesão recebe o seu pedido, com frete próprio
-      const grupos = new Map<string, { produtoId: string; titulo: string; preco: Prisma.Decimal; quantidade: number }[]>();
-      for (const id of ids) {
-        const p = porId.get(id)!;
-        grupos.set(p.artesaoId, [...(grupos.get(p.artesaoId) ?? []), { produtoId: id, titulo: p.titulo, preco: p.preco, quantidade: quantidades.get(id)! }]);
-      }
-      const unidades = new Map([...grupos.entries()].map(([a, itens]) => [a, itens.reduce((s, i) => s + i.quantidade, 0)]));
-      const frete = cotarPorArtesao(endereco.cep, unidades);
-      const fretePorArtesao = new Map(frete.porArtesao.map(f => [f.artesaoId, f]));
-
-      const enderecoCriado = await tx.endereco.create({ data: { consumidorId, ...endereco, cep: frete.cep } });
-
-      const pedidos = [...grupos.entries()].map(([artesaoId, itens]) => {
-        const valorProdutos = itens.reduce((s, i) => s.add(i.preco.mul(i.quantidade)), new Prisma.Decimal(0));
-        const f = fretePorArtesao.get(artesaoId)!;
-        return { artesaoId, itens, valorProdutos, valorFrete: new Prisma.Decimal(f.valor), prazoDias: f.prazoDias };
-      });
-      const valorProdutos = pedidos.reduce((s, p) => s.add(p.valorProdutos), new Prisma.Decimal(0));
-      const valorFrete = pedidos.reduce((s, p) => s.add(p.valorFrete), new Prisma.Decimal(0));
-
-      const criada = await tx.compra.create({
-        data: {
-          codigo: novoCodigoCompra(),
-          consumidor: { connect: { id: consumidorId } },
-          endereco: { connect: { id: enderecoCriado.id } },
-          valorProdutos,
-          valorFrete,
-          valorTotal: valorProdutos.add(valorFrete),
-          reservaExpiraEm: new Date(Date.now() + env.RESERVA_MINUTOS * 60_000),
-          pedidos: {
-            create: pedidos.map(p => ({
-              consumidor: { connect: { id: consumidorId } },
-              artesao: { connect: { id: p.artesaoId } },
-              status: StatusPedido.AGUARDANDO_PAGAMENTO,
-              valorProdutos: p.valorProdutos,
-              valorFrete: p.valorFrete,
-              valorTotal: p.valorProdutos.add(p.valorFrete),
-              itens: {
-                create: p.itens.map(i => ({
-                  produto: { connect: { id: i.produtoId } },
-                  artesao: { connect: { id: p.artesaoId } },
-                  tituloProduto: i.titulo,
-                  quantidade: i.quantidade,
-                  precoUnitario: i.preco,
-                })),
-              },
-              entrega: { create: { endereco: { connect: { id: enderecoCriado.id } }, dataPrevista: somarDiasUteis(new Date(), p.prazoDias) } },
-              historico: { create: { status: StatusPedido.AGUARDANDO_PAGAMENTO } },
-            })),
-          },
-        },
-        include: incluirCompra,
-      });
-
-      // HU12: o evento "Novo Pedido" é gravado na mesma transação e publicado na fila pelo worker
-      for (const pedido of criada.pedidos) {
-        await registrarEvento(tx, TipoEvento.NOVO_PEDIDO, {
-          pedidoId: pedido.id,
-          artesaoId: pedido.artesaoId,
-          codigoCompra: criada.codigo,
-          valorTotal: dinheiro(pedido.valorTotal),
-          itens: pedido.itens.map(i => `${i.quantidade}x ${i.tituloProduto}`),
-        });
-      }
+      const produtos = await buscarProdutosVendaveis(tx, carrinho);
+      await reservarEstoque(tx, carrinho, produtos);
+      const orcamento = orcarPorArtesao(agruparPorArtesao(carrinho, produtos), endereco.cep);
+      const enderecoCriado = await tx.endereco.create({ data: { consumidorId, ...endereco, cep: orcamento.cep } });
+      const criada = await criarCompra(tx, consumidorId, enderecoCriado.id, orcamento);
+      await registrarNovosPedidos(tx, criada);
       return criada;
     }, OPCOES_TX);
 
