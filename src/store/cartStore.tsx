@@ -31,6 +31,18 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 // v2: os ids agora são os UUIDs do banco; carrinhos antigos (ids do mock) são descartados
 const STORAGE_KEY = 'ponto_da_terra_cart_v2';
 
+/** Confere o formato de um item vindo do localStorage (pode estar corrompido ou ser de uma versão antiga). */
+const ehItemCarrinho = (v: unknown): v is ItemCarrinho =>
+  typeof v === 'object' &&
+  v !== null &&
+  'quantidade' in v &&
+  typeof v.quantidade === 'number' &&
+  'peca' in v &&
+  typeof v.peca === 'object' &&
+  v.peca !== null &&
+  'id' in v.peca &&
+  typeof v.peca.id === 'string';
+
 const estoqueDe = (peca: Peca) => (typeof peca.estoque === 'number' ? peca.estoque : Infinity);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -43,8 +55,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
+      const lido: unknown = saved ? JSON.parse(saved) : null;
       // eslint-disable-next-line react-hooks/set-state-in-effect -- sincronização única com armazenamento externo
-      if (saved) setItems(JSON.parse(saved));
+      if (Array.isArray(lido)) setItems((lido as unknown[]).filter(ehItemCarrinho));
     } catch {
       /* carrinho corrompido: começa vazio */
     } finally {

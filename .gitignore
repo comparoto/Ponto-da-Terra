@@ -41,3 +41,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 README.md
+# O README do backend faz parte da documentação do projeto (a linha acima o ignoraria)
+!backend/README.md

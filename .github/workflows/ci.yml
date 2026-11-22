@@ -57,6 +57,9 @@ jobs:
       - name: Gerar Prisma Client
         run: npx prisma generate
 
+      - name: Lint (sem o tipo any)
+        run: npm run lint
+
       - name: Checagem de tipos
         run: npm run typecheck
 

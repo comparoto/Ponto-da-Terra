@@ -28,7 +28,8 @@ export function lerToken(): string | null {
   if (!isBrowser()) return null;
   try {
     const bruto = localStorage.getItem(SESSION_KEY);
-    return bruto ? (JSON.parse(bruto).token as string) ?? null : null;
+    const sessao: unknown = bruto ? JSON.parse(bruto) : null;
+    return typeof sessao === 'object' && sessao !== null && 'token' in sessao && typeof sessao.token === 'string' ? sessao.token : null;
   } catch {
     return null;
   }
@@ -65,12 +66,16 @@ export async function request<T>(caminho: string, { method = 'GET', body, form, 
     return { success: false, data: null, error: 'Não foi possível conectar ao servidor. Verifique se a API está rodando.' };
   }
 
-  let json: ApiResult<T>;
+  const invalida: ApiResult<T> = { success: false, data: null, error: `Resposta inválida do servidor (HTTP ${resposta.status}).`, status: resposta.status };
+  let bruto: unknown;
   try {
-    json = await resposta.json();
+    bruto = await resposta.json();
   } catch {
-    return { success: false, data: null, error: `Resposta inválida do servidor (HTTP ${resposta.status}).`, status: resposta.status };
+    return invalida;
   }
+  // A API sempre responde no formato { success, data, error }; qualquer outra coisa (ex.: página de erro) é inválida
+  if (typeof bruto !== 'object' || bruto === null || !('success' in bruto) || typeof bruto.success !== 'boolean') return invalida;
+  const json = bruto as ApiResult<T>;
 
   // Sessão expirada ou revogada: descarta o token salvo para o usuário entrar de novo
   if (resposta.status === 401 && token) limparSessaoLocal();

@@ -50,8 +50,9 @@ const isBrowser = () => typeof window !== 'undefined';
 /** Lê o `exp` do JWT (sem validar assinatura — quem valida é o servidor) para descartar sessões vencidas. */
 function tokenExpirado(token: string): boolean {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now();
+    const payload: unknown = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const exp = typeof payload === 'object' && payload !== null && 'exp' in payload ? payload.exp : undefined;
+    return typeof exp === 'number' && exp * 1000 <= Date.now();
   } catch {
     return true;
   }

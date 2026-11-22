@@ -16,7 +16,7 @@ import { env } from './config/env';
 import { prisma } from './config/prisma';
 import { closeRedis } from './config/redis';
 import { FILA_EVENTOS, FILA_MANUTENCAO, conexaoFila } from './jobs/filas';
-import { publicarPendentes } from './jobs/outbox';
+import { publicarPendentes, type EventoPublicado } from './jobs/outbox';
 import { processarEvento } from './jobs/processar-evento';
 import { comprasService } from './modules/compras/compras.service';
 
@@ -49,7 +49,7 @@ async function iniciar() {
     { connection, concurrency: 1 },
   );
 
-  const eventos = new Worker(FILA_EVENTOS, async job => processarEvento(job.data), { connection, concurrency: 5 });
+  const eventos = new Worker<EventoPublicado>(FILA_EVENTOS, async job => processarEvento(job.data), { connection, concurrency: 5 });
 
   eventos.on('completed', job => console.info(`[worker] ${job.name} processado (evento ${job.id})`));
   eventos.on('failed', (job, err) => console.error(`[worker] falha em ${job?.name} (tentativa ${job?.attemptsMade}): ${err.message}`));

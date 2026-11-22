@@ -24,13 +24,19 @@ export const limitarPedidosDeSenha = rateLimit({
   },
 });
 
+/** E-mail enviado no corpo do login, ou texto vazio se o corpo não tiver o formato esperado. */
+const emailDoCorpo = (corpo: unknown): string => {
+  if (typeof corpo !== 'object' || corpo === null || !('email' in corpo)) return '';
+  return typeof corpo.email === 'string' ? corpo.email : '';
+};
+
 export const limitarTentativasDeLogin = rateLimit({
   windowMs: env.LOGIN_JANELA_MINUTOS * 60_000,
   limit: env.LOGIN_MAX_TENTATIVAS,
   skipSuccessfulRequests: true,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
-  keyGenerator: req => `${ipKeyGenerator(req.ip ?? '')}:${String(req.body?.email ?? '').trim().toLowerCase()}`,
+  keyGenerator: req => `${ipKeyGenerator(req.ip ?? '')}:${emailDoCorpo(req.body).trim().toLowerCase()}`,
   handler: (_req, res) => {
     res.status(429).json(fail(`Muitas tentativas de login. Aguarde ${env.LOGIN_JANELA_MINUTOS} minutos e tente novamente.`));
   },
