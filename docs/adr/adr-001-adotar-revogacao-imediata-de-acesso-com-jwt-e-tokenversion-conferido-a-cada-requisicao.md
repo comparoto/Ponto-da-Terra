@@ -4,7 +4,7 @@
 - **Data:** 2026-11-22
 - **Autor:** PAULO CESAR DA SILVA MARROCOS (pcsm@cesar.school)
 - **Turma:** Embarque (segundas)
-- **Projeto:** Origem · marketplace da economia criativa e do artesanato de Pernambuco
+- **Projeto:** Ponto da Terra · marketplace da economia criativa e do artesanato de Pernambuco
 
 ## Contexto
 
