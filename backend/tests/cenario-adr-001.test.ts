@@ -3,7 +3,7 @@ import { api, aprovarCadastro, bearer, ciclo, login, prisma, unico } from './hel
 ciclo();
 
 /**
- * Teste do cenário do ADR-001 (docs/adr/adr-001-revogar-acesso-imediato-com-jwt-e-tokenversion.md).
+ * Teste do cenário do ADR-001 (docs/adr/adr-001-adotar-revogacao-imediata-de-acesso-com-jwt-e-tokenversion-conferido-a-cada-requisicao.md).
  *
  * Em operação normal, com o artesão logado em dois aparelhos e com tokens ainda dentro da validade,
  * o administrador suspende a conta dele. A partir da resposta 200 da suspensão, em 100% das tentativas
