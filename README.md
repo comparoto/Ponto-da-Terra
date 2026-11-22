@@ -290,6 +290,7 @@ Os documentos da época estão em "Documentações exigidas" (Fake API e migraç
 - [Slides do teste de concorrência](https://canva.link/yesnpw11bo8hgas)
 - [Log de Uso de IA (1ª unidade)](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing) · [Uso de IA na 2ª unidade](docs/USO_DE_IA_2A_UNIDADE.md)
 - [Relatórios de testes: 1ª rodada e 2ª rodada](docs/RELATORIO_2A_RODADA_TESTES.md)
+- [Evidências da Avaliação 2: banco de dados, recomendação, assíncrono e cache](docs/EVIDENCIAS_AVALIACAO_2.md)
 - [Issues / Bug Tracker](https://github.com/comparoto/Ponto-da-Terra/issues)
 - [Screencast](https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2)
 
@@ -302,6 +303,7 @@ Os documentos da época estão em "Documentações exigidas" (Fake API e migraç
 - [Diagrama de classes atualizado (gerado do schema)](docs/DIAGRAMA_DE_CLASSES.md)
 - [Relatório de testes · 1ª rodada](RELATORIO_TESTES.md) e [2ª rodada](docs/RELATORIO_2A_RODADA_TESTES.md)
 - [Uso de IA na 2ª unidade](docs/USO_DE_IA_2A_UNIDADE.md)
+- [Evidências da Avaliação 2](docs/EVIDENCIAS_AVALIACAO_2.md)
 - [Refatoração de code smells: moderação de contas](docs/REFATORACAO_MODERACAO_CONTAS.md)
 - [API e como executar o backend](backend/README.md) · [Deploy](DEPLOY_VERCEL.md)
 
