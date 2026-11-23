@@ -2,6 +2,7 @@
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 import { CartProvider } from '@/store/cartStore';
+import { FavoritosProvider } from '@/store/favoritosStore';
 
 export const theme = extendTheme({
   colors: {
@@ -52,7 +53,9 @@ export const theme = extendTheme({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ChakraProvider theme={theme}>
-      <CartProvider>{children}</CartProvider>
+      <CartProvider>
+        <FavoritosProvider>{children}</FavoritosProvider>
+      </CartProvider>
     </ChakraProvider>
   );
 }

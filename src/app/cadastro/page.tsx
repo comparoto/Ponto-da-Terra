@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Button, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
-import { registerAccount, signIn } from '@/services/demoAuth';
+import { Box, Button, Checkbox, Heading, Input, Link, Select, Stack, Text } from '@chakra-ui/react';
+import { registerAccount } from '@/services/authService';
+import { mensagemDeErro } from '@/services/http';
 import { AREAS_ARTESANATO, ESTADOS_BRASILEIROS } from '@/data';
 
 type AccountRole = 'comprador' | 'artesao';
@@ -28,10 +29,15 @@ export default function CadastroPage() {
   const [customSpecialty, setCustomSpecialty] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  function submit(event: React.SyntheticEvent) {
+  async function submit(event: React.SyntheticEvent) {
     event.preventDefault();
     setError('');
+    if (!acceptedTerms) {
+      setError('Você precisa aceitar os Termos de Uso e a Política de Privacidade para criar a conta.');
+      return;
+    }
     setSaving(true);
 
     try {
@@ -43,37 +49,15 @@ export default function CadastroPage() {
           }
         : undefined;
 
-      const created = registerAccount(
-        name,
-        email,
-        password,
-        role,
-        artisanInfo
-      );
+      // A API cria a conta e já devolve a sessão autenticada (JWT)
+      const resultado = await registerAccount(name.trim(), email, password, role, artisanInfo, true);
 
-      if (!created) {
-        setError(
-          role === 'artesao'
-            ? 'Confira o e-mail, a senha, a cidade, o estado e a área de atuação.'
-            : 'Este e-mail já está cadastrado ou os dados estão incompletos. Use ao menos 6 caracteres na senha.'
-        );
-        return;
-      }
-
-      const session = signIn(role, email, password);
-
-      if (!session) {
-        setError(
-          'A conta foi salva, mas não foi possível entrar. Tente fazer login com o mesmo perfil, e-mail e senha.'
-        );
+      if (!resultado.success) {
+        setError(mensagemDeErro(resultado, 'Não foi possível criar a conta. Confira os dados e tente novamente.'));
         return;
       }
 
       router.replace(role === 'artesao' ? '/artesao' : '/vitrine');
-    } catch {
-      setError(
-        'Não foi possível salvar a conta neste navegador. Verifique as permissões de armazenamento e tente novamente.'
-      );
     } finally {
       setSaving(false);
     }
@@ -180,7 +164,7 @@ export default function CadastroPage() {
           {role === 'artesao' && (
             <>
               <Text
-                color="terra.200"
+                color="terra.100"
                 fontWeight="semibold"
                 fontSize="md"
                 mt={2}
@@ -251,6 +235,18 @@ export default function CadastroPage() {
                 />
               )}
             </>
+          )}
+
+          <Checkbox colorScheme="orange" alignItems="flex-start" isChecked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)}>
+            <Text fontSize="sm" color="#E8DFD7" mt="-1px">
+              Li e aceito os <Link href="/termos" color="terra.500" textDecoration="underline">Termos de Uso</Link> e a{' '}
+              <Link href="/termos#privacidade" color="terra.500" textDecoration="underline">Política de Privacidade</Link>.
+            </Text>
+          </Checkbox>
+          {role === 'artesao' && (
+            <Text fontSize="sm" color="whiteAlpha.700">
+              Novos ateliês passam por uma aprovação rápida da curadoria antes de aparecer na vitrine.
+            </Text>
           )}
 
           {error && (

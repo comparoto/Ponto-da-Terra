@@ -4,62 +4,340 @@
 
 # Origem: Ponto da Terra
 
-**Uma vitrine digital para o artesanato pernambucano.**
+**Vitrine digital full stack para o artesanato pernambucano.**
 
-[![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=flat-square)](#)
+[![Status](https://img.shields.io/badge/status-full%20stack%20integrado-brightgreen?style=flat-square)](#)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![Chakra UI](https://img.shields.io/badge/Chakra_UI-319795?style=flat&logo=chakraui&logoColor=white)](https://chakra-ui.com/)
+[![Chakra UI](https://img.shields.io/badge/Chakra_UI-319795?style=flat-square&logo=chakraui&logoColor=white)](https://v2.chakra-ui.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-Express%205-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
 
+[Aplicação (Deploy)](https://ponto-da-terra-eight.vercel.app) ·
+[API (Swagger)](https://ponto-da-terra-api.vercel.app/api/docs) ·
 [Requisitos](https://app.notion.com/p/Projeto-Integrador-3c996fcfd27080df9bf3ef635f5bdf99?source=copy_link) ·
 [Backlog](https://trello.com/b/KZIZUnYE/ponto-da-terra) ·
 [Issues](https://github.com/comparoto/Ponto-da-Terra/issues)
 
 </div>
 
-## Índice
-
-- 📖 Descrição
-- 🎞️ Screencast
-- 👩‍💻 Integrantes
-- 🧱 Arquitetura
-  - Concorrência, paralelismo e distribuição
-- 🔄 Fluxos implementados
-- 🛠️ Tecnologias utilizadas
-- ⚙️ Como executar localmente
-- ✅ Funcionalidades implementadas
-- 🔌 "Rotas" da Fake API
-- 🚀 Deploy
-- 🧪 Evidências
-- 📃 Documentações exigidas
-- 📋 Índice de entregas por unidade
-
 ---
 
-## 📖 Descrição
+## Sobre o projeto
 
-O **Origem: Ponto da Terra** é uma aplicação web full stack voltada para o **Artesanato Pernambucano**, criada para resolver um problema real do setor: artesãos e produtores criativos têm pouca visibilidade digital, dependem de intermediários e enfrentam gestão precária de catálogo, pedidos e estoque.
+O **Origem: Ponto da Terra** é uma aplicação web full stack voltada para o **artesanato pernambucano**. Artesãos e produtores criativos têm pouca visibilidade digital, dependem de intermediários e enfrentam gestão precária de catálogo, pedidos e estoque. A plataforma conecta esses artesãos diretamente a compradores de todo o país e reúne catálogo, estoque e pedidos em um só lugar.
 
-A plataforma conecta esses artesãos diretamente a compradores de todo o país, por meio de:
+A aplicação atende três perfis, com permissões validadas no servidor por JWT:
+- **Comprador:** vitrine com busca e filtros, perfil do artesão, favoritos, recomendações, carrinho, checkout, pagamentos simulados, rastreio e avaliações.
+- **Artesão:** gestão de catálogo (com curadoria), controle de estoque, pedidos, perfil, checklist de formalização e indicadores.
+- **Administrador:** aprovação de novos artesãos, curadoria de peças, moderação de contas, intervenção em pedidos e métricas gerais.
 
-- **Vitrine do comprador** — busca, filtros, perfil do artesão, carrinho e avaliações;
-- **Painel do artesão** — gestão de catálogo, estoque e pedidos;
-- **Painel administrativo** — indicadores de venda e gestão geral da plataforma.
-
-> 📌 **Status atual do projeto:** esta versão da aplicação conta apenas com **frontend responsivo** e uma **Fake API** (dados mockados diretamente no código, nas pastas `data/` e `services/`), simulando o comportamento de um backend real enquanto a integração com a API definitiva não é implementada.
-
-O projeto integra três frentes acadêmicas complementares:
+O projeto integra três frentes acadêmicas:
 
 | Disciplina | Responsabilidade |
 |---|---|
-| **Desenvolvimento Web** | Frontend responsivo (vitrine, busca, carrinho, perfis) e, futuramente, backend (API e regras de negócio) |
+| **Desenvolvimento Web** | Frontend responsivo e backend (API, banco de dados e regras de negócio) |
 | **Requisitos, Projeto de Software e Validação** | Análise de domínio, gestão de requisitos, arquitetura (SOLID/GRASP, padrões de projeto) e estratégia de testes |
-| **Fundamentos de Computação Concorrente, Paralela e Distribuída** | Desempenho, escalabilidade e tolerância a falhas — concorrência no checkout/baixa de estoque, filas e processamento assíncrono |
+| **Fundamentos de Computação Concorrente, Paralela e Distribuída** | Desempenho, escalabilidade e tolerância a falhas: concorrência no checkout, filas e processamento assíncrono |
 
-📄 [Lista de requisitos detalhada (Notion)](https://app.notion.com/p/Projeto-Integrador-3c996fcfd27080df9bf3ef635f5bdf99?source=copy_link)
+> **Branch principal:** `main`, com o frontend na raiz e o backend em [`backend/`](docs/md/README_BACKEND.md). A 1ª entrega (somente frontend, com Fake API) está descrita em "Histórico da 1ª entrega" e no deploy da 1ª entrega.
 
-## 👩‍💻 Integrantes
+---
+
+## Acesso rápido: deploy, API e screencasts
+
+| Entregável | Link | Descrição |
+|---|---|---|
+| **Deploy final (full stack)** | [ponto-da-terra-eight.vercel.app](https://ponto-da-terra-eight.vercel.app) | Aplicação integrada à API real |
+| **API em produção (health)** | [ponto-da-terra-api.vercel.app/api/health](https://ponto-da-terra-api.vercel.app/api/health) | Backend Node.js/Express com PostgreSQL (Neon) |
+| **Documentação da API (Swagger)** | [ponto-da-terra-api.vercel.app/api/docs](https://ponto-da-terra-api.vercel.app/api/docs) | 69 operações em 60 caminhos, geradas dos esquemas Zod (OpenAPI). Dá para testar ali mesmo, ver o passo a passo abaixo |
+| **Screencast final (com Network)** | `[INSERIR LINK DO SCREENCAST FINAL]` | Fluxo completo com a aba Network aberta, mostrando as chamadas ao backend. **Ainda a gravar** |
+| **Deploy da 1ª entrega** | [ponto-da-terra.vercel.app](https://ponto-da-terra.vercel.app/) | Versão inicial (frontend com Fake API) |
+| **Screencast da 1ª entrega** | [Assistir no YouTube](https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2) | Demonstração dos fluxos da 1ª unidade |
+
+**Testar a API no Swagger:** abra a página, rode `POST /api/auth/login` com *Try it out* (por exemplo `comprador@pontodaterra.com` e `comprador123`), copie o `token` da resposta, clique em **Authorize** e cole só o token. As rotas com cadeado passam a funcionar.
+
+Configuração e publicação na nuvem: [`docs/md/DEPLOY_VERCEL.md`](docs/md/DEPLOY_VERCEL.md).
+
+---
+
+## Arquitetura e tecnologias
+
+```text
+Navegador ──▶ Frontend (Next.js / Vercel) ──HTTP/JSON──▶ API (Express / Vercel) ──▶ PostgreSQL (Neon)
+                                                            │                          ▲
+                                                            ├──▶ Redis (cache do catálogo)
+                                                            └──▶ Fila de eventos (BullMQ local / QStash na Vercel)
+                                                                   └──▶ Worker: notificações, e-mails, reservas e imagens
+```
+
+| Camada | Tecnologias |
+|---|---|
+| **Frontend** | Next.js 16 (App Router), React 19, TypeScript 5, Chakra UI |
+| **Backend** | Node.js 22, TypeScript, Express 5, Zod 4, Swagger (OpenAPI) |
+| **Banco de dados** | PostgreSQL 16 com Prisma 7 (migrations versionadas, driver `pg`) |
+| **Cache** | Redis |
+| **Assíncrono e filas** | BullMQ (local) e QStash (Vercel), com Transactional Outbox |
+| **Segurança** | JWT com 3 perfis validados no servidor, revogação imediata por `tokenVersion`, rate limit no login, lint e teste que proíbem o tipo `any` |
+| **Testes e CI** | Jest com Supertest (148 testes de API), Playwright (fluxos, segurança, responsividade e acessibilidade), k6 (carga), GitHub Actions |
+
+<details>
+<summary><b>📁 Estrutura de pastas e decisões arquiteturais</b></summary>
+
+### Frontend (`src/`)
+```text
+src/
+├── app/            # Rotas (App Router): (comprador), artesao, artesaos/[id], admin, login, cadastro, notificacoes, orientacao...
+├── components/     # UI reutilizável (Navbar, CartDrawer, ProductCard, ProductManager, OrderManager, ContatoModal...)
+├── services/       # Cliente HTTP (http.ts) e um serviço por assunto, todos devolvendo ApiResult<T>
+├── store/          # Estado global (cartStore, favoritosStore)
+├── hooks/          # useSession, useCarregar
+├── data/           # Listas fixas (estados, áreas) e o conteúdo da Central de Orientação; os dados de peças e artesãos vêm da API
+└── types/          # Tipagens e contratos TypeScript
+```
+
+### Backend (`backend/src/`)
+```text
+backend/src/
+├── app.ts, server.ts, worker.ts    # API, servidor local e worker de filas
+├── config/                         # Variáveis de ambiente validadas
+├── modules/                        # auth, artesaos, produtos, carrinho, compras, pedidos, comprador,
+│                                   # interacao, notificacoes, relatorios, admin, jobs
+├── jobs/                           # Fila, outbox, consumidores idempotentes e processamento de imagem
+├── shared/                         # Middlewares e utilidades (auth, validação, erros, cache, rate limit, e-mail)
+├── types/                          # Extensões de tipos do Express (dados validados na requisição)
+└── docs/                           # Esquemas Zod usados para gerar o Swagger
+```
+
+### Padrões e princípios aplicados
+- **Camadas desacopladas (SOLID/GRASP):** as telas não conhecem as URLs da API; toda a comunicação passa por `src/services/`, com o contrato `ApiResult<T>`.
+- **Cadeia de middlewares no backend:** `autenticar` → `autorizar` → `validate` (Zod) → controlador → serviço.
+- **Padrões de projeto:** *Strategy* nos meios de pagamento (PIX, cartão e boleto simulados), *Transactional Outbox* para publicar eventos com segurança e consumidores idempotentes.
+- **Modelo de dados:** 24 modelos e 9 enumerações no Prisma. O [diagrama de classes](docs/md/DIAGRAMA_DE_CLASSES.md) é gerado do próprio schema (`cd backend && npm run docs:diagrama`).
+- **Sem `any`:** o lint (regras `no-explicit-any` e `no-unsafe-*`) e um teste automatizado verificam que o código não usa o tipo `any`.
+
+</details>
+
+---
+
+## Fluxos implementados
+
+<details>
+<summary><b>🔄 Ver todos os fluxos integrados à API real (18 histórias de usuário)</b></summary>
+
+As 18 histórias de usuário do backlog (10 *must*, 6 *should* e 2 *could*) estão implementadas e integradas:
+
+- **Conta e autenticação:** cadastro, login (JWT com revogação imediata por `tokenVersion`), alteração e recuperação de senha por e-mail.
+- **Vitrine e descoberta:** busca, filtros, paginação, detalhe da peça, perfil público do artesão (`/artesaos/:id`), favoritos e recomendações ("Feitas para você", na página inicial).
+- **Carrinho e checkout:** sacola salva na conta, limite de estoque, frete por CEP e reserva atômica de estoque.
+- **Pagamentos simulados:** PIX (com expiração e webhook), cartão de crédito e boleto.
+- **Pedidos e relacionamento:** um pedido por artesão, linha do tempo de status, código de rastreio, avaliação da peça, contato com o produtor e notificações com contador.
+- **Painel do artesão (`/artesao`):** cadastro de peças (sujeitas à curadoria), estoque, pedidos (produção, postagem e entrega), perfil e fotos, checklist de formalização e indicadores.
+- **Painel administrativo (`/admin`):** aprovação de novos artesãos, curadoria de peças (aprovar ou reprovar com motivo), moderação de contas (suspender, inativar e reativar), intervenção em pedidos e métricas.
+- **Institucional:** central de orientação (`/orientacao`) e termos de uso (`/termos`).
+
+> **Fora do escopo desta etapa:** envio de e-mail real em produção (hoje usa uma caixa de testes) e recursos de IA embarcados na plataforma.
+
+</details>
+
+---
+
+## Evidências técnicas
+
+Todas as evidências abaixo, com capturas de tela, logs e medições, estão reunidas em [**docs/md/EVIDENCIAS_AVALIACAO_2.md**](docs/md/EVIDENCIAS_AVALIACAO_2.md). Foram coletadas em 22/11/2026, em ambiente local.
+
+<details>
+<summary><b>🗄️ Banco de dados: persistência real (PostgreSQL + Prisma)</b></summary>
+
+- **Implementação:** PostgreSQL 16 gerenciado pelo Prisma 7 (`backend/prisma/`), com **24 modelos**, **9 enumerações**, **7 migrations** versionadas e seed com contas de demonstração.
+- **Persistência comprovada:** uma compra foi criada pela API e, depois de **reiniciar o contêiner do PostgreSQL**, a mesma consulta devolveu os mesmos dados. Em produção, os dados ficam no **Neon (PostgreSQL)**.
+- **Modelagem:** [diagrama de classes gerado do schema](docs/md/DIAGRAMA_DE_CLASSES.md).
+- **Testes:** 148 testes de API usam o banco de verdade ([relatório da 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md)).
+
+</details>
+
+<details>
+<summary><b>✨ Recomendação: "Feitas para você"</b></summary>
+
+- **Onde aparece:** na página inicial (`/home`), abaixo dos destaques. Código: [`recomendacaoService.ts`](src/services/recomendacaoService.ts).
+- **Como funciona:** cada peça aberta no detalhe entra no histórico de visualização (até 20, guardado no navegador). Cada peça candidata recebe uma pontuação de afinidade com as peças vistas e com as favoritas: **categoria** vale 4, **técnica** 3, **polo de origem** 2 e **mesmo artesão** 1; as vistas mais recentes e os favoritos pesam mais. Peças já vistas, favoritas ou em destaque não são sugeridas, e as 4 de maior pontuação aparecem.
+- **Limites:** o cálculo é feito no navegador, por regras de similaridade. Não usa IA nem aprendizado de máquina.
+- **Evidência:** ao abrir o *Vaso Bojudo Terracota Esculpido* (barro), as 4 peças recomendadas passaram a ser todas de barro. Capturas em [docs/md/EVIDENCIAS_AVALIACAO_2.md](docs/md/EVIDENCIAS_AVALIACAO_2.md#2-evidência-de-recomendação).
+
+</details>
+
+<details>
+<summary><b>⚡ Processamento assíncrono: filas, outbox e worker</b></summary>
+
+- **Implementação:** padrão **Transactional Outbox** (o evento é gravado na mesma transação da compra), publicado numa fila (**BullMQ** localmente e **QStash** na Vercel) e consumido por um worker separado (`backend/src/worker.ts`), com processamento idempotente.
+- **Fluxos assíncronos:** notificações (em `/notificacoes`, com contador), e-mails em caixa de testes, processamento de imagens e expiração de PIX e boleto vencidos, que devolve o estoque.
+- **Evidência:** uma compra feita pela API gerou o evento `NOVO_PEDIDO`; o log do worker mostrou o processamento, o banco ligou o evento à notificação e o artesão passou a ver a notificação na tela. Detalhes em [docs/md/EVIDENCIAS_AVALIACAO_2.md](docs/md/EVIDENCIAS_AVALIACAO_2.md#3-evidência-de-assíncrono).
+- **Executar localmente:** `cd backend && npm run dev:worker`. Sem o worker, a API funciona, mas os avisos não são gerados.
+
+</details>
+
+<details>
+<summary><b>🚀 Cache: onde foi aplicado e por quê (Redis)</b></summary>
+
+- **Onde foi aplicado:** no catálogo da vitrine (`GET /api/produtos`), nas categorias e nas páginas de artesãos, com **Redis** (código em `backend/src/shared/cache.ts`).
+- **Por quê:** a vitrine concentra o maior volume de leituras repetidas e a consulta é cara (peças, artesãos, categorias e estoque, com filtros e paginação). Guardar a resposta reduz o tempo de resposta e alivia o PostgreSQL.
+- **Como:** chave por consulta, validade de 60 s e **invalidação por versão**: aprovação na curadoria, edição de peça, mudança de estoque e alterações de conta aumentam a versão, e as chaves antigas deixam de ser lidas. A resposta traz o cabeçalho `X-Cache: HIT` ou `MISS`. Se o Redis falhar, a API responde direto do banco.
+- **Medição** (50 usuários simultâneos por 15 s, em máquina de desenvolvimento): com cache, **145 req/s e mediana de 301 ms**; sem cache, **27 req/s e mediana de 2.019 ms**. Os números valem como comparação, não como capacidade de produção. Metodologia e limites em [docs/md/EVIDENCIAS_AVALIACAO_2.md](docs/md/EVIDENCIAS_AVALIACAO_2.md#4-evidência-de-cache).
+
+</details>
+
+<details>
+<summary><b>🔒 Concorrência, teste de carga e CI</b></summary>
+
+- **Checkout atômico:** a reserva de estoque é um `UPDATE` condicional somado à restrição `CHECK (estoque >= 0)` no PostgreSQL, o que impede a sobrevenda.
+- **Teste de carga (k6):** 50 compradores simultâneos disputando 1 unidade (`cd backend && npm run test:carga`) resultaram em **1 venda, 49 recusas e estoque final 0**.
+- **Qualidade contínua:** o GitHub Actions (`.github/workflows/ci.yml`) roda lint, checagem de tipos, testes de API e build a cada push em `main` e `integracao-backend` e em pull requests. Os roteiros de navegador, de carga e de segurança são executados à mão.
+- **Testes:** [relatório da 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md): os 16 casos do plano de testes passaram.
+
+</details>
+
+---
+
+## Como executar localmente
+
+### Pré-requisitos
+- Node.js 22 e npm
+- Docker Desktop (para subir o PostgreSQL e o Redis)
+
+### Variáveis de ambiente
+Os arquivos [`.env.example`](.env.example) (raiz) e [`backend/.env.example`](backend/.env.example) documentam as variáveis e **não contêm credenciais reais**.
+
+<details open>
+<summary><b>⚙️ Passo a passo (backend, worker, frontend e testes)</b></summary>
+
+#### 1. Clonar o repositório
+```bash
+git clone https://github.com/comparoto/Ponto-da-Terra.git
+cd Ponto-da-Terra
+```
+
+#### 2. Subir banco, Redis e API (terminal 1)
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm run db:up                 # PostgreSQL (porta 5434) e Redis (porta 6380) via Docker
+npx prisma migrate deploy     # cria as tabelas
+npm run db:seed               # dados iniciais e contas de demonstração
+npm run dev                   # API em http://localhost:3333/api · Swagger em /api/docs
+```
+
+#### 3. Subir o worker de filas (terminal 2, em `backend/`)
+```bash
+npm run dev:worker            # notificações e expiração de reservas de PIX e boleto
+```
+
+#### 4. Subir o frontend (terminal 3, na raiz do projeto)
+```bash
+npm install
+cp .env.example .env.local    # ajuste NEXT_PUBLIC_API_URL se a API rodar em outra porta ou host
+npm run dev                   # aplicação em http://localhost:3000
+```
+
+#### 5. Contas e cartões de teste
+- **Contas do seed:** `admin@pontodaterra.com / admin123` · `comprador@pontodaterra.com / comprador123` · `artesao@pontodaterra.com / artesao123`
+- **Cartões simulados:** `4111 1111 1111 1111` (aprovado) · `4000 0000 0000 0002` (recusado)
+
+#### 6. Executar os testes
+```bash
+cd backend && npm test                   # 148 testes de API (Jest), com concorrência no checkout
+cd backend && npm run test:carga         # carga com k6: disputa de estoque
+cd backend && node tests/carga/vitrine-cache.mjs   # benchmark do cache, sem k6
+cd e2e && npm install && npm test        # segurança, fluxos, responsividade e acessibilidade (exige os passos 2 a 4)
+cd backend && npm run limpar:testes -- --apagar    # remove os dados criados pelos roteiros
+```
+
+Scripts e rotas do backend: [`docs/md/README_BACKEND.md`](docs/md/README_BACKEND.md).
+
+</details>
+
+---
+
+## Histórico da 1ª entrega (Fake API e migração)
+
+<details>
+<summary><b>🗂️ Documentação da Fake API e da substituição pelo backend real</b></summary>
+
+Na 1ª unidade, o frontend funcionava sem backend por meio da fachada `fakeApi` (`services/api.ts`), que lia dados fixos de `data/mockData.ts` e devolvia o contrato padronizado `ApiResult<T>`:
+
+```ts
+type ApiResult<T> = {
+  success: boolean;
+  data: T | null;
+  error: string | null;
+};
+```
+
+**Como a migração foi feita:** a camada `src/services/` manteve o mesmo contrato `ApiResult<T>` e trocou as chamadas em memória por requisições HTTP (`http.ts`) à API Express. Por isso os componentes de tela não precisaram ser reescritos.
+
+| Método da Fake API (1ª entrega) | Endpoint na API real | Serviço atual |
+|---|---|---|
+| `fakeApi.getArtesaos()` | `GET /api/artesaos` | `artesaoService` |
+| `fakeApi.getPecas()` | `GET /api/produtos` | `produtoService` |
+
+- [Documentação da Fake API (PDF)](https://github.com/user-attachments/files/32670674/Documentacao_Fake_API.pdf)
+- [Plano de substituição da Fake API pelo backend real (PDF)](https://github.com/user-attachments/files/32671712/Documento_Substituicao_Fake_API_Backend_Real.pdf)
+
+</details>
+
+---
+
+## Documentações e entregas por unidade
+
+<details>
+<summary><b>📘 Segunda unidade (atual)</b></summary>
+
+> Índice de todos os documentos: [docs/md/INDICE.md](docs/md/INDICE.md).
+
+- **Desenvolvimento Web:**
+  - [Aplicação full stack (deploy)](https://ponto-da-terra-eight.vercel.app) · [Swagger](https://ponto-da-terra-api.vercel.app/api/docs)
+  - [Documentação do backend](docs/md/README_BACKEND.md) · [Guia de deploy na Vercel](docs/md/DEPLOY_VERCEL.md)
+- **Requisitos, Projeto de Software e Validação:**
+  - [Requisitos, decisões e roadmap do backend](docs/md/REQUISITOS_BACKEND.md)
+  - [Diagrama de classes atualizado (gerado do schema)](docs/md/DIAGRAMA_DE_CLASSES.md)
+  - [Relatório de testes · 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](docs/md/RELATORIO_TESTES.md)
+  - [Evidências da Avaliação 2](docs/md/EVIDENCIAS_AVALIACAO_2.md)
+  - [Uso de IA na 2ª unidade](docs/md/USO_DE_IA_2A_UNIDADE.md)
+  - [Refatoração de code smells: moderação de contas](docs/md/REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](docs/md/REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](docs/md/ANALISE_CODE_SMELLS.md)
+  - ADR individual: disponível na branch `adr-paulo-marrocos`
+- **Fundamentos de Computação Concorrente, Paralela e Distribuída:**
+  - Reserva atômica de estoque (`UPDATE` condicional e `CHECK`), fila de eventos (BullMQ ou QStash, com Transactional Outbox), worker idempotente (`backend/src/worker.ts`) e teste de carga com k6 (`npm run test:carga`).
+- **Gestão e rastreamento:**
+  - [Issues](https://github.com/comparoto/Ponto-da-Terra/issues) · [Backlog (Trello)](https://trello.com/b/KZIZUnYE/ponto-da-terra)
+
+</details>
+
+<details>
+<summary><b>📗 Primeira unidade (histórico)</b></summary>
+
+- **Desenvolvimento Web:**
+  - [Deploy da 1ª entrega](https://ponto-da-terra.vercel.app/) · [Screencast da 1ª entrega](https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2)
+  - [Documentação da Fake API (PDF)](https://github.com/user-attachments/files/32670674/Documentacao_Fake_API.pdf)
+  - [Plano de migração para o backend real (PDF)](https://github.com/user-attachments/files/32671712/Documento_Substituicao_Fake_API_Backend_Real.pdf)
+- **Requisitos, Projeto de Software e Validação:**
+  - [Diagrama de casos de uso](https://drive.google.com/file/d/1j8Ej2N5DjwcfHfw6MvURt_CsS5oYxgQL/view?usp=sharing)
+  - [Diagrama de classes (1ª unidade)](https://drive.google.com/file/d/1B3XJBb0NO-GSV3IqV8fT050-bVJqG5ad/view?usp=sharing)
+  - [Plano de testes, versão 3](https://docs.google.com/document/d/1g6MABX9mCtVXfg0vxMLuS0kMjwttT4BClnToPovFeB8/edit?usp=sharing)
+- **Fundamentos de Computação Concorrente, Paralela e Distribuída** (`TesteDeStress`, 20 threads com `CountDownLatch`):
+  - [Script de simulação de carga (ZIP)](https://drive.google.com/file/d/1ITK4Tarze59MlXn2-qVx2QE2MADOqIVR/view?usp=sharing)
+  - [Slides do teste de concorrência](https://canva.link/yesnpw11bo8hgas)
+- **Uso de IA:**
+  - [Log de uso de IA (Google Docs)](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing) · [Documentação de uso de IA (PDF)](https://github.com/user-attachments/files/32670671/Uso_de_IA_documentacao.pdf)
+
+</details>
+
+---
+
+## Integrantes e evidências de commits
+
+A participação de cada integrante pode ser conferida no [histórico de commits](https://github.com/comparoto/Ponto-da-Terra/commits/main) e no [painel de contribuidores](https://github.com/comparoto/Ponto-da-Terra/graphs/contributors).
 
 | Nome | GitHub |
 |---|---|
@@ -73,231 +351,4 @@ O projeto integra três frentes acadêmicas complementares:
 
 ---
 
-## 🧱 Arquitetura
-
-Nesta etapa, a aplicação é **100% client-side**: não há backend nem banco de dados em produção. Toda a "API" é simulada dentro do próprio código-fonte, o que permite validar fluxos de tela e regras de negócio de UI antes da integração com um backend real.
-
-```
-src/
-├── app/                    # Rotas e páginas (Next.js App Router)
-│   ├── (comprador)/            # Rotas da experiência do comprador
-│   ├── admin/                  # Rotas do painel administrativo
-│   ├── artesao/                 # Rotas do painel do artesão
-│   ├── cadastro/                # Fluxo de cadastro
-│   ├── home/                    # Página inicial
-│   ├── login/                   # Fluxo de autenticação
-│   ├── perfil/                  # Perfil do usuário
-│   └── termos/                  # Termos de uso
-├── components/              # Componentes de UI reutilizáveis
-│   ├── CartDrawer.tsx           # Painel lateral do carrinho
-│   ├── Navbar.tsx                # Barra de navegação
-│   ├── OrderManager.tsx          # Gestão de pedidos (artesão)
-│   ├── Portal.tsx                # Componente de portal (modais/overlays)
-│   ├── ProductCard.tsx           # Card de produto na vitrine
-│   ├── ProductManager.tsx        # Gestão de catálogo (artesão)
-│   └── ProductModal.tsx          # Modal de detalhes do produto
-├── data/                     # Fake API — dados mockados
-│   ├── index.ts                  # Ponto de exportação dos dados
-│   └── mockData.ts               # Dados mockados (artesãos, peças etc.)
-├── services/                 # Camada de serviços / Fake API
-│   ├── api.ts                    # Objeto fachada `fakeApi` (ver seção "Fake API")
-│   ├── artesaoService.ts         # Regras/consultas sobre artesãos
-│   ├── produtoService.ts         # Regras/consultas sobre produtos/peças
-│   └── demoAuth.ts               # Autenticação simulada (login/cadastro demo)
-├── store/                    # Gerenciamento de estado global
-│   └── cartStore.ts/.tsx         # Estado do carrinho de compras
-└── types/                    # Tipagens e contratos (TypeScript)
-    ├── artesao.ts                 # Tipo `Artesao`
-    ├── produto.ts                 # Tipo `Peca`/produto
-    └── index.ts                   # Ponto de exportação dos tipos
-```
-
-**Como a Fake API funciona:**
-- Os dados vivem como objetos/arrays estáticos em `data/` (ex.: lista de artesãos, peças/produtos).
-- A camada `services/` é organizada em três partes:
-  - **Serviços de domínio** (`artesaoService`, `produtoService`, ...) — cada um responsável por ler/manipular os dados mockados de uma entidade específica.
-  - **`fakeApi`** (definido em `services/api.ts`) — um objeto fachada (*facade*) que expõe os métodos consumidos pelo restante da aplicação (ex.: `getArtesaos()`, `getPecas()`), delegando internamente para os serviços de domínio.
-  - **`ApiResult<T>`** — um tipo padronizado de retorno (`{ success, data, error }`) usado por toda a Fake API, simulando o formato de resposta de uma API HTTP real, inclusive com tratamento de erro via `try/catch` e normalização da mensagem de erro.
-- Essa padronização faz com que os componentes/`store/` consumam a Fake API exatamente como consumiriam uma API real — a troca futura por chamadas HTTP deve preservar o mesmo contrato `ApiResult<T>`, minimizando o impacto no restante do código.
-- O `store/` consome os métodos de `fakeApi` e mantém o estado em memória durante a sessão do usuário (o estado **não persiste** entre reloads, a não ser que algo seja salvo explicitamente em `localStorage`).
-
-**Princípios de projeto aplicados:**
-- Separação entre **apresentação** (`components`), **estado** (`store`) e **acesso a dados** (`services`), reduzindo o acoplamento entre a UI e a origem dos dados (alinhado a SOLID/GRASP).
-- Essa separação foi pensada de forma intencional: quando a API real existir, basta trocar a implementação interna de `services/` (Fake API → chamadas HTTP), sem alterar `components/` nem `store/`.
-- Tipagem centralizada em `types/`, garantindo contratos consistentes entre camadas mesmo sem um backend tipado.
-
-### Concorrência, paralelismo e distribuição
-
-Para validar a consistência de um cenário de checkout/estoque sob alta carga — mesmo sem backend definitivo integrado — foi desenvolvido um módulo independente de teste de stress:
-
-- **`TesteDeStress`**: script à parte da aplicação principal, que simula acessos simultâneos ao fluxo de checkout, disparando **20 threads paralelas** de forma sincronizada com `CountDownLatch` (garantindo largada simultânea e controle de conclusão), com o objetivo de validar a consistência do estoque e comprovar a ausência de *race conditions*.
-  - 📦 [Arquivo ZIP](https://drive.google.com/file/d/1ITK4Tarze59MlXn2-qVx2QE2MADOqIVR/view?usp=sharing)
-  - 🖼️ [Slides](https://canva.link/yesnpw11bo8hgas)
-
-> Este módulo foi construído para validar o conceito de concorrência de forma independente do estágio atual do frontend, servindo de base para a futura implementação real de baixa de estoque no backend.
-
----
-
-## 🔄 Fluxos implementados
-
-Com base no progresso registrado no repositório, os seguintes fluxos já estão implementados no frontend, operando sobre a Fake API:
-
-- **Fluxo de compra**: navegação na vitrine → seleção de produto → carrinho → checkout do comprador (usando dados e regras simuladas em `services/`).
-- **Área de pedidos do comprador**: visualização dos pedidos "realizados" pelo comprador, a partir dos dados mockados.
-- **Fluxo de gestão do artesão**: cadastro/gestão de catálogo, estoque e acompanhamento de pedidos, todos operando sobre a Fake API.
-- **Estrutura de layout**: refinamento visual e organizacional das telas principais (vitrine, welcome, pedidos), com foco em responsividade.
-
----
-
-## 🛠️ Tecnologias utilizadas
-
-| Camada | Tecnologia |
-|---|---|
-| **Frontend** | Next.js + TypeScript |
-| **Estilização** | Chakra UI |
-| **Fake API** | Dados mockados em código (`data/`) consumidos via camada de serviços (`services/`) |
-| **Backend real** | Ainda não implementado nesta versão |
-| **Banco de dados** | Ainda não implementado nesta versão pois ninguém da equipe está na disciplina de Bando de Dados |
-| **Autenticação** | Autenticação simulada (`services/demoAuth.ts`), sem backend/token real |
-| **Testes de concorrência** | Java (`CountDownLatch`, simulação de 20 threads paralelas) — módulo `TesteDeStress`, independente da aplicação |
-| **Controle de versão** | Git / GitHub |
-
----
-
-## ⚙️ Como executar localmente
-
-Como não há backend nesta versão, basta rodar o frontend — a Fake API já está embutida no próprio código.
-
-### 1. Pré-requisitos
-- Node.js
-- npm ou yarn
-
-### 2. Clonar o repositório
-```bash
-git clone https://github.com/comparoto/Ponto-da-Terra.git
-cd Ponto-da-Terra
-```
-
-### 3. Instalar dependências
-```bash
-npm install
-```
-
-### 4. Executar a aplicação
-```bash
-npm run dev
-```
-A aplicação ficará disponível em `http://localhost:3000`. Não é necessário subir nenhum serviço adicional — a Fake API roda junto com o frontend.
-
----
-
-## ✅ Funcionalidades implementadas
-
-- [x] **Home / Vitrine do comprador** (`app/home`, `app/(comprador)`) — navegação e exibição de peças
-- [x] **Login e Cadastro** (`app/login`, `app/cadastro`) — com autenticação simulada via `demoAuth.ts`
-- [x] **Perfil do usuário** (`app/perfil`)
-- [x] **Carrinho de compras** (`components/CartDrawer.tsx` + `store/cartStore`)
-- [x] **Área de pedidos do comprador** — `OrderManager.tsx`
-- [x] **Painel do artesão** (`app/artesao`) — gestão de catálogo (`ProductManager.tsx`) e pedidos
-- [x] **Painel administrativo** (`app/admin`)
-- [x] **Página de termos de uso** (`app/termos`)
-- [x] **Detalhe de produto em modal** (`ProductModal.tsx`)
-- [x] Integração com backend/API real (planejado para próxima etapa)
-
----
-
-## 🔌 "Rotas" da Fake API
-
-Como não há backend, não existem rotas HTTP reais. A "API" é o objeto `fakeApi` (`services/api.ts`), que funciona como uma **fachada** sobre os serviços de domínio (`artesaoService`, `produtoService`) e é o que os componentes e o `store/` efetivamente consomem.
-
-Todo retorno segue o mesmo formato padronizado, simulando a resposta de uma API HTTP real:
-
-```ts
-type ApiResult<T> = {
-  success: boolean;
-  data: T | null;
-  error: string | null;
-};
-```
-
-- `success`: indica se a operação foi concluída sem erros;
-- `data`: o payload da entidade solicitada (`null` em caso de erro);
-- `error`: mensagem de erro tratada (`error instanceof Error ? error.message : 'Erro ao carregar os dados.'`), ou `null` em caso de sucesso.
-
-| Método `fakeApi` | Equivalente a | Descrição | Retorno |
-|---|---|---|---|
-| `fakeApi.getArtesaos()` | `GET /artesaos` | Retorna a lista de artesãos, delegando para `artesaoService.getArtesaos()` | `ApiResult<Artesao[]>` |
-| `fakeApi.getPecas()` | `GET /pecas` | Retorna a lista de peças/produtos, delegando para `produtoService.getProdutos()` | `ApiResult<Peca[]>` |
-
-`artesaoService` e `produtoService` também são exportados diretamente de `fakeApi.ts`, caso algum consumidor precise acessar métodos específicos de domínio que ainda não estejam expostos pela fachada `fakeApi`.
-
----
-
-## 🚀 Deploy
-
-- [Clique aqui](https://ponto-da-terra.vercel.app/)
-
----
-
-## 🧪 Evidências
-
-- [Backlog — Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
-- [Diagrama de Casos de Uso](https://drive.google.com/file/d/1j8Ej2N5DjwcfHfw6MvURt_CsS5oYxgQL/view?usp=sharing)
-- [Diagrama de Classes](https://drive.google.com/file/d/1B3XJBb0NO-GSV3IqV8fT050-bVJqG5ad/view?usp=sharing)
-- [Plano de Testes — Versão 3](https://docs.google.com/document/d/1g6MABX9mCtVXfg0vxMLuS0kMjwttT4BClnToPovFeB8/edit?usp=sharing)
-- [Script de Simulação de Carga — ZIP](https://drive.google.com/file/d/1ITK4Tarze59MlXn2-qVx2QE2MADOqIVR/view?usp=sharing)
-- [Slides do teste de concorrência](https://canva.link/yesnpw11bo8hgas)
-- [Log de Uso de IA](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing)
-- [Issues / Bug Tracker](https://github.com/comparoto/Ponto-da-Terra/issues)
-- [Screencast](https://youtu.be/G3cyHzcV1Eo?si=K9olgvrcalE2YpW2)
-
----
-
-## 📃 Documentações exigidas
-
-- Documentação sobre o uso de IA: [Uso_de_IA_documentacao.pdf](https://github.com/user-attachments/files/32670671/Uso_de_IA_documentacao.pdf)
-- Documentação sobre a Fake API: [Documentacao_Fake_API.pdf](https://github.com/user-attachments/files/32670674/Documentacao_Fake_API.pdf)
-- Migração futura da FakeAPI para Back-end: [Documento_Substituicao_Fake_API_Backend_Real.pdf](https://github.com/user-attachments/files/32671712/Documento_Substituicao_Fake_API_Backend_Real.pdf)
-
-
----
-
-## 📋 Índice de entregas por unidade
-
-<details>
-<summary><b>Primeira Unidade</b></summary>
-
-**Requisitos, Projeto de Software e Validação**
-- [Backlog - Trello](https://trello.com/b/KZIZUnYE/ponto-da-terra)
-- [Diagrama de Casos de Uso](https://drive.google.com/file/d/1j8Ej2N5DjwcfHfw6MvURt_CsS5oYxgQL/view?usp=sharing)
-- [Diagrama de Classes](https://drive.google.com/file/d/1B3XJBb0NO-GSV3IqV8fT050-bVJqG5ad/view?usp=sharing)
-- [Plano de Testes](https://docs.google.com/document/d/1g6MABX9mCtVXfg0vxMLuS0kMjwttT4BClnToPovFeB8/edit?usp=sharing)
-
-**Fundamentos de Computação Concorrente, Paralela e Distribuída**
-- [Arquivo ZIP](https://drive.google.com/file/d/1ITK4Tarze59MlXn2-qVx2QE2MADOqIVR/view?usp=sharing)
-- [Slides](https://canva.link/yesnpw11bo8hgas)
-- [Log Uso de IA](https://docs.google.com/document/d/1suMTaLtk8SR1g8WeNKN4IzYHL_MzHw9sh-mnHzTPREI/edit?usp=sharing)
-
-</details>
-
-<details>
-<summary><b>Segunda Unidade</b></summary>
-
-**Desenvolvimento Web**
-- Entregas:
-
-**Requisitos, Projeto de Software e Validação**
-- Entregas:
-
-**Fundamentos de Computação Concorrente, Paralela e Distribuída**
-- Entregas: 
-
-**Issues/Bug Tracker**
-- [Issues](https://github.com/comparoto/Ponto-da-Terra/issues)
-
-</details>
-
----
-
-<p align="center">Projeto acadêmico desenvolvido para a cadeira de Desenvolvimento Web sem fins lucrativos</p>
-<p align="center"> Cesar School | 4º Período</p>
+<p align="center">Projeto acadêmico sem fins lucrativos · CESAR School | 4º Período</p>

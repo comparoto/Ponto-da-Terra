@@ -1,98 +1,93 @@
-import { Peca, FiltrosProduto } from '@/types';
-import { PRODUTOS_MOCK } from '@/data';
+/**
+ * Produtos via API real (antes: localStorage + dados mockados).
+ */
+import type { Peca, StatusProduto } from '@/types';
+import { type ApiResult, request } from './http';
+import { produtoParaPeca, type ProdutoApi } from './mappers';
 
-export const CATEGORIAS = [
-  'Todas',
-  'Cerâmica & Barro',
-  'Escultura & Madeira',
-  'Renda & Têxtil',
-  'Cestaria & Palha',
-  'Xilogravura',
-];
+export const CATEGORIAS = ['Todas', 'Cerâmica & Barro', 'Escultura & Madeira', 'Renda & Têxtil', 'Cestaria & Palha', 'Xilogravura'];
 
-export const PECAS_DATA: Peca[] = PRODUTOS_MOCK;
+/** Converte ApiResult<ProdutoApi[]> → ApiResult<Peca[]> preservando meta/erros. */
+const mapearLista = (res: ApiResult<ProdutoApi[]>): ApiResult<Peca[]> => ({ ...res, data: res.data ? res.data.map(produtoParaPeca) : null });
+const mapearUm = (res: ApiResult<ProdutoApi>): ApiResult<Peca> => ({ ...res, data: res.data ? produtoParaPeca(res.data) : null });
+
+export interface DadosPeca {
+  nome: string;
+  preco: number;
+  categoriaId?: string;
+  tecnica: string;
+  poloOrigem: string;
+  descricao?: string;
+  material?: string;
+  dimensoes?: string;
+}
+
+const corpoProduto = (d: DadosPeca) => ({
+  titulo: d.nome,
+  preco: d.preco,
+  categoriaId: d.categoriaId || undefined,
+  tecnica: d.tecnica,
+  poloOrigem: d.poloOrigem,
+  descricao: d.descricao || undefined,
+  materiaisUtilizados: d.material || undefined,
+  dimensoes: d.dimensoes || undefined,
+});
 
 export const produtoService = {
-  listarProdutosSincrono: (): Peca[] => {
-    if (typeof window !== 'undefined') {
-      try { const saved = localStorage.getItem('ponto_da_terra_products_v1'); if (saved) return JSON.parse(saved) as Peca[]; } catch { /* usa catálogo inicial */ }
+  /** Vitrine pública: todas as peças aprovadas (percorre as páginas da API). */
+  async getProdutos(): Promise<ApiResult<Peca[]>> {
+    const todas: Peca[] = [];
+    for (let page = 1; ; page++) {
+      const res = mapearLista(await request<ProdutoApi[]>('/produtos', { query: { page, limit: 50 } }));
+      if (!res.success || !res.data) return res;
+      todas.push(...res.data);
+      if (!res.meta || page >= res.meta.totalPages) return { ...res, data: todas };
     }
-    return [...PECAS_DATA];
-  },
-  salvarProduto: (produto: Peca): void => {
-    if (typeof window === 'undefined') return;
-    const atual = produtoService.listarProdutosSincrono();
-    localStorage.setItem('ponto_da_terra_products_v1', JSON.stringify([...atual.filter(p => p.id !== produto.id), produto]));
-  },
-  excluirProduto: (id: string): void => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('ponto_da_terra_products_v1', JSON.stringify(produtoService.listarProdutosSincrono().filter(p => p.id !== id)));
-  },
-  getProdutos: async (filtros?: FiltrosProduto): Promise<Peca[]> => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        let resultado = produtoService.listarProdutosSincrono();
-
-        if (filtros?.termoBusca) {
-          const termo = filtros.termoBusca.toLowerCase().trim();
-          resultado = resultado.filter(
-            p =>
-              p.nome.toLowerCase().includes(termo) ||
-              p.artesaoNome?.toLowerCase().includes(termo) ||
-              p.categoria?.toLowerCase().includes(termo) ||
-              p.artesaoCidade?.toLowerCase().includes(termo)
-          );
-        }
-
-        if (filtros?.categoria && filtros.categoria !== 'Todas') {
-          resultado = resultado.filter(p => p.categoria === filtros.categoria);
-        }
-
-        if (filtros?.artesaoId) {
-          resultado = resultado.filter(p => p.artesaoId === filtros.artesaoId);
-        }
-
-        if (filtros?.precoMin !== undefined) {
-          resultado = resultado.filter(p => p.preco >= filtros.precoMin!);
-        }
-
-        if (filtros?.precoMax !== undefined) {
-          resultado = resultado.filter(p => p.preco <= filtros.precoMax!);
-        }
-
-        if (filtros?.ordenacao) {
-          switch (filtros.ordenacao) {
-            case 'preco-asc':
-              resultado.sort((a, b) => a.preco - b.preco);
-              break;
-            case 'preco-desc':
-              resultado.sort((a, b) => b.preco - a.preco);
-              break;
-            case 'nome':
-              resultado.sort((a, b) => a.nome.localeCompare(b.nome));
-              break;
-            case 'recentes':
-            default:
-              break;
-          }
-        }
-
-        resolve(resultado);
-      }, 250);
-    });
   },
 
-  getProdutoById: async (id: string): Promise<Peca | undefined> => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(produtoService.listarProdutosSincrono().find(p => p.id === id));
-      }, 150);
-    });
+  async getProdutoById(id: string): Promise<ApiResult<Peca>> {
+    return mapearUm(await request<ProdutoApi>(`/produtos/${id}`));
   },
 
-  getCategorias: (): string[] => {
-    return CATEGORIAS;
+  async getCategorias(): Promise<ApiResult<{ id: string; nome: string }[]>> {
+    return request('/categorias');
+  },
+
+  getCategoriasFixas: (): string[] => CATEGORIAS,
+
+  // ───── Artesão ─────
+
+  async listarMinhas(status?: StatusProduto): Promise<ApiResult<Peca[]>> {
+    return mapearLista(await request<ProdutoApi[]>('/artesao/produtos', { query: { limit: 50, status } }));
+  },
+
+  /** Cria a peça (nasce PENDENTE, aguardando curadoria) e envia a foto. */
+  async criar(dados: DadosPeca, estoque: number, foto?: File): Promise<ApiResult<Peca>> {
+    const res = mapearUm(await request<ProdutoApi>('/produtos', { method: 'POST', body: { ...corpoProduto(dados), estoque } }));
+    if (!res.success || !res.data || !foto) return res;
+    return this.enviarFoto(res.data.id, foto, true);
+  },
+
+  /** Edita a peça (volta para PENDENTE) e, se houver nova foto, a substitui. */
+  async atualizar(id: string, dados: DadosPeca, estoque: number, foto?: File): Promise<ApiResult<Peca>> {
+    const res = mapearUm(await request<ProdutoApi>(`/produtos/${id}`, { method: 'PUT', body: corpoProduto(dados) }));
+    if (!res.success) return res;
+    const est = mapearUm(await request<ProdutoApi>(`/produtos/${id}/estoque`, { method: 'PATCH', body: { quantidade: estoque } }));
+    if (!est.success || !foto) return est;
+    return this.enviarFoto(id, foto, true);
+  },
+
+  async ajustarEstoque(id: string, quantidade: number): Promise<ApiResult<Peca>> {
+    return mapearUm(await request<ProdutoApi>(`/produtos/${id}/estoque`, { method: 'PATCH', body: { quantidade } }));
+  },
+
+  async enviarFoto(id: string, foto: File, substituir = false): Promise<ApiResult<Peca>> {
+    const form = new FormData();
+    form.append('imagem', foto);
+    return mapearUm(await request<ProdutoApi>(`/produtos/${id}/imagens`, { method: 'POST', form, query: { substituir: String(substituir) } }));
+  },
+
+  async excluir(id: string): Promise<ApiResult<null>> {
+    return request<null>(`/produtos/${id}`, { method: 'DELETE' });
   },
 };
-
-

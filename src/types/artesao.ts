@@ -6,4 +6,9 @@ export interface Artesao {
   imagemUrl: string;
   biografia?: string;
   especialidade?: string;
+  nomeAtelie?: string;
+  poloRegional?: string;
+  fotoAtelieUrl?: string;
+  tecnicasPrincipais?: string[];
+  avaliacaoMedia?: number;
 }

@@ -1,28 +1,28 @@
 'use client';
 
 import { useEffect, useState, useMemo, Suspense } from 'react';
-import { Box,Flex,SimpleGrid,Text,Heading,Input,InputGroup,InputLeftElement,Select,Button,Spinner,Icon,Badge,useDisclosure,Divider,} from '@chakra-ui/react';
+import { Box,Flex,SimpleGrid,Text,Heading,Input,InputGroup,InputLeftElement,Select,Button,Spinner,Icon,Badge,useDisclosure,Divider, type IconProps } from '@chakra-ui/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductModal } from '@/components/ProductModal';
 import { Peca, Artesao } from '@/types';
-import { fakeApi } from '@/services/api';
+import { api } from '@/services/api';
 import { CATEGORIAS } from '@/services/produtoService';
 
-const SearchIcon = (props: any) => (
+const SearchIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
   </Icon>
 );
 
-const FilterResetIcon = (props: any) => (
+const FilterResetIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
   </Icon>
 );
 
-const EmptyBoxIcon = (props: any) => (
+const EmptyBoxIcon = (props: IconProps) => (
   <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
   </Icon>
@@ -40,6 +40,9 @@ function CatalogoContent() {
   const [busca, setBusca] = useState(searchParams.get('q') || '');
   const [categoria, setCategoria] = useState(searchParams.get('categoria') || 'Todas');
   const [artesaoId, setArtesaoId] = useState('');
+  // HU2: filtros por técnica artesanal e polo de origem
+  const [tecnica, setTecnica] = useState('');
+  const [polo, setPolo] = useState('');
   const [faixaPreco, setFaixaPreco] = useState('todas');
   const [ordenacao, setOrdenacao] = useState<'recentes' | 'preco-asc' | 'preco-desc' | 'nome'>('recentes');
 
@@ -47,12 +50,15 @@ function CatalogoContent() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
 
-  useEffect(() => {
+  // Quando a URL muda (ex.: busca pela Navbar), aplica os novos parâmetros — ajuste de estado durante a renderização
+  const [paramsAplicados, setParamsAplicados] = useState(searchParams.toString());
+  if (searchParams.toString() !== paramsAplicados) {
+    setParamsAplicados(searchParams.toString());
     const q = searchParams.get('q');
     if (q !== null) setBusca(q);
     const cat = searchParams.get('categoria');
     if (cat !== null) setCategoria(cat);
-  }, [searchParams]);
+  }
 
   useEffect(() => {
     const loadData = async () => {
@@ -61,8 +67,8 @@ function CatalogoContent() {
 
       try {
         const [pecasResult, artesaosResult] = await Promise.all([
-          fakeApi.getPecas(),
-          fakeApi.getArtesaos(),
+          api.getPecas(),
+          api.getArtesaos(),
         ]);
 
         if (!pecasResult.success || !artesaosResult.success) {
@@ -109,6 +115,14 @@ function CatalogoContent() {
       filtradas = filtradas.filter(p => p.artesaoId === artesaoId);
     }
 
+    if (tecnica) {
+      filtradas = filtradas.filter(p => p.tecnica === tecnica);
+    }
+
+    if (polo) {
+      filtradas = filtradas.filter(p => p.poloOrigem === polo);
+    }
+
     if (faixaPreco === 'ate-100') {
       filtradas = filtradas.filter(p => p.preco <= 100);
     } else if (faixaPreco === '100-200') {
@@ -133,12 +147,17 @@ function CatalogoContent() {
     }
 
     return filtradas;
-  }, [pecas, busca, categoria, artesaoId, faixaPreco, ordenacao]);
+  }, [pecas, busca, categoria, artesaoId, tecnica, polo, faixaPreco, ordenacao]);
+
+  const tecnicas = useMemo(() => [...new Set(pecas.map(p => p.tecnica).filter((t): t is string => Boolean(t)))].sort(), [pecas]);
+  const polos = useMemo(() => [...new Set(pecas.map(p => p.poloOrigem).filter((t): t is string => Boolean(t)))].sort(), [pecas]);
 
   const temFiltroAtivo =
     busca.trim() !== '' ||
     categoria !== 'Todas' ||
     artesaoId !== '' ||
+    tecnica !== '' ||
+    polo !== '' ||
     faixaPreco !== 'todas' ||
     ordenacao !== 'recentes';
 
@@ -146,6 +165,8 @@ function CatalogoContent() {
     setBusca('');
     setCategoria('Todas');
     setArtesaoId('');
+    setTecnica('');
+    setPolo('');
     setFaixaPreco('todas');
     setOrdenacao('recentes');
   };
@@ -219,7 +240,7 @@ function CatalogoContent() {
           <Divider borderColor="whiteAlpha.200" my={6} />
 
           <Flex direction="column" gap={4}>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
               <InputGroup size="md">
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon color="whiteAlpha.600" />
@@ -246,6 +267,7 @@ function CatalogoContent() {
                 _focus={{ borderColor: 'terra.500' }}
                 value={artesaoId}
                 onChange={e => setArtesaoId(e.target.value)}
+                aria-label="Artesão"
               >
                 <option value="" style={{ background: '#2C2724', color: '#fff' }}>
                   Todos os Artesãos
@@ -264,8 +286,51 @@ function CatalogoContent() {
                 color="white"
                 borderRadius="lg"
                 _focus={{ borderColor: 'terra.500' }}
+                value={tecnica}
+                onChange={e => setTecnica(e.target.value)}
+                aria-label="Técnica artesanal"
+              >
+                <option value="" style={{ background: '#2C2724', color: '#fff' }}>
+                  Todas as técnicas
+                </option>
+                {tecnicas.map(t => (
+                  <option key={t} value={t} style={{ background: '#2C2724', color: '#fff' }}>
+                    {t}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                size="md"
+                bg="#2C2724"
+                borderColor="whiteAlpha.300"
+                color="white"
+                borderRadius="lg"
+                _focus={{ borderColor: 'terra.500' }}
+                value={polo}
+                onChange={e => setPolo(e.target.value)}
+                aria-label="Polo de origem"
+              >
+                <option value="" style={{ background: '#2C2724', color: '#fff' }}>
+                  Todos os polos
+                </option>
+                {polos.map(p => (
+                  <option key={p} value={p} style={{ background: '#2C2724', color: '#fff' }}>
+                    {p}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                size="md"
+                bg="#2C2724"
+                borderColor="whiteAlpha.300"
+                color="white"
+                borderRadius="lg"
+                _focus={{ borderColor: 'terra.500' }}
                 value={faixaPreco}
                 onChange={e => setFaixaPreco(e.target.value)}
+                aria-label="Faixa de preço"
               >
                 <option value="todas" style={{ background: '#2C2724', color: '#fff' }}>
                   Todas as faixas de preço
@@ -289,7 +354,8 @@ function CatalogoContent() {
                 borderRadius="lg"
                 _focus={{ borderColor: 'terra.500' }}
                 value={ordenacao}
-                onChange={e => setOrdenacao(e.target.value as any)}
+                onChange={e => setOrdenacao(e.target.value as typeof ordenacao)}
+                aria-label="Ordenação"
               >
                 <option value="recentes" style={{ background: '#2C2724', color: '#fff' }}>
                   Ordenar: Mais Recentes
