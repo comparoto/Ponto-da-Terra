@@ -761,4 +761,4 @@ Vêm dos comentários `AJUSTE` do schema. Os códigos C2, C3, C8, C9 e D5 refere
 
 ## Pendência
 
-O diagrama de classes **original** (1ª unidade, no Drive) e o plano de testes (casos TC09 e TC02) são documentos externos e ainda não foram editados. Este arquivo é a versão atualizada do modelo; a decisão D9 do documento de requisitos fica resolvida para o diagrama de classes e continua aberta apenas para os casos de teste do plano.
+O arquivo do diagrama de classes **original** (1ª unidade, no Drive) continua com o desenho antigo: as imagens deste documento (`docs/diagramas/`) são a versão atualizada e podem substituí-lo. No plano de testes (Google Doc), os ajustes dos casos TC02 e TC09 foram feitos como **sugestões** em 23/11/2026 e dependem de a equipe aceitá-las. Com isso, a decisão D9 do documento de requisitos fica resolvida para o modelo e aguarda só essa aceitação.
