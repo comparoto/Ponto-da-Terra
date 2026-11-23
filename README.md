@@ -301,7 +301,7 @@ type ApiResult<T> = {
   - [Documentação do backend](docs/md/README_BACKEND.md) · [Guia de deploy na Vercel](docs/md/DEPLOY_VERCEL.md)
 - **Requisitos, Projeto de Software e Validação:**
   - [Requisitos, decisões e roadmap do backend](docs/md/REQUISITOS_BACKEND.md)
-  - [Diagrama de classes atualizado (gerado do schema)](docs/md/DIAGRAMA_DE_CLASSES.md)
+  - [Diagrama de classes atualizado (gerado do schema)](docs/md/DIAGRAMA_DE_CLASSES.md) · [Diagrama de casos de uso atualizado](docs/md/DIAGRAMA_DE_CASOS_DE_USO.md)
   - [Relatório de testes · 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](docs/md/RELATORIO_TESTES.md)
   - [Evidências da Avaliação 2](docs/md/EVIDENCIAS_AVALIACAO_2.md)
   - [Uso de IA na 2ª unidade](docs/md/USO_DE_IA_2A_UNIDADE.md)
