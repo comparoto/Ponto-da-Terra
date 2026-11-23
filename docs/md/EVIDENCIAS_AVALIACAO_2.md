@@ -7,7 +7,7 @@ Este documento reúne as evidências pedidas nos "Entregáveis da Avaliação 2"
 | Entregável | Onde está | Situação |
 |---|---|---|
 | Repositório GitHub final | [github.com/comparoto/Ponto-da-Terra](https://github.com/comparoto/Ponto-da-Terra), branch `integracao-backend` ([README](../../README.md)) | Frontend, backend e instruções de execução. Ainda não está na `main` |
-| Deploy final | [Site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) ([DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)) | No ar. A versão publicada **não tem** o código da recomendação, que só existe no repositório até o próximo deploy |
+| Deploy final | [Site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) ([DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)) | Publicado em 23/11/2026 com o código da `main`, incluindo a recomendação. Conferido em produção: logins, estoque das peças, Swagger (69 operações) e a seção "Feitas para você" |
 | Vídeo ou screencast | Link do README (1ª entrega) | **Pendente:** é preciso gravar um novo, com o *Network* do navegador aberto |
 | Documentação da API | [Swagger](https://ponto-da-terra-api.vercel.app/api/docs) · [docs/md/README_BACKEND.md](README_BACKEND.md) | 69 operações em 60 caminhos, com teste de contrato que compara as respostas com a documentação |
 | README atualizado | [README.md](../../README.md) | Arquitetura, execução, tecnologias e deploy |

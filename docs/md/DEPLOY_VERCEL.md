@@ -1,6 +1,8 @@
 # Deploy na Vercel · Origem: Ponto da Terra
 
-## ✅ Situação atual (11/11/2026): publicado
+## ✅ Situação atual (23/11/2026): publicado
+
+A última publicação (23/11/2026) levou o código da integração completa, com a recomendação da home e o Swagger atualizado. Verificado em produção: `/api/health` com banco e Redis "ok", os três logins de demonstração, 69 operações no Swagger e a seção "Feitas para você" funcionando. As verificações listadas abaixo são da publicação de 11/11/2026.
 
 | | Endereço |
 |---|---|
