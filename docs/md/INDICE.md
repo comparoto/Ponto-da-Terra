@@ -8,6 +8,7 @@
 |---|---|
 | [REQUISITOS_BACKEND.md](REQUISITOS_BACKEND.md) | Requisitos, regras de negócio, conflitos entre documentos (C1 a C11), decisões (D1 a D9) e roadmap do backend |
 | [DIAGRAMA_DE_CLASSES.md](DIAGRAMA_DE_CLASSES.md) | Diagrama de classes do modelo de dados, **gerado do schema** (`cd backend && npm run docs:diagrama`), com os ajustes em relação ao diagrama da 1ª unidade |
+| [`../diagramas/`](../diagramas) | Imagens (PNG) do diagrama de classes, geradas do `.md` acima por `node e2e/gerar-imagens-diagrama.cjs`: o diagrama completo (`02-diagrama-completo.png`) e os diagramas por assunto |
 
 ## Testes e evidências
 

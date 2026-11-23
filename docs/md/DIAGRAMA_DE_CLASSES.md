@@ -71,14 +71,14 @@ classDiagram
   ChecklistFormalizacao "0..1" --> "1" Artesao : artesao
 ```
 
-## Pessoas e contas
+## Diagrama completo
 
-Usuário e os perfis comprador, artesão e administrador, com endereços e recuperação de senha.
+Todas as classes com seus atributos e todas as relações (sem rótulos nas setas, para o desenho ficar limpo; o campo de ligação aparece nos atributos, como `pedidoId`). A imagem desta versão, para colar em documentos, é gerada por `node e2e/gerar-imagens-diagrama.cjs` (arquivos em [`docs/diagramas/`](../diagramas)).
 
 ```mermaid
 classDiagram
   class Usuario {
-    +String id
+    +UUID id
     +String nome
     +String email
     +String senhaHash
@@ -86,24 +86,32 @@ classDiagram
     +TipoUsuario tipo
     +StatusUsuario status
     +String? motivoSuspensao
-    +Int tokenVersion
+    +Integer tokenVersion
     +DateTime? termosAceitosEm
     +DateTime dataCadastro
   }
+  class TokenRedefinicaoSenha {
+    +UUID id
+    +UUID usuarioId
+    +String tokenHash
+    +DateTime expiraEm
+    +DateTime? usadoEm
+    +DateTime criadoEm
+  }
   class Consumidor {
-    +String id
-    +String usuarioId
-    +String? enderecoPadraoId
+    +UUID id
+    +UUID usuarioId
+    +UUID? enderecoPadraoId
     +DateTime dataCadastro
   }
   class Administrador {
-    +String id
-    +String usuarioId
+    +UUID id
+    +UUID usuarioId
     +String nivelAcesso
   }
   class Artesao {
-    +String id
-    +String usuarioId
+    +UUID id
+    +UUID usuarioId
     +String? nomeAtelie
     +String? biografia
     +String[] tecnicasPrincipais
@@ -121,8 +129,265 @@ classDiagram
     +DateTime dataCadastro
   }
   class Endereco {
-    +String id
-    +String consumidorId
+    +UUID id
+    +UUID consumidorId
+    +String cep
+    +String rua
+    +String numero
+    +String? complemento
+    +String? bairro
+    +String cidade
+    +String estado
+  }
+  class CategoriaProduto {
+    +UUID id
+    +String nome
+  }
+  class Produto {
+    +UUID id
+    +UUID artesaoId
+    +UUID? categoriaId
+    +String titulo
+    +String? descricao
+    +String tecnica
+    +String poloOrigem
+    +Decimal preco
+    +String? materiaisUtilizados
+    +String? dimensoes
+    +Boolean prontaEntrega
+    +Integer? tempoProducaoDias
+    +String[] imagensUrls
+    +Float avaliacaoMedia
+    +StatusProduto status
+    +String? justificativaCuradoria
+    +DateTime criadoEm
+    +DateTime atualizadoEm
+  }
+  class Estoque {
+    +UUID id
+    +UUID produtoId
+    +Integer quantidadeDisponivel
+    +Integer versao
+  }
+  class Carrinho {
+    +UUID id
+    +UUID consumidorId
+    +DateTime atualizadoEm
+  }
+  class ItemCarrinho {
+    +UUID id
+    +UUID carrinhoId
+    +UUID produtoId
+    +Integer quantidade
+    +Integer posicao
+  }
+  class Compra {
+    +UUID id
+    +String codigo
+    +UUID consumidorId
+    +UUID enderecoId
+    +Decimal valorProdutos
+    +Decimal valorFrete
+    +Decimal valorTotal
+    +StatusCompra status
+    +DateTime reservaExpiraEm
+    +DateTime criadoEm
+  }
+  class Pedido {
+    +UUID id
+    +UUID compraId
+    +UUID consumidorId
+    +UUID artesaoId
+    +DateTime dataPedido
+    +Decimal valorProdutos
+    +Decimal valorFrete
+    +Decimal valorTotal
+    +StatusPedido status
+  }
+  class ItemPedido {
+    +UUID id
+    +UUID pedidoId
+    +UUID produtoId
+    +UUID artesaoId
+    +String tituloProduto
+    +Integer quantidade
+    +Decimal precoUnitario
+  }
+  class HistoricoStatusPedido {
+    +UUID id
+    +UUID pedidoId
+    +StatusPedido status
+    +DateTime criadoEm
+    +UUID? autorId
+  }
+  class IntervencaoPedido {
+    +UUID id
+    +UUID pedidoId
+    +UUID adminId
+    +String nota
+    +DateTime criadoEm
+  }
+  class Pagamento {
+    +UUID id
+    +UUID compraId
+    +MetodoPagamento metodo
+    +StatusPagamento status
+    +Integer parcelas
+    +String codigoTransacao
+    +String? pixCopiaECola
+    +String? pixQrCode
+    +String? linhaDigitavel
+    +String? cartaoFinal
+    +String? motivoRecusa
+    +DateTime? expiraEm
+    +DateTime criadoEm
+    +DateTime? dataProcessamento
+  }
+  class Entrega {
+    +UUID id
+    +UUID pedidoId
+    +UUID enderecoId
+    +String? codigoRastreio
+    +String? transportadora
+    +DateTime? dataPostagem
+    +DateTime? dataPrevista
+  }
+  class Avaliacao {
+    +UUID id
+    +UUID consumidorId
+    +UUID produtoId
+    +Integer nota
+    +String? comentario
+    +DateTime dataAvaliacao
+  }
+  class Favorito {
+    +UUID id
+    +UUID consumidorId
+    +UUID produtoId
+  }
+  class MensagemContato {
+    +UUID id
+    +UUID consumidorId
+    +UUID artesaoId
+    +UUID produtoId
+    +String mensagem
+    +DateTime dataEnvio
+  }
+  class NotificacaoLog {
+    +UUID id
+    +UUID? eventoId
+    +UUID? artesaoId
+    +UUID? usuarioId
+    +UUID? pedidoId
+    +TipoEvento tipoEvento
+    +Json? payload
+    +Boolean enviadoComSucesso
+    +Integer tentativas
+    +Boolean lida
+    +DateTime dataEnvio
+  }
+  class ChecklistFormalizacao {
+    +UUID id
+    +UUID artesaoId
+    +Json itensConcluidos
+    +Integer percentualConclusao
+    +DateTime atualizadoEm
+  }
+  class EventoOutbox {
+    +UUID id
+    +TipoEvento tipo
+    +Json payload
+    +DateTime criadoEm
+    +DateTime? publicadoEm
+  }
+  TokenRedefinicaoSenha "*" --> "1" Usuario
+  Consumidor "0..1" --> "1" Usuario
+  Administrador "0..1" --> "1" Usuario
+  Artesao "0..1" --> "1" Usuario
+  Endereco "*" --> "1" Consumidor
+  Produto "*" --> "1" Artesao
+  Produto "*" --> "0..1" CategoriaProduto
+  Estoque "0..1" --> "1" Produto
+  Carrinho "0..1" --> "1" Consumidor
+  ItemCarrinho "*" --> "1" Carrinho
+  ItemCarrinho "*" --> "1" Produto
+  Compra "*" --> "1" Consumidor
+  Compra "*" --> "1" Endereco
+  Pedido "*" --> "1" Compra
+  Pedido "*" --> "1" Consumidor
+  Pedido "*" --> "1" Artesao
+  ItemPedido "*" --> "1" Pedido
+  ItemPedido "*" --> "1" Produto
+  ItemPedido "*" --> "1" Artesao
+  HistoricoStatusPedido "*" --> "1" Pedido
+  IntervencaoPedido "*" --> "1" Pedido
+  Pagamento "0..1" --> "1" Compra
+  Entrega "0..1" --> "1" Pedido
+  Entrega "*" --> "1" Endereco
+  Avaliacao "*" --> "1" Consumidor
+  Avaliacao "*" --> "1" Produto
+  Favorito "*" --> "1" Consumidor
+  Favorito "*" --> "1" Produto
+  MensagemContato "*" --> "1" Consumidor
+  MensagemContato "*" --> "1" Artesao
+  MensagemContato "*" --> "1" Produto
+  NotificacaoLog "*" --> "0..1" Artesao
+  NotificacaoLog "*" --> "0..1" Pedido
+  ChecklistFormalizacao "0..1" --> "1" Artesao
+```
+
+## Pessoas e contas
+
+Usuário e os perfis comprador, artesão e administrador, com endereços e recuperação de senha.
+
+```mermaid
+classDiagram
+  class Usuario {
+    +UUID id
+    +String nome
+    +String email
+    +String senhaHash
+    +String? telefone
+    +TipoUsuario tipo
+    +StatusUsuario status
+    +String? motivoSuspensao
+    +Integer tokenVersion
+    +DateTime? termosAceitosEm
+    +DateTime dataCadastro
+  }
+  class Consumidor {
+    +UUID id
+    +UUID usuarioId
+    +UUID? enderecoPadraoId
+    +DateTime dataCadastro
+  }
+  class Administrador {
+    +UUID id
+    +UUID usuarioId
+    +String nivelAcesso
+  }
+  class Artesao {
+    +UUID id
+    +UUID usuarioId
+    +String? nomeAtelie
+    +String? biografia
+    +String[] tecnicasPrincipais
+    +String? especialidade
+    +String? poloRegional
+    +String cidade
+    +String estado
+    +String? cepOrigem
+    +String? fotoPerfilUrl
+    +String? fotoAtelieUrl
+    +Boolean aceitaEncomenda
+    +Float avaliacaoMedia
+    +StatusCadastroArtesao statusCadastro
+    +String? motivoCadastro
+    +DateTime dataCadastro
+  }
+  class Endereco {
+    +UUID id
+    +UUID consumidorId
     +String cep
     +String rua
     +String numero
@@ -132,8 +397,8 @@ classDiagram
     +String estado
   }
   class TokenRedefinicaoSenha {
-    +String id
-    +String usuarioId
+    +UUID id
+    +UUID usuarioId
     +String tokenHash
     +DateTime expiraEm
     +DateTime? usadoEm
@@ -200,13 +465,13 @@ Peças, estoque, categorias, favoritos, avaliações, mensagens ao produtor e ch
 ```mermaid
 classDiagram
   class CategoriaProduto {
-    +String id
+    +UUID id
     +String nome
   }
   class Produto {
-    +String id
-    +String artesaoId
-    +String? categoriaId
+    +UUID id
+    +UUID artesaoId
+    +UUID? categoriaId
     +String titulo
     +String? descricao
     +String tecnica
@@ -215,7 +480,7 @@ classDiagram
     +String? materiaisUtilizados
     +String? dimensoes
     +Boolean prontaEntrega
-    +Int? tempoProducaoDias
+    +Integer? tempoProducaoDias
     +String[] imagensUrls
     +Float avaliacaoMedia
     +StatusProduto status
@@ -224,37 +489,37 @@ classDiagram
     +DateTime atualizadoEm
   }
   class Estoque {
-    +String id
-    +String produtoId
-    +Int quantidadeDisponivel
-    +Int versao
+    +UUID id
+    +UUID produtoId
+    +Integer quantidadeDisponivel
+    +Integer versao
   }
   class Favorito {
-    +String id
-    +String consumidorId
-    +String produtoId
+    +UUID id
+    +UUID consumidorId
+    +UUID produtoId
   }
   class Avaliacao {
-    +String id
-    +String consumidorId
-    +String produtoId
-    +Int nota
+    +UUID id
+    +UUID consumidorId
+    +UUID produtoId
+    +Integer nota
     +String? comentario
     +DateTime dataAvaliacao
   }
   class MensagemContato {
-    +String id
-    +String consumidorId
-    +String artesaoId
-    +String produtoId
+    +UUID id
+    +UUID consumidorId
+    +UUID artesaoId
+    +UUID produtoId
     +String mensagem
     +DateTime dataEnvio
   }
   class ChecklistFormalizacao {
-    +String id
-    +String artesaoId
+    +UUID id
+    +UUID artesaoId
     +Json itensConcluidos
-    +Int percentualConclusao
+    +Integer percentualConclusao
     +DateTime atualizadoEm
   }
   class Artesao {
@@ -291,22 +556,22 @@ Carrinho, a compra (um pagamento) dividida em um pedido por artesão, entrega, h
 ```mermaid
 classDiagram
   class Carrinho {
-    +String id
-    +String consumidorId
+    +UUID id
+    +UUID consumidorId
     +DateTime atualizadoEm
   }
   class ItemCarrinho {
-    +String id
-    +String carrinhoId
-    +String produtoId
-    +Int quantidade
-    +Int posicao
+    +UUID id
+    +UUID carrinhoId
+    +UUID produtoId
+    +Integer quantidade
+    +Integer posicao
   }
   class Compra {
-    +String id
+    +UUID id
     +String codigo
-    +String consumidorId
-    +String enderecoId
+    +UUID consumidorId
+    +UUID enderecoId
     +Decimal valorProdutos
     +Decimal valorFrete
     +Decimal valorTotal
@@ -315,10 +580,10 @@ classDiagram
     +DateTime criadoEm
   }
   class Pedido {
-    +String id
-    +String compraId
-    +String consumidorId
-    +String artesaoId
+    +UUID id
+    +UUID compraId
+    +UUID consumidorId
+    +UUID artesaoId
     +DateTime dataPedido
     +Decimal valorProdutos
     +Decimal valorFrete
@@ -326,20 +591,20 @@ classDiagram
     +StatusPedido status
   }
   class ItemPedido {
-    +String id
-    +String pedidoId
-    +String produtoId
-    +String artesaoId
+    +UUID id
+    +UUID pedidoId
+    +UUID produtoId
+    +UUID artesaoId
     +String tituloProduto
-    +Int quantidade
+    +Integer quantidade
     +Decimal precoUnitario
   }
   class Pagamento {
-    +String id
-    +String compraId
+    +UUID id
+    +UUID compraId
     +MetodoPagamento metodo
     +StatusPagamento status
-    +Int parcelas
+    +Integer parcelas
     +String codigoTransacao
     +String? pixCopiaECola
     +String? pixQrCode
@@ -351,25 +616,25 @@ classDiagram
     +DateTime? dataProcessamento
   }
   class Entrega {
-    +String id
-    +String pedidoId
-    +String enderecoId
+    +UUID id
+    +UUID pedidoId
+    +UUID enderecoId
     +String? codigoRastreio
     +String? transportadora
     +DateTime? dataPostagem
     +DateTime? dataPrevista
   }
   class HistoricoStatusPedido {
-    +String id
-    +String pedidoId
+    +UUID id
+    +UUID pedidoId
     +StatusPedido status
     +DateTime criadoEm
-    +String? autorId
+    +UUID? autorId
   }
   class IntervencaoPedido {
-    +String id
-    +String pedidoId
-    +String adminId
+    +UUID id
+    +UUID pedidoId
+    +UUID adminId
     +String nota
     +DateTime criadoEm
   }
@@ -414,22 +679,22 @@ Transactional Outbox (eventos gravados junto com a operação) e o registro das 
 ```mermaid
 classDiagram
   class EventoOutbox {
-    +String id
+    +UUID id
     +TipoEvento tipo
     +Json payload
     +DateTime criadoEm
     +DateTime? publicadoEm
   }
   class NotificacaoLog {
-    +String id
-    +String? eventoId
-    +String? artesaoId
-    +String? usuarioId
-    +String? pedidoId
+    +UUID id
+    +UUID? eventoId
+    +UUID? artesaoId
+    +UUID? usuarioId
+    +UUID? pedidoId
     +TipoEvento tipoEvento
     +Json? payload
     +Boolean enviadoComSucesso
-    +Int tentativas
+    +Integer tentativas
     +Boolean lida
     +DateTime dataEnvio
   }
