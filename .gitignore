@@ -42,6 +42,7 @@ yarn-error.log*
 next-env.d.ts
 README.md
 # Todos os documentos .md ficam em docs/md/ (a linha acima ignoraria os README)
+!/README.md
 !docs/md/*.md
 
 # O next dev recria o AGENTS.md na raiz; a versão versionada fica em docs/md/

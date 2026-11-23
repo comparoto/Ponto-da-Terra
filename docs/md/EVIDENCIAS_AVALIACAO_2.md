@@ -6,11 +6,11 @@ Este documento reúne as evidências pedidas nos "Entregáveis da Avaliação 2"
 
 | Entregável | Onde está | Situação |
 |---|---|---|
-| Repositório GitHub final | [github.com/comparoto/Ponto-da-Terra](https://github.com/comparoto/Ponto-da-Terra), branch `integracao-backend` ([README](README.md)) | Frontend, backend e instruções de execução. Ainda não está na `main` |
+| Repositório GitHub final | [github.com/comparoto/Ponto-da-Terra](https://github.com/comparoto/Ponto-da-Terra), branch `integracao-backend` ([README](../../README.md)) | Frontend, backend e instruções de execução. Ainda não está na `main` |
 | Deploy final | [Site](https://ponto-da-terra-eight.vercel.app) · [API](https://ponto-da-terra-api.vercel.app/api/health) ([DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)) | No ar. A versão publicada **não tem** o código da recomendação, que só existe no repositório até o próximo deploy |
 | Vídeo ou screencast | Link do README (1ª entrega) | **Pendente:** é preciso gravar um novo, com o *Network* do navegador aberto |
 | Documentação da API | [Swagger](https://ponto-da-terra-api.vercel.app/api/docs) · [docs/md/README_BACKEND.md](README_BACKEND.md) | 69 operações em 60 caminhos, com teste de contrato que compara as respostas com a documentação |
-| README atualizado | [README.md](README.md) | Arquitetura, execução, tecnologias e deploy |
+| README atualizado | [README.md](../../README.md) | Arquitetura, execução, tecnologias e deploy |
 | `.env.example` | [.env.example](../../.env.example) e [backend/.env.example](../../backend/.env.example) | Só valores de exemplo; tokens e chaves ficam vazios |
 | Evidência de banco de dados | [Seção 1](#1-evidência-de-banco-de-dados) | Abaixo |
 | Evidência de recomendação | [Seção 2](#2-evidência-de-recomendação) | Abaixo |

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="../../logo-pdt-png.png" alt="Logo Origem: Ponto da Terra" width="180">
+<img src="logo-pdt-png.png" alt="Logo Origem: Ponto da Terra" width="180">
 
 # Origem: Ponto da Terra
 
@@ -42,7 +42,7 @@ O projeto integra três frentes acadêmicas:
 | **Requisitos, Projeto de Software e Validação** | Análise de domínio, gestão de requisitos, arquitetura (SOLID/GRASP, padrões de projeto) e estratégia de testes |
 | **Fundamentos de Computação Concorrente, Paralela e Distribuída** | Desempenho, escalabilidade e tolerância a falhas: concorrência no checkout, filas e processamento assíncrono |
 
-> **Branch desta versão:** `integracao-backend`, que contém o frontend na raiz e o backend em [`backend/`](README_BACKEND.md). A `main` ainda guarda a versão da 1ª entrega (somente frontend).
+> **Branch desta versão:** `integracao-backend`, que contém o frontend na raiz e o backend em [`backend/`](docs/md/README_BACKEND.md). A `main` ainda guarda a versão da 1ª entrega (somente frontend).
 
 ---
 
@@ -59,7 +59,7 @@ O projeto integra três frentes acadêmicas:
 
 **Testar a API no Swagger:** abra a página, rode `POST /api/auth/login` com *Try it out* (por exemplo `comprador@pontodaterra.com` e `comprador123`), copie o `token` da resposta, clique em **Authorize** e cole só o token. As rotas com cadeado passam a funcionar.
 
-Configuração e publicação na nuvem: [`docs/md/DEPLOY_VERCEL.md`](DEPLOY_VERCEL.md).
+Configuração e publicação na nuvem: [`docs/md/DEPLOY_VERCEL.md`](docs/md/DEPLOY_VERCEL.md).
 
 ---
 
@@ -113,7 +113,7 @@ backend/src/
 - **Camadas desacopladas (SOLID/GRASP):** as telas não conhecem as URLs da API; toda a comunicação passa por `src/services/`, com o contrato `ApiResult<T>`.
 - **Cadeia de middlewares no backend:** `autenticar` → `autorizar` → `validate` (Zod) → controlador → serviço.
 - **Padrões de projeto:** *Strategy* nos meios de pagamento (PIX, cartão e boleto simulados), *Transactional Outbox* para publicar eventos com segurança e consumidores idempotentes.
-- **Modelo de dados:** 24 modelos e 9 enumerações no Prisma. O [diagrama de classes](DIAGRAMA_DE_CLASSES.md) é gerado do próprio schema (`cd backend && npm run docs:diagrama`).
+- **Modelo de dados:** 24 modelos e 9 enumerações no Prisma. O [diagrama de classes](docs/md/DIAGRAMA_DE_CLASSES.md) é gerado do próprio schema (`cd backend && npm run docs:diagrama`).
 - **Sem `any`:** o lint (regras `no-explicit-any` e `no-unsafe-*`) e um teste automatizado verificam que o código não usa o tipo `any`.
 
 </details>
@@ -144,25 +144,25 @@ As 18 histórias de usuário do backlog (10 *must*, 6 *should* e 2 *could*) est�
 
 ## Evidências técnicas
 
-Todas as evidências abaixo, com capturas de tela, logs e medições, estão reunidas em [**docs/md/EVIDENCIAS_AVALIACAO_2.md**](EVIDENCIAS_AVALIACAO_2.md). Foram coletadas em 22/11/2026, em ambiente local.
+Todas as evidências abaixo, com capturas de tela, logs e medições, estão reunidas em [**docs/md/EVIDENCIAS_AVALIACAO_2.md**](docs/md/EVIDENCIAS_AVALIACAO_2.md). Foram coletadas em 22/11/2026, em ambiente local.
 
 <details>
 <summary><b>🗄️ Banco de dados: persistência real (PostgreSQL + Prisma)</b></summary>
 
 - **Implementação:** PostgreSQL 16 gerenciado pelo Prisma 7 (`backend/prisma/`), com **24 modelos**, **9 enumerações**, **7 migrations** versionadas e seed com contas de demonstração.
 - **Persistência comprovada:** uma compra foi criada pela API e, depois de **reiniciar o contêiner do PostgreSQL**, a mesma consulta devolveu os mesmos dados. Em produção, os dados ficam no **Neon (PostgreSQL)**.
-- **Modelagem:** [diagrama de classes gerado do schema](DIAGRAMA_DE_CLASSES.md).
-- **Testes:** 148 testes de API usam o banco de verdade ([relatório da 2ª rodada](RELATORIO_2A_RODADA_TESTES.md)).
+- **Modelagem:** [diagrama de classes gerado do schema](docs/md/DIAGRAMA_DE_CLASSES.md).
+- **Testes:** 148 testes de API usam o banco de verdade ([relatório da 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md)).
 
 </details>
 
 <details>
 <summary><b>✨ Recomendação: "Feitas para você"</b></summary>
 
-- **Onde aparece:** na página inicial (`/home`), abaixo dos destaques. Código: [`recomendacaoService.ts`](../../src/services/recomendacaoService.ts).
+- **Onde aparece:** na página inicial (`/home`), abaixo dos destaques. Código: [`recomendacaoService.ts`](src/services/recomendacaoService.ts).
 - **Como funciona:** cada peça aberta no detalhe entra no histórico de visualização (até 20, guardado no navegador). Cada peça candidata recebe uma pontuação de afinidade com as peças vistas e com as favoritas: **categoria** vale 4, **técnica** 3, **polo de origem** 2 e **mesmo artesão** 1; as vistas mais recentes e os favoritos pesam mais. Peças já vistas, favoritas ou em destaque não são sugeridas, e as 4 de maior pontuação aparecem.
 - **Limites:** o cálculo é feito no navegador, por regras de similaridade. Não usa IA nem aprendizado de máquina.
-- **Evidência:** ao abrir o *Vaso Bojudo Terracota Esculpido* (barro), as 4 peças recomendadas passaram a ser todas de barro. Capturas em [docs/md/EVIDENCIAS_AVALIACAO_2.md](EVIDENCIAS_AVALIACAO_2.md#2-evidência-de-recomendação).
+- **Evidência:** ao abrir o *Vaso Bojudo Terracota Esculpido* (barro), as 4 peças recomendadas passaram a ser todas de barro. Capturas em [docs/md/EVIDENCIAS_AVALIACAO_2.md](docs/md/EVIDENCIAS_AVALIACAO_2.md#2-evidência-de-recomendação).
 
 </details>
 
@@ -171,7 +171,7 @@ Todas as evidências abaixo, com capturas de tela, logs e medições, estão reu
 
 - **Implementação:** padrão **Transactional Outbox** (o evento é gravado na mesma transação da compra), publicado numa fila (**BullMQ** localmente e **QStash** na Vercel) e consumido por um worker separado (`backend/src/worker.ts`), com processamento idempotente.
 - **Fluxos assíncronos:** notificações (em `/notificacoes`, com contador), e-mails em caixa de testes, processamento de imagens e expiração de PIX e boleto vencidos, que devolve o estoque.
-- **Evidência:** uma compra feita pela API gerou o evento `NOVO_PEDIDO`; o log do worker mostrou o processamento, o banco ligou o evento à notificação e o artesão passou a ver a notificação na tela. Detalhes em [docs/md/EVIDENCIAS_AVALIACAO_2.md](EVIDENCIAS_AVALIACAO_2.md#3-evidência-de-assíncrono).
+- **Evidência:** uma compra feita pela API gerou o evento `NOVO_PEDIDO`; o log do worker mostrou o processamento, o banco ligou o evento à notificação e o artesão passou a ver a notificação na tela. Detalhes em [docs/md/EVIDENCIAS_AVALIACAO_2.md](docs/md/EVIDENCIAS_AVALIACAO_2.md#3-evidência-de-assíncrono).
 - **Executar localmente:** `cd backend && npm run dev:worker`. Sem o worker, a API funciona, mas os avisos não são gerados.
 
 </details>
@@ -182,7 +182,7 @@ Todas as evidências abaixo, com capturas de tela, logs e medições, estão reu
 - **Onde foi aplicado:** no catálogo da vitrine (`GET /api/produtos`), nas categorias e nas páginas de artesãos, com **Redis** (código em `backend/src/shared/cache.ts`).
 - **Por quê:** a vitrine concentra o maior volume de leituras repetidas e a consulta é cara (peças, artesãos, categorias e estoque, com filtros e paginação). Guardar a resposta reduz o tempo de resposta e alivia o PostgreSQL.
 - **Como:** chave por consulta, validade de 60 s e **invalidação por versão**: aprovação na curadoria, edição de peça, mudança de estoque e alterações de conta aumentam a versão, e as chaves antigas deixam de ser lidas. A resposta traz o cabeçalho `X-Cache: HIT` ou `MISS`. Se o Redis falhar, a API responde direto do banco.
-- **Medição** (50 usuários simultâneos por 15 s, em máquina de desenvolvimento): com cache, **145 req/s e mediana de 301 ms**; sem cache, **27 req/s e mediana de 2.019 ms**. Os números valem como comparação, não como capacidade de produção. Metodologia e limites em [docs/md/EVIDENCIAS_AVALIACAO_2.md](EVIDENCIAS_AVALIACAO_2.md#4-evidência-de-cache).
+- **Medição** (50 usuários simultâneos por 15 s, em máquina de desenvolvimento): com cache, **145 req/s e mediana de 301 ms**; sem cache, **27 req/s e mediana de 2.019 ms**. Os números valem como comparação, não como capacidade de produção. Metodologia e limites em [docs/md/EVIDENCIAS_AVALIACAO_2.md](docs/md/EVIDENCIAS_AVALIACAO_2.md#4-evidência-de-cache).
 
 </details>
 
@@ -192,7 +192,7 @@ Todas as evidências abaixo, com capturas de tela, logs e medições, estão reu
 - **Checkout atômico:** a reserva de estoque é um `UPDATE` condicional somado à restrição `CHECK (estoque >= 0)` no PostgreSQL, o que impede a sobrevenda.
 - **Teste de carga (k6):** 50 compradores simultâneos disputando 1 unidade (`cd backend && npm run test:carga`) resultaram em **1 venda, 49 recusas e estoque final 0**.
 - **Qualidade contínua:** o GitHub Actions (`.github/workflows/ci.yml`) roda lint, checagem de tipos, testes de API e build a cada push em `main` e `integracao-backend` e em pull requests. Os roteiros de navegador, de carga e de segurança são executados à mão.
-- **Testes:** [relatório da 2ª rodada](RELATORIO_2A_RODADA_TESTES.md): os 16 casos do plano de testes passaram.
+- **Testes:** [relatório da 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md): os 16 casos do plano de testes passaram.
 
 </details>
 
@@ -205,7 +205,7 @@ Todas as evidências abaixo, com capturas de tela, logs e medições, estão reu
 - Docker Desktop (para subir o PostgreSQL e o Redis)
 
 ### Variáveis de ambiente
-Os arquivos [`.env.example`](../../.env.example) (raiz) e [`backend/.env.example`](../../backend/.env.example) documentam as variáveis e **não contêm credenciais reais**.
+Os arquivos [`.env.example`](.env.example) (raiz) e [`backend/.env.example`](backend/.env.example) documentam as variáveis e **não contêm credenciais reais**.
 
 <details open>
 <summary><b>⚙️ Passo a passo (backend, worker, frontend e testes)</b></summary>
@@ -253,7 +253,7 @@ cd e2e && npm install && npm test        # segurança, fluxos, responsividade e 
 cd backend && npm run limpar:testes -- --apagar    # remove os dados criados pelos roteiros
 ```
 
-Scripts e rotas do backend: [`docs/md/README_BACKEND.md`](README_BACKEND.md).
+Scripts e rotas do backend: [`docs/md/README_BACKEND.md`](docs/md/README_BACKEND.md).
 
 </details>
 
@@ -293,18 +293,18 @@ type ApiResult<T> = {
 <details>
 <summary><b>📘 Segunda unidade (atual)</b></summary>
 
-> Índice de todos os documentos: [docs/md/INDICE.md](INDICE.md).
+> Índice de todos os documentos: [docs/md/INDICE.md](docs/md/INDICE.md).
 
 - **Desenvolvimento Web:**
   - [Aplicação full stack (deploy)](https://ponto-da-terra-eight.vercel.app) · [Swagger](https://ponto-da-terra-api.vercel.app/api/docs)
-  - [Documentação do backend](README_BACKEND.md) · [Guia de deploy na Vercel](DEPLOY_VERCEL.md)
+  - [Documentação do backend](docs/md/README_BACKEND.md) · [Guia de deploy na Vercel](docs/md/DEPLOY_VERCEL.md)
 - **Requisitos, Projeto de Software e Validação:**
-  - [Requisitos, decisões e roadmap do backend](REQUISITOS_BACKEND.md)
-  - [Diagrama de classes atualizado (gerado do schema)](DIAGRAMA_DE_CLASSES.md)
-  - [Relatório de testes · 2ª rodada](RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](RELATORIO_TESTES.md)
-  - [Evidências da Avaliação 2](EVIDENCIAS_AVALIACAO_2.md)
-  - [Uso de IA na 2ª unidade](USO_DE_IA_2A_UNIDADE.md)
-  - [Refatoração de code smells: moderação de contas](REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](ANALISE_CODE_SMELLS.md)
+  - [Requisitos, decisões e roadmap do backend](docs/md/REQUISITOS_BACKEND.md)
+  - [Diagrama de classes atualizado (gerado do schema)](docs/md/DIAGRAMA_DE_CLASSES.md)
+  - [Relatório de testes · 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](docs/md/RELATORIO_TESTES.md)
+  - [Evidências da Avaliação 2](docs/md/EVIDENCIAS_AVALIACAO_2.md)
+  - [Uso de IA na 2ª unidade](docs/md/USO_DE_IA_2A_UNIDADE.md)
+  - [Refatoração de code smells: moderação de contas](docs/md/REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](docs/md/REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](docs/md/ANALISE_CODE_SMELLS.md)
   - ADR individual: disponível na branch `adr-paulo-marrocos`
 - **Fundamentos de Computação Concorrente, Paralela e Distribuída:**
   - Reserva atômica de estoque (`UPDATE` condicional e `CHECK`), fila de eventos (BullMQ ou QStash, com Transactional Outbox), worker idempotente (`backend/src/worker.ts`) e teste de carga com k6 (`npm run test:carga`).

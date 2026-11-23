@@ -1,6 +1,6 @@
 # Documentação do projeto
 
-Índice dos documentos do **Origem: Ponto da Terra**. O [README principal](README.md) apresenta o projeto, e o [README do backend](README_BACKEND.md) detalha a API.
+Índice dos documentos do **Origem: Ponto da Terra**. O [README principal](../../README.md) apresenta o projeto, e o [README do backend](README_BACKEND.md) detalha a API.
 
 ## Requisitos e modelagem
 
