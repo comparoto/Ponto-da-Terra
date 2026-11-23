@@ -4,15 +4,31 @@ const CHAVE_HISTORICO = 'ponto-da-terra:pecas-visualizadas';
 const EVENTO_HISTORICO = 'ponto-da-terra:peca-visualizada';
 const LIMITE_HISTORICO = 20;
 
-export function lerHistoricoVisualizacao(): string[] {
-  if (typeof window === 'undefined') return [];
+const HISTORICO_VAZIO = '[]';
+
+/** Texto bruto guardado no navegador. Serve de "snapshot" estável para useSyncExternalStore. */
+export function lerHistoricoBruto(): string {
+  if (typeof window === 'undefined') return HISTORICO_VAZIO;
   try {
-    const salvo: unknown = JSON.parse(window.localStorage.getItem(CHAVE_HISTORICO) ?? '[]');
+    return window.localStorage.getItem(CHAVE_HISTORICO) ?? HISTORICO_VAZIO;
+  } catch {
+    return HISTORICO_VAZIO;
+  }
+}
+
+/** Valor usado no servidor e durante a hidratação: o servidor não conhece o histórico do navegador. */
+export const historicoVazioNoServidor = (): string => HISTORICO_VAZIO;
+
+export function interpretarHistorico(bruto: string): string[] {
+  try {
+    const salvo: unknown = JSON.parse(bruto);
     return Array.isArray(salvo) ? salvo.filter((id): id is string => typeof id === 'string') : [];
   } catch {
     return [];
   }
 }
+
+export const lerHistoricoVisualizacao = (): string[] => interpretarHistorico(lerHistoricoBruto());
 
 export function registrarVisualizacao(produtoId: string): void {
   if (typeof window === 'undefined') return;

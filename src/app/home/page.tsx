@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Box, Button, Flex, Heading, SimpleGrid, Spinner, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { Navbar } from '@/components/Navbar';
@@ -8,24 +8,22 @@ import { ProductModal } from '@/components/ProductModal';
 import { produtoService } from '@/services/produtoService';
 import type { Peca } from '@/types';
 import { DESTAQUES } from '@/data';
-import { lerHistoricoVisualizacao, observarHistorico, recomendarPecas } from '@/services/recomendacaoService';
+import { historicoVazioNoServidor, interpretarHistorico, lerHistoricoBruto, observarHistorico, recomendarPecas } from '@/services/recomendacaoService';
 import { useFavoritos } from '@/store/favoritosStore';
 
 export default function HomePage() {
   const router = useRouter();
   const [catalogo, setCatalogo] = useState<Peca[] | null>(null);
   const destaques = catalogo?.slice(0, 4) ?? null;
-  const [historicoIds, setHistoricoIds] = useState<string[]>(() => lerHistoricoVisualizacao());
+  // O histórico fica no navegador: lido como store externo, o primeiro render é igual ao HTML do servidor (sem erro de hidratação)
+  const historicoBruto = useSyncExternalStore(observarHistorico, lerHistoricoBruto, historicoVazioNoServidor);
+  const historicoIds = useMemo(() => interpretarHistorico(historicoBruto), [historicoBruto]);
   const [pecaSelecionada, setPecaSelecionada] = useState<Peca | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const favoritos = useFavoritos();
 
   useEffect(() => {
     void produtoService.getProdutos().then(res => setCatalogo(res.success ? (res.data ?? []) : []));
-  }, []);
-
-  useEffect(() => {
-    return observarHistorico(() => setHistoricoIds(lerHistoricoVisualizacao()));
   }, []);
 
   const recomendadas = useMemo(() => {
@@ -87,7 +85,7 @@ export default function HomePage() {
           <Text color="#E8DFD7">Não foi possível carregar as peças agora. Tente novamente em instantes.</Text>
         )}
       </Box>
-      {destaques?.length && recomendadas.length > 0 && (
+      {(destaques?.length ?? 0) > 0 && recomendadas.length > 0 && (
         <Box maxW="1200px" mx="auto" w="100%" px={{ base: 4, md: 8 }} pb={16}>
           <Flex justify="space-between" align="center" gap={4} mb={6} wrap="wrap">
             <Heading size="lg">Feitas para você</Heading>

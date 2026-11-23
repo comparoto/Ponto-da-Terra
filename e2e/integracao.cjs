@@ -43,7 +43,7 @@ async function sair(page) {
   const browser = await chromium.launch({ channel: process.env.BROWSER ?? 'msedge', headless: process.env.HEADLESS !== 'false' });
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
   const errosConsole = [];
-  page.on('pageerror', e => errosConsole.push(e.message));
+  page.on('pageerror', e => errosConsole.push(`[${page.url()}] ${e.message}`));
   const tituloPeca = `Peça E2E ${Date.now()}`;
 
   try {
