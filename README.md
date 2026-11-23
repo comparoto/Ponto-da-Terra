@@ -94,6 +94,7 @@ src/
 ├── services/       # Cliente HTTP (http.ts) e um serviço por assunto, todos devolvendo ApiResult<T>
 ├── store/          # Estado global (cartStore, favoritosStore)
 ├── hooks/          # useSession, useCarregar
+├── data/           # Listas fixas (estados, áreas) e o conteúdo da Central de Orientação; os dados de peças e artesãos vêm da API
 └── types/          # Tipagens e contratos TypeScript
 ```
 
@@ -106,6 +107,7 @@ backend/src/
 │                                   # interacao, notificacoes, relatorios, admin, jobs
 ├── jobs/                           # Fila, outbox, consumidores idempotentes e processamento de imagem
 ├── shared/                         # Middlewares e utilidades (auth, validação, erros, cache, rate limit, e-mail)
+├── types/                          # Extensões de tipos do Express (dados validados na requisição)
 └── docs/                           # Esquemas Zod usados para gerar o Swagger
 ```
 
