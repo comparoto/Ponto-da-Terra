@@ -2,7 +2,8 @@
 
 - **Status:** Proposta
 - **Data:** 2026-11-23
-- **Autor:** Lucas Vinícius
+- **Aluno:** Lucas Vinícius
+- **Turma:** Embarque Digital
 - **Projeto:** ORIGEM — Ponto da Terra (marketplace de artesanato pernambucano)
 
 ## Contexto
