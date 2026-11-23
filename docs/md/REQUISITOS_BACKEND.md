@@ -876,7 +876,7 @@ O `data/mockData.ts` vira o **`prisma/seed.ts`**.
 | D6 | **"IA" exigida pelo Notion** | Ex.: gerar descrição da peça a partir do título/técnica; busca semântica; moderação automática de imagem/texto na curadoria | Confirmar com o professor. Sugestão: **pré-curadoria por IA** (sinaliza descrição/imagem suspeita para o admin), rodando **na fila** (cumpre IA e fila ao mesmo tempo) |
 | D7 | **Storage de imagens** | Cloudinary, Supabase Storage, S3 | Cloudinary ou Supabase (plano gratuito) |
 | D8 | **Token** | Bearer no header (como nos TCs) vs. cookie httpOnly | Bearer: é o que os casos de teste descrevem |
-| D9 | **Ajustes nos documentos** | Atualizar diagrama de classes (C2, C3, C8), TC09 (C1), TC02 (C7) | **Parcial.** O diagrama de classes atualizado está em [docs/md/DIAGRAMA_DE_CLASSES.md](DIAGRAMA_DE_CLASSES.md), gerado do schema. Pendentes: o diagrama original no Drive e os casos TC09 e TC02 do plano de testes (documentos externos) |
+| D9 | **Ajustes nos documentos** | Atualizar diagrama de classes (C2, C3, C8), TC09 (C1), TC02 (C7) | **Feito, falta a equipe aceitar.** Diagrama de classes atualizado em [DIAGRAMA_DE_CLASSES.md](DIAGRAMA_DE_CLASSES.md) (com imagens em `docs/diagramas/`), a substituir no Drive. TC02 (mensagem "Item esgotado durante a finalização") e TC09 (peça nasce "Pendente") ajustados no Google Doc do plano como **sugestões** em 23/11/2026 |
 
 ---
 

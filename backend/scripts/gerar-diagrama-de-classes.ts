@@ -107,11 +107,27 @@ for (const m of modelos) {
 }
 
 // ───────────── Mermaid ─────────────
-const tipoExibido = (c: Campo) => `${c.tipo}${c.lista ? '[]' : ''}${c.opcional ? '?' : ''}`;
+// Como no diagrama da 1ª unidade: identificadores aparecem como UUID e Int como Integer
+const nomeDoTipo = (c: Campo) => {
+  if (c.tipo === 'String' && !c.lista && (c.nome === 'id' || c.nome.endsWith('Id'))) return 'UUID';
+  return c.tipo === 'Int' ? 'Integer' : c.tipo;
+};
+const tipoExibido = (c: Campo) => `${nomeDoTipo(c)}${c.lista ? '[]' : ''}${c.opcional ? '?' : ''}`;
 const atributosDe = (m: Modelo) => m.campos.filter(c => ESCALARES.has(c.tipo) || nomesEnum.has(c.tipo)).map(c => `    +${tipoExibido(c)} ${c.nome}`);
 const linhaRelacao = (r: Relacao) => `  ${r.origem} "${r.multOrigem}" --> "${r.multDestino}" ${r.destino} : ${r.rotulo}`;
+// No diagrama completo os rótulos poluem o desenho: o campo de ligação já aparece nos atributos
+const linhaRelacaoSemRotulo = (r: Relacao) => `  ${r.origem} "${r.multOrigem}" --> "${r.multDestino}" ${r.destino}`;
 
 const diagramaGeral = ['```mermaid', 'classDiagram', '  direction LR', ...modelos.map(m => `  class ${m.nome}`), ...relacoes.map(linhaRelacao), '```'].join('\n');
+
+// Todas as classes, com atributos, e todas as relações: é a versão para imagem (estilo do diagrama da 1ª unidade)
+const diagramaCompleto = [
+  '```mermaid',
+  'classDiagram',
+  ...modelos.map(m => ['  class ' + m.nome + ' {', ...atributosDe(m), '  }'].join('\n')),
+  ...relacoes.map(linhaRelacaoSemRotulo),
+  '```',
+].join('\n');
 
 function diagramaDoGrupo(nomes: string[]): string {
   const dentro = new Set(nomes);
@@ -155,6 +171,11 @@ Este diagrama mostra o modelo de dados **como está implementado** (${modelos.le
 ## Visão geral
 
 ${diagramaGeral}`);
+partes.push(`## Diagrama completo
+
+Todas as classes com seus atributos e todas as relações (sem rótulos nas setas, para o desenho ficar limpo; o campo de ligação aparece nos atributos, como \`pedidoId\`). A imagem desta versão, para colar em documentos, é gerada por \`node e2e/gerar-imagens-diagrama.cjs\` (arquivos em [\`docs/diagramas/\`](../diagramas)).
+
+${diagramaCompleto}`);
 for (const g of GRUPOS) {
   partes.push(`## ${g.titulo}\n\n${g.descricao}\n\n${diagramaDoGrupo(g.modelos)}`);
 }
@@ -177,7 +198,7 @@ partes.push(`## Descrição das classes (do schema)
 ${descricoes.join('\n')}`);
 partes.push(`## Pendência
 
-O diagrama de classes **original** (1ª unidade, no Drive) e o plano de testes (casos TC09 e TC02) são documentos externos e ainda não foram editados. Este arquivo é a versão atualizada do modelo; a decisão D9 do documento de requisitos fica resolvida para o diagrama de classes e continua aberta apenas para os casos de teste do plano.`);
+O arquivo do diagrama de classes **original** (1ª unidade, no Drive) continua com o desenho antigo: as imagens deste documento (\`docs/diagramas/\`) são a versão atualizada e podem substituí-lo. No plano de testes (Google Doc), os ajustes dos casos TC02 e TC09 foram feitos como **sugestões** em 23/11/2026 e dependem de a equipe aceitá-las. Com isso, a decisão D9 do documento de requisitos fica resolvida para o modelo e aguarda só essa aceitação.`);
 
 writeFileSync(SAIDA, partes.join('\n\n') + '\n', 'utf-8');
 console.log(`Gerado: ${SAIDA}`);
