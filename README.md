@@ -42,7 +42,7 @@ O projeto integra três frentes acadêmicas:
 | **Requisitos, Projeto de Software e Validação** | Análise de domínio, gestão de requisitos, arquitetura (SOLID/GRASP, padrões de projeto) e estratégia de testes |
 | **Fundamentos de Computação Concorrente, Paralela e Distribuída** | Desempenho, escalabilidade e tolerância a falhas: concorrência no checkout, filas e processamento assíncrono |
 
-> **Branch desta versão:** `integracao-backend`, que contém o frontend na raiz e o backend em [`backend/`](docs/md/README_BACKEND.md). A `main` ainda guarda a versão da 1ª entrega (somente frontend).
+> **Branch principal:** `main`, com o frontend na raiz e o backend em [`backend/`](docs/md/README_BACKEND.md). A 1ª entrega (somente frontend, com Fake API) está descrita em "Histórico da 1ª entrega" e no deploy da 1ª entrega.
 
 ---
 
@@ -216,7 +216,6 @@ Os arquivos [`.env.example`](.env.example) (raiz) e [`backend/.env.example`](bac
 ```bash
 git clone https://github.com/comparoto/Ponto-da-Terra.git
 cd Ponto-da-Terra
-git checkout integracao-backend
 ```
 
 #### 2. Subir banco, Redis e API (terminal 1)
@@ -338,7 +337,7 @@ type ApiResult<T> = {
 
 ## Integrantes e evidências de commits
 
-A participação de cada integrante pode ser conferida no [histórico de commits](https://github.com/comparoto/Ponto-da-Terra/commits/integracao-backend) e no [painel de contribuidores](https://github.com/comparoto/Ponto-da-Terra/graphs/contributors).
+A participação de cada integrante pode ser conferida no [histórico de commits](https://github.com/comparoto/Ponto-da-Terra/commits/main) e no [painel de contribuidores](https://github.com/comparoto/Ponto-da-Terra/graphs/contributors).
 
 | Nome | GitHub |
 |---|---|
