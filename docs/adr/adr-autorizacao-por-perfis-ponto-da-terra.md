@@ -4,6 +4,9 @@
 - **Data:** 2026-11-23
 - **Projeto:** Origem: Ponto da Terra
 - **Atributo de qualidade prioritário:** Segurança
+- **Aluno:** Lucas Vinicius
+- **Turma:** Embarque Digital
+- **E-mail:** lvos@cesar.school
 
 ## Contexto
 
