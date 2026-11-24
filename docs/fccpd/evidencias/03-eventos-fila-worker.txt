@@ -1,0 +1,20 @@
+# Publicação e consumo de eventos pela fila (Outbox → BullMQ → worker) para a compra PT-MWVATQS4-1D18
+
+$ Evento gravado na outbox na mesma transação do checkout e publicado pelo relay
+tipo | publicado | compra
+NOVO_PEDIDO | t | PT-MWVATQS4-1D18
+(1 row)
+
+$ Notificação criada pelo worker, ligada ao evento (eventoId único: processamento idempotente)
+tipoEvento | enviadoComSucesso | ligada_ao_evento
+NOVO_PEDIDO | t | t
+(1 row)
+
+$ Log do worker (processo separado da API), linhas desta compra
+[worker] em execução (development) · filas: eventos, manutencao
+[worker] 1 evento(s) publicados na fila
+[worker] NOVO_PEDIDO processado (evento 1d3834dc-24a0-4f8b-877f-89e264ead123)
+
+$ Log da API: requisições do fluxo (checkout e pagamento respondem sem esperar o worker)
+POST /api/checkout 201 136.009 ms
+POST /api/compras/PT-MWVATQS4-1D18/pagamento 201 70.925 ms

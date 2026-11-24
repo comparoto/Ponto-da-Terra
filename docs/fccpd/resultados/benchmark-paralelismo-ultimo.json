@@ -1,0 +1,1673 @@
+{
+  "metodologia": {
+    "repeticoes": 15,
+    "aquecimento": 3,
+    "escalas": [
+      20000,
+      100000,
+      300000
+    ],
+    "ordem": "alternada a cada repetição",
+    "equivalencia": "conferida a cada repetição (ignorando geradoEmMs)",
+    "retentativasPorConexaoInterrompida": 0
+  },
+  "ambiente": {
+    "dataExecucao": "2026-11-24T22:42:49.382Z",
+    "sistema": "win32 10.0.26200",
+    "processador": "13th Gen Intel(R) Core(TM) i7-1355U (12 threads)",
+    "memoriaTotalGB": 15.7,
+    "node": "v24.22.0",
+    "docker": "CPUs=12 memoria=8165019648 servidor=29.8.2",
+    "postgres": "PostgreSQL 16.15",
+    "ajustesPostgres": {
+      "max_connections": "100",
+      "max_parallel_workers_per_gather": "2",
+      "max_worker_processes": "8",
+      "shared_buffers": "16384",
+      "work_mem": "4096"
+    },
+    "poolDeConexoesPorInstancia": 10,
+    "banco": "pontodaterra_bench",
+    "redis": "Redis 7 (Docker), db 2"
+  },
+  "comparacoes": [
+    {
+      "escala": {
+        "pedidos": 20000,
+        "itens": 60000
+      },
+      "periodo": "ano",
+      "relatorio": "dashboardAdmin",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 151.5,
+        "mediana": 140.9,
+        "p95": 198.8,
+        "min": 116.7,
+        "max": 198.8,
+        "desvio": 25.8
+      },
+      "concorrenteMs": {
+        "media": 83.6,
+        "mediana": 79.4,
+        "p95": 131,
+        "min": 61.2,
+        "max": 131,
+        "desvio": 17.1
+      },
+      "speedupMediana": 1.77,
+      "speedupMedia": 1.81,
+      "reducaoPercentualMediana": 43.6,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 7.1,
+        "concorrente": 12.59
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 18.6,
+          "concluidos": 10.1,
+          "novosArtesaos": 3.4,
+          "porArtesao": 24.9,
+          "maisVendidas": 48.9,
+          "porStatus": 7.4,
+          "serie": 15.5,
+          "termos": 1.7
+        },
+        "concorrente": {
+          "termos": 9.2,
+          "novosArtesaos": 10.7,
+          "porStatus": 20.4,
+          "concluidos": 20.8,
+          "porArtesao": 40.7,
+          "serie": 35.8,
+          "receita": 34.2,
+          "maisVendidas": 70.1
+        }
+      },
+      "somaDasConsultasMs": 130.5,
+      "maiorConsultaMs": 48.9,
+      "temposBrutosMs": {
+        "sequencial": [
+          134.47,
+          132.97,
+          124.93,
+          196.32,
+          143.75,
+          182.64,
+          177.37,
+          164.38,
+          160.61,
+          140.93,
+          133.69,
+          198.81,
+          126.02,
+          116.67,
+          139.37
+        ],
+        "concorrente": [
+          100.81,
+          89.02,
+          73.11,
+          78.05,
+          63.64,
+          99.14,
+          92.8,
+          76.5,
+          78.6,
+          131.01,
+          79.41,
+          83.91,
+          61.17,
+          81.53,
+          65.22
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 20000,
+        "itens": 60000
+      },
+      "periodo": "ano",
+      "relatorio": "indicadoresArtesao",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 35.9,
+        "mediana": 30.2,
+        "p95": 67.8,
+        "min": 27.5,
+        "max": 67.8,
+        "desvio": 11.8
+      },
+      "concorrenteMs": {
+        "media": 15.4,
+        "mediana": 15.2,
+        "p95": 18.6,
+        "min": 12.6,
+        "max": 18.6,
+        "desvio": 1.9
+      },
+      "speedupMediana": 1.99,
+      "speedupMedia": 2.33,
+      "reducaoPercentualMediana": 49.7,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 33.11,
+        "concorrente": 65.79
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 1,
+        "concorrente": 2
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "faturamento": 3.3,
+          "maisVendidas": 9.6,
+          "porStatus": 3,
+          "porPolo": 10.9,
+          "porMes": 3
+        },
+        "concorrente": {
+          "faturamento": 5.3,
+          "porStatus": 6,
+          "porMes": 6.7,
+          "maisVendidas": 14.2,
+          "porPolo": 14.7
+        }
+      },
+      "somaDasConsultasMs": 29.8,
+      "maiorConsultaMs": 10.9,
+      "temposBrutosMs": {
+        "sequencial": [
+          29.92,
+          32.31,
+          34.99,
+          27.54,
+          30.84,
+          34.37,
+          57.27,
+          28.28,
+          29.08,
+          28.39,
+          28.98,
+          28.41,
+          30.18,
+          49.51,
+          67.83
+        ],
+        "concorrente": [
+          16.6,
+          15.08,
+          15.19,
+          14.85,
+          12.99,
+          16.54,
+          17.57,
+          12.57,
+          13.2,
+          13.67,
+          16.75,
+          18.63,
+          18.07,
+          15.72,
+          13.57
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 20000,
+        "itens": 60000
+      },
+      "periodo": "mes",
+      "relatorio": "dashboardAdmin",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 48.8,
+        "mediana": 45,
+        "p95": 92.7,
+        "min": 25.9,
+        "max": 92.7,
+        "desvio": 18.8
+      },
+      "concorrenteMs": {
+        "media": 33.3,
+        "mediana": 30.4,
+        "p95": 63.2,
+        "min": 15.7,
+        "max": 63.2,
+        "desvio": 11.7
+      },
+      "speedupMediana": 1.48,
+      "speedupMedia": 1.47,
+      "reducaoPercentualMediana": 32.4,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 22.22,
+        "concorrente": 32.89
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 1,
+        "concorrente": 2
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 4.3,
+          "concluidos": 2.7,
+          "novosArtesaos": 2,
+          "porArtesao": 3.8,
+          "maisVendidas": 14.8,
+          "porStatus": 5.4,
+          "serie": 3.8,
+          "termos": 1.3
+        },
+        "concorrente": {
+          "termos": 3.1,
+          "novosArtesaos": 4.8,
+          "concluidos": 6.3,
+          "receita": 7,
+          "serie": 9.6,
+          "porArtesao": 9.6,
+          "porStatus": 9.6,
+          "maisVendidas": 26
+        }
+      },
+      "somaDasConsultasMs": 38.1,
+      "maiorConsultaMs": 14.8,
+      "temposBrutosMs": {
+        "sequencial": [
+          45,
+          25.89,
+          26.32,
+          29.72,
+          31.08,
+          61.85,
+          81.75,
+          55.82,
+          37.71,
+          50.6,
+          62.04,
+          45.76,
+          92.66,
+          42.69,
+          43.67
+        ],
+        "concorrente": [
+          27.67,
+          30.39,
+          15.69,
+          17.56,
+          29.28,
+          40.3,
+          63.21,
+          29.3,
+          28.69,
+          26.72,
+          51.49,
+          41.66,
+          36.17,
+          30.52,
+          30.57
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 20000,
+        "itens": 60000
+      },
+      "periodo": "mes",
+      "relatorio": "indicadoresArtesao",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 24.8,
+        "mediana": 24,
+        "p95": 36.7,
+        "min": 20.8,
+        "max": 36.7,
+        "desvio": 3.9
+      },
+      "concorrenteMs": {
+        "media": 12.1,
+        "mediana": 10.6,
+        "p95": 16.7,
+        "min": 9.6,
+        "max": 16.7,
+        "desvio": 2.6
+      },
+      "speedupMediana": 2.26,
+      "speedupMedia": 2.05,
+      "reducaoPercentualMediana": 55.8,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 41.67,
+        "concorrente": 94.34
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 1,
+        "concorrente": 1
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "faturamento": 1.9,
+          "maisVendidas": 8.3,
+          "porStatus": 2,
+          "porPolo": 8.3,
+          "porMes": 2.1
+        },
+        "concorrente": {
+          "faturamento": 3.3,
+          "porStatus": 3.1,
+          "porMes": 3.3,
+          "porPolo": 10.3,
+          "maisVendidas": 9.8
+        }
+      },
+      "somaDasConsultasMs": 22.6,
+      "maiorConsultaMs": 8.3,
+      "temposBrutosMs": {
+        "sequencial": [
+          25.15,
+          26.87,
+          21.09,
+          21.7,
+          20.8,
+          25.8,
+          22,
+          22.39,
+          21.92,
+          23.96,
+          26.28,
+          28.73,
+          36.74,
+          23.58,
+          24.59
+        ],
+        "concorrente": [
+          9.96,
+          11.76,
+          10.02,
+          10.1,
+          10.38,
+          9.77,
+          10.56,
+          9.6,
+          12.33,
+          9.96,
+          16.45,
+          15.09,
+          16.28,
+          16.73,
+          11.88
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 100000,
+        "itens": 300000
+      },
+      "periodo": "ano",
+      "relatorio": "dashboardAdmin",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 503,
+        "mediana": 486.1,
+        "p95": 643.9,
+        "min": 402.8,
+        "max": 643.9,
+        "desvio": 66.6
+      },
+      "concorrenteMs": {
+        "media": 303.7,
+        "mediana": 281.9,
+        "p95": 503.7,
+        "min": 239.6,
+        "max": 503.7,
+        "desvio": 71.7
+      },
+      "speedupMediana": 1.72,
+      "speedupMedia": 1.66,
+      "reducaoPercentualMediana": 42,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 2.06,
+        "concorrente": 3.55
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 2,
+        "concorrente": 7
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 60.9,
+          "concluidos": 23.5,
+          "novosArtesaos": 2.6,
+          "porArtesao": 55.4,
+          "maisVendidas": 245.4,
+          "porStatus": 22.3,
+          "serie": 58.7,
+          "termos": 1.4
+        },
+        "concorrente": {
+          "termos": 8.4,
+          "novosArtesaos": 9.1,
+          "concluidos": 40.9,
+          "porStatus": 43.1,
+          "porArtesao": 83,
+          "receita": 96.9,
+          "serie": 99.3,
+          "maisVendidas": 273.3
+        }
+      },
+      "somaDasConsultasMs": 470.2,
+      "maiorConsultaMs": 245.4,
+      "temposBrutosMs": {
+        "sequencial": [
+          500.56,
+          473.72,
+          553.86,
+          433.97,
+          486.09,
+          547.94,
+          435.91,
+          421.68,
+          481.48,
+          583.63,
+          570.42,
+          546.16,
+          643.86,
+          402.84,
+          462.22
+        ],
+        "concorrente": [
+          281.85,
+          270.81,
+          284.51,
+          259.11,
+          287.23,
+          290.09,
+          271.99,
+          446.77,
+          239.57,
+          345.57,
+          284.79,
+          251.2,
+          271.88,
+          266.95,
+          503.73
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 100000,
+        "itens": 300000
+      },
+      "periodo": "ano",
+      "relatorio": "indicadoresArtesao",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 73.1,
+        "mediana": 67.1,
+        "p95": 115.2,
+        "min": 61.1,
+        "max": 115.2,
+        "desvio": 14.8
+      },
+      "concorrenteMs": {
+        "media": 49.8,
+        "mediana": 45,
+        "p95": 77.1,
+        "min": 37.5,
+        "max": 77.1,
+        "desvio": 12.3
+      },
+      "speedupMediana": 1.49,
+      "speedupMedia": 1.47,
+      "reducaoPercentualMediana": 32.9,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 14.9,
+        "concorrente": 22.22
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 6
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "faturamento": 3.3,
+          "maisVendidas": 27.6,
+          "porStatus": 3.4,
+          "porPolo": 29.1,
+          "porMes": 3.2
+        },
+        "concorrente": {
+          "faturamento": 6.5,
+          "porStatus": 6.2,
+          "porMes": 6.2,
+          "porPolo": 44.5,
+          "maisVendidas": 44
+        }
+      },
+      "somaDasConsultasMs": 66.6,
+      "maiorConsultaMs": 29.1,
+      "temposBrutosMs": {
+        "sequencial": [
+          72.72,
+          70.18,
+          80.73,
+          99.28,
+          115.22,
+          64.64,
+          68.44,
+          65.86,
+          78.13,
+          64.82,
+          63.98,
+          61.63,
+          61.11,
+          62.19,
+          67.05
+        ],
+        "concorrente": [
+          59.82,
+          44.49,
+          75.38,
+          77.06,
+          61.36,
+          41.08,
+          47.42,
+          47.83,
+          42.04,
+          40.49,
+          44.04,
+          46.05,
+          37.45,
+          38,
+          45.03
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 100000,
+        "itens": 300000
+      },
+      "periodo": "mes",
+      "relatorio": "dashboardAdmin",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 124.8,
+        "mediana": 126,
+        "p95": 140.7,
+        "min": 106.2,
+        "max": 140.7,
+        "desvio": 9.2
+      },
+      "concorrenteMs": {
+        "media": 74,
+        "mediana": 74.1,
+        "p95": 86.7,
+        "min": 64.5,
+        "max": 86.7,
+        "desvio": 6.7
+      },
+      "speedupMediana": 1.7,
+      "speedupMedia": 1.69,
+      "reducaoPercentualMediana": 41.2,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 7.94,
+        "concorrente": 13.5
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 8.9,
+          "concluidos": 4,
+          "novosArtesaos": 2.4,
+          "porArtesao": 9.3,
+          "maisVendidas": 67.3,
+          "porStatus": 13.3,
+          "serie": 10.8,
+          "termos": 1.4
+        },
+        "concorrente": {
+          "termos": 4.7,
+          "novosArtesaos": 6.2,
+          "concluidos": 8.5,
+          "receita": 14.1,
+          "porArtesao": 15.5,
+          "serie": 19.5,
+          "porStatus": 22.3,
+          "maisVendidas": 67.7
+        }
+      },
+      "somaDasConsultasMs": 117.4,
+      "maiorConsultaMs": 67.3,
+      "temposBrutosMs": {
+        "sequencial": [
+          124.57,
+          126.03,
+          126.81,
+          136.11,
+          140.67,
+          130.23,
+          133.02,
+          106.17,
+          118.68,
+          115.19,
+          133.51,
+          120.34,
+          127.88,
+          122.42,
+          110.72
+        ],
+        "concorrente": [
+          72.7,
+          77.49,
+          81.05,
+          78.03,
+          84.36,
+          86.69,
+          69.54,
+          64.53,
+          77.92,
+          65.8,
+          65.11,
+          66.09,
+          74.05,
+          72.86,
+          74.19
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 100000,
+        "itens": 300000
+      },
+      "periodo": "mes",
+      "relatorio": "indicadoresArtesao",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 76.5,
+        "mediana": 75.8,
+        "p95": 100.6,
+        "min": 55.8,
+        "max": 100.6,
+        "desvio": 10.8
+      },
+      "concorrenteMs": {
+        "media": 43.5,
+        "mediana": 42.6,
+        "p95": 59.6,
+        "min": 34.3,
+        "max": 59.6,
+        "desvio": 6.4
+      },
+      "speedupMediana": 1.78,
+      "speedupMedia": 1.76,
+      "reducaoPercentualMediana": 43.8,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 13.19,
+        "concorrente": 23.47
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 6
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "faturamento": 3.7,
+          "maisVendidas": 33.1,
+          "porStatus": 3.3,
+          "porPolo": 30.9,
+          "porMes": 3.4
+        },
+        "concorrente": {
+          "porStatus": 5.6,
+          "faturamento": 5.8,
+          "porMes": 5.9,
+          "maisVendidas": 40.9,
+          "porPolo": 39.1
+        }
+      },
+      "somaDasConsultasMs": 74.4,
+      "maiorConsultaMs": 33.1,
+      "temposBrutosMs": {
+        "sequencial": [
+          88.47,
+          91.78,
+          100.56,
+          81.48,
+          73.74,
+          76.77,
+          71.81,
+          75.83,
+          55.81,
+          62.56,
+          65.64,
+          76.49,
+          75.04,
+          78.19,
+          73.79
+        ],
+        "concorrente": [
+          48.4,
+          47.52,
+          45.73,
+          42.52,
+          42.64,
+          59.61,
+          44.73,
+          37.66,
+          37.88,
+          41.31,
+          36.8,
+          51.49,
+          44.13,
+          34.31,
+          37.29
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 300000,
+        "itens": 900000
+      },
+      "periodo": "ano",
+      "relatorio": "dashboardAdmin",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 1350.1,
+        "mediana": 1334.2,
+        "p95": 1748.5,
+        "min": 1207.4,
+        "max": 1748.5,
+        "desvio": 115.3
+      },
+      "concorrenteMs": {
+        "media": 958.9,
+        "mediana": 923.3,
+        "p95": 1268.1,
+        "min": 889.3,
+        "max": 1268.1,
+        "desvio": 101.8
+      },
+      "speedupMediana": 1.45,
+      "speedupMedia": 1.41,
+      "reducaoPercentualMediana": 30.8,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 0.75,
+        "concorrente": 1.08
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 10
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 168.5,
+          "concluidos": 14.8,
+          "novosArtesaos": 1.7,
+          "porArtesao": 126.1,
+          "maisVendidas": 809.6,
+          "porStatus": 51,
+          "serie": 150.1,
+          "termos": 1
+        },
+        "concorrente": {
+          "termos": 2.1,
+          "novosArtesaos": 3.3,
+          "concluidos": 27.1,
+          "porStatus": 92.8,
+          "porArtesao": 169.3,
+          "serie": 278.9,
+          "receita": 284.7,
+          "maisVendidas": 920
+        }
+      },
+      "somaDasConsultasMs": 1322.8,
+      "maiorConsultaMs": 809.6,
+      "temposBrutosMs": {
+        "sequencial": [
+          1323.67,
+          1385.67,
+          1340.74,
+          1312.58,
+          1361,
+          1383.13,
+          1748.46,
+          1283.4,
+          1338.95,
+          1280.25,
+          1334.15,
+          1315.69,
+          1281.34,
+          1354.91,
+          1207.43
+        ],
+        "concorrente": [
+          931.89,
+          951.47,
+          904.12,
+          942.69,
+          907.02,
+          889.33,
+          893.47,
+          923.25,
+          944.91,
+          904.13,
+          918.04,
+          951.1,
+          908.06,
+          1146.35,
+          1268.05
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 300000,
+        "itens": 900000
+      },
+      "periodo": "ano",
+      "relatorio": "indicadoresArtesao",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 203.8,
+        "mediana": 182.3,
+        "p95": 303.9,
+        "min": 172.7,
+        "max": 303.9,
+        "desvio": 41.9
+      },
+      "concorrenteMs": {
+        "media": 124.1,
+        "mediana": 108.9,
+        "p95": 187,
+        "min": 102.1,
+        "max": 187,
+        "desvio": 28.7
+      },
+      "speedupMediana": 1.67,
+      "speedupMedia": 1.64,
+      "reducaoPercentualMediana": 40.3,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 5.49,
+        "concorrente": 9.18
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 6
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "faturamento": 4.6,
+          "maisVendidas": 83,
+          "porStatus": 4.7,
+          "porPolo": 86.7,
+          "porMes": 4.8
+        },
+        "concorrente": {
+          "porStatus": 8.7,
+          "faturamento": 8.8,
+          "porMes": 9,
+          "maisVendidas": 92.3,
+          "porPolo": 108.4
+        }
+      },
+      "somaDasConsultasMs": 183.8,
+      "maiorConsultaMs": 86.7,
+      "temposBrutosMs": {
+        "sequencial": [
+          294.08,
+          303.86,
+          253.26,
+          205.39,
+          184.18,
+          182.29,
+          178.63,
+          176.87,
+          179.87,
+          181.06,
+          172.65,
+          196.74,
+          176.73,
+          181.85,
+          190.18
+        ],
+        "concorrente": [
+          173.67,
+          186.96,
+          178.33,
+          111.78,
+          108.35,
+          104.58,
+          109.25,
+          102.07,
+          104.99,
+          108.9,
+          107.51,
+          121.72,
+          107.09,
+          106.13,
+          129.97
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 300000,
+        "itens": 900000
+      },
+      "periodo": "mes",
+      "relatorio": "dashboardAdmin",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 226.9,
+        "mediana": 221.5,
+        "p95": 304.7,
+        "min": 197,
+        "max": 304.7,
+        "desvio": 24.8
+      },
+      "concorrenteMs": {
+        "media": 164.3,
+        "mediana": 158.1,
+        "p95": 253.9,
+        "min": 137.4,
+        "max": 253.9,
+        "desvio": 27.4
+      },
+      "speedupMediana": 1.4,
+      "speedupMedia": 1.38,
+      "reducaoPercentualMediana": 28.6,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 4.51,
+        "concorrente": 6.33
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 5
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 15.8,
+          "concluidos": 3,
+          "novosArtesaos": 1.4,
+          "porArtesao": 19.9,
+          "maisVendidas": 146.6,
+          "porStatus": 7.8,
+          "serie": 20.9,
+          "termos": 1.1
+        },
+        "concorrente": {
+          "termos": 1.8,
+          "novosArtesaos": 3,
+          "concluidos": 6.1,
+          "porStatus": 21.9,
+          "receita": 28.3,
+          "porArtesao": 32.8,
+          "serie": 38.2,
+          "maisVendidas": 154.9
+        }
+      },
+      "somaDasConsultasMs": 216.5,
+      "maiorConsultaMs": 146.6,
+      "temposBrutosMs": {
+        "sequencial": [
+          197.03,
+          212.85,
+          215.87,
+          207.62,
+          206.99,
+          207.96,
+          217.35,
+          222.16,
+          304.73,
+          244.02,
+          241.38,
+          235.74,
+          232.19,
+          221.5,
+          236
+        ],
+        "concorrente": [
+          144.63,
+          174.75,
+          154.14,
+          165.78,
+          144.39,
+          144.5,
+          137.38,
+          147.22,
+          253.89,
+          161.31,
+          182.76,
+          180.96,
+          158.09,
+          162.39,
+          152.79
+        ]
+      }
+    },
+    {
+      "escala": {
+        "pedidos": 300000,
+        "itens": 900000
+      },
+      "periodo": "mes",
+      "relatorio": "indicadoresArtesao",
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 208.7,
+        "mediana": 183.4,
+        "p95": 404.8,
+        "min": 147.2,
+        "max": 404.8,
+        "desvio": 75.4
+      },
+      "concorrenteMs": {
+        "media": 115.7,
+        "mediana": 106.7,
+        "p95": 216.9,
+        "min": 82.8,
+        "max": 216.9,
+        "desvio": 31.6
+      },
+      "speedupMediana": 1.72,
+      "speedupMedia": 1.8,
+      "reducaoPercentualMediana": 41.8,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 5.45,
+        "concorrente": 9.37
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 5
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 6
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "faturamento": 4.9,
+          "maisVendidas": 85.3,
+          "porStatus": 4.3,
+          "porPolo": 81,
+          "porMes": 4.9
+        },
+        "concorrente": {
+          "porStatus": 6.9,
+          "porMes": 10,
+          "faturamento": 8.9,
+          "porPolo": 106.2,
+          "maisVendidas": 103.9
+        }
+      },
+      "somaDasConsultasMs": 180.4,
+      "maiorConsultaMs": 85.3,
+      "temposBrutosMs": {
+        "sequencial": [
+          163.6,
+          166.35,
+          183.36,
+          241.63,
+          187.79,
+          161.63,
+          163.74,
+          193.31,
+          178.81,
+          217.33,
+          184.77,
+          404.83,
+          377.28,
+          147.21,
+          158.56
+        ],
+        "concorrente": [
+          106.69,
+          106.48,
+          100.74,
+          101.29,
+          113.2,
+          97.18,
+          100.08,
+          99.66,
+          111.8,
+          118.01,
+          107.74,
+          111.57,
+          216.94,
+          82.84,
+          161.75
+        ]
+      }
+    }
+  ],
+  "varreduraDePool": [
+    {
+      "pool": 1,
+      "retentativas": 0,
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 1419.2,
+        "mediana": 1370.1,
+        "p95": 1679.2,
+        "min": 1269,
+        "max": 1679.2,
+        "desvio": 131.9
+      },
+      "concorrenteMs": {
+        "media": 1382.6,
+        "mediana": 1322.8,
+        "p95": 1855.1,
+        "min": 1258.4,
+        "max": 1855.1,
+        "desvio": 145.7
+      },
+      "speedupMediana": 1.04,
+      "speedupMedia": 1.03,
+      "reducaoPercentualMediana": 3.5,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 0.73,
+        "concorrente": 0.76
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 3
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 174.2,
+          "concluidos": 15,
+          "novosArtesaos": 1.7,
+          "porArtesao": 128,
+          "maisVendidas": 841.2,
+          "porStatus": 52.1,
+          "serie": 146.3,
+          "termos": 1.1
+        },
+        "concorrente": {
+          "termos": 1.8,
+          "receita": 164.6,
+          "concluidos": 182.1,
+          "novosArtesaos": 184.2,
+          "porArtesao": 306.1,
+          "maisVendidas": 1111.1,
+          "porStatus": 1162,
+          "serie": 1318.1
+        }
+      },
+      "somaDasConsultasMs": 1359.6,
+      "maiorConsultaMs": 841.2,
+      "temposBrutosMs": {
+        "sequencial": [
+          1490.87,
+          1679.2,
+          1464.09,
+          1325.47,
+          1346.39,
+          1368.6,
+          1378.98,
+          1285.03,
+          1296.46,
+          1269.05,
+          1452.79,
+          1296.87,
+          1591.8,
+          1370.07,
+          1672.64
+        ],
+        "concorrente": [
+          1855.11,
+          1433.27,
+          1413.16,
+          1426,
+          1258.38,
+          1285.8,
+          1322.77,
+          1309.68,
+          1267.52,
+          1279.41,
+          1310.94,
+          1264.19,
+          1397.92,
+          1485.99,
+          1428.76
+        ]
+      }
+    },
+    {
+      "pool": 2,
+      "retentativas": 0,
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 1379,
+        "mediana": 1356.2,
+        "p95": 1685.9,
+        "min": 1128.1,
+        "max": 1685.9,
+        "desvio": 126.1
+      },
+      "concorrenteMs": {
+        "media": 1081.3,
+        "mediana": 1057.8,
+        "p95": 1406.1,
+        "min": 924.7,
+        "max": 1406.1,
+        "desvio": 111.1
+      },
+      "speedupMediana": 1.28,
+      "speedupMedia": 1.28,
+      "reducaoPercentualMediana": 22,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 0.74,
+        "concorrente": 0.95
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 6
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 167.7,
+          "concluidos": 15.6,
+          "novosArtesaos": 2.4,
+          "porArtesao": 127,
+          "maisVendidas": 831.4,
+          "porStatus": 51.3,
+          "serie": 145.9,
+          "termos": 1.1
+        },
+        "concorrente": {
+          "termos": 2.7,
+          "concluidos": 18.4,
+          "novosArtesaos": 19.5,
+          "porArtesao": 161.1,
+          "receita": 245.9,
+          "porStatus": 309.9,
+          "serie": 543.8,
+          "maisVendidas": 1052.4
+        }
+      },
+      "somaDasConsultasMs": 1342.4,
+      "maiorConsultaMs": 831.4,
+      "temposBrutosMs": {
+        "sequencial": [
+          1685.92,
+          1348.39,
+          1312.49,
+          1356.23,
+          1321.15,
+          1128.09,
+          1239.62,
+          1376.63,
+          1325.25,
+          1511.65,
+          1491.57,
+          1510.06,
+          1386.49,
+          1335.3,
+          1356.46
+        ],
+        "concorrente": [
+          1057.83,
+          1115.01,
+          1032.6,
+          1003.85,
+          996.63,
+          1158.07,
+          1013.9,
+          1104.14,
+          1083.59,
+          1214.71,
+          924.73,
+          1406.13,
+          1079.93,
+          1021.24,
+          1006.82
+        ]
+      }
+    },
+    {
+      "pool": 4,
+      "retentativas": 0,
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 1324.6,
+        "mediana": 1312.3,
+        "p95": 1449.4,
+        "min": 1271.5,
+        "max": 1449.4,
+        "desvio": 48.6
+      },
+      "concorrenteMs": {
+        "media": 890.4,
+        "mediana": 883.9,
+        "p95": 926.4,
+        "min": 861.8,
+        "max": 926.4,
+        "desvio": 19.2
+      },
+      "speedupMediana": 1.48,
+      "speedupMedia": 1.49,
+      "reducaoPercentualMediana": 32.6,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 0.76,
+        "concorrente": 1.13
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 10
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 163.2,
+          "concluidos": 15,
+          "novosArtesaos": 1.8,
+          "porArtesao": 124.3,
+          "maisVendidas": 810.4,
+          "porStatus": 49.3,
+          "serie": 141.8,
+          "termos": 1.1
+        },
+        "concorrente": {
+          "termos": 1.9,
+          "novosArtesaos": 3.8,
+          "concluidos": 23.8,
+          "porStatus": 101.5,
+          "porArtesao": 153.9,
+          "receita": 298.5,
+          "serie": 339.5,
+          "maisVendidas": 880
+        }
+      },
+      "somaDasConsultasMs": 1306.9,
+      "maiorConsultaMs": 810.4,
+      "temposBrutosMs": {
+        "sequencial": [
+          1274.73,
+          1384.48,
+          1321.98,
+          1358.14,
+          1351.32,
+          1295.38,
+          1368.97,
+          1271.54,
+          1312.28,
+          1275.9,
+          1290.56,
+          1305.45,
+          1330.89,
+          1277.22,
+          1449.45
+        ],
+        "concorrente": [
+          881.96,
+          866.34,
+          892.56,
+          921.3,
+          905.97,
+          890.96,
+          883.57,
+          926.37,
+          861.79,
+          874.97,
+          919.91,
+          891.26,
+          883.9,
+          873.56,
+          881.98
+        ]
+      }
+    },
+    {
+      "pool": 10,
+      "retentativas": 0,
+      "repeticoes": 15,
+      "aquecimento": 3,
+      "sequencialMs": {
+        "media": 1312.4,
+        "mediana": 1294.3,
+        "p95": 1388.5,
+        "min": 1279.3,
+        "max": 1388.5,
+        "desvio": 33.5
+      },
+      "concorrenteMs": {
+        "media": 917.6,
+        "mediana": 901.4,
+        "p95": 1020.9,
+        "min": 857.2,
+        "max": 1020.9,
+        "desvio": 55
+      },
+      "speedupMediana": 1.44,
+      "speedupMedia": 1.43,
+      "reducaoPercentualMediana": 30.4,
+      "throughputRelatoriosPorSegundo": {
+        "sequencial": 0.77,
+        "concorrente": 1.11
+      },
+      "divergenciasDeResultado": 0,
+      "sobreposicaoPicoCliente": {
+        "sequencial": 1,
+        "concorrente": 8
+      },
+      "sobreposicaoPicoServidor": {
+        "sequencial": 3,
+        "concorrente": 9
+      },
+      "medianaPorConsultaMs": {
+        "sequencial": {
+          "receita": 171.6,
+          "concluidos": 15,
+          "novosArtesaos": 1.7,
+          "porArtesao": 123.6,
+          "maisVendidas": 786.4,
+          "porStatus": 50.7,
+          "serie": 142.4,
+          "termos": 1.1
+        },
+        "concorrente": {
+          "termos": 2.8,
+          "novosArtesaos": 3.5,
+          "concluidos": 33,
+          "porStatus": 83.3,
+          "porArtesao": 157,
+          "receita": 300.7,
+          "serie": 265.1,
+          "maisVendidas": 896.2
+        }
+      },
+      "somaDasConsultasMs": 1292.5,
+      "maiorConsultaMs": 786.4,
+      "temposBrutosMs": {
+        "sequencial": [
+          1293,
+          1280.71,
+          1294.32,
+          1321.6,
+          1325.46,
+          1279.3,
+          1284.19,
+          1290.83,
+          1358.64,
+          1298.26,
+          1366.3,
+          1388.54,
+          1292.54,
+          1327.74,
+          1284.17
+        ],
+        "concorrente": [
+          892.96,
+          870.73,
+          952.07,
+          1018.16,
+          895.78,
+          866.1,
+          857.2,
+          901.42,
+          1020.87,
+          997.94,
+          912.87,
+          928.13,
+          931.44,
+          860.9,
+          857.99
+        ]
+      }
+    }
+  ],
+  "cargaComVariosClientes": [
+    {
+      "modo": "sequencial",
+      "clientes": 1,
+      "relatorios": 7,
+      "erros": 0,
+      "relatoriosPorSegundo": 0.76,
+      "latenciaMedianaMs": 1331.9,
+      "latenciaP95Ms": 1411.4
+    },
+    {
+      "modo": "concorrente",
+      "clientes": 1,
+      "relatorios": 9,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.04,
+      "latenciaMedianaMs": 915.4,
+      "latenciaP95Ms": 1196.7
+    },
+    {
+      "modo": "sequencial",
+      "clientes": 4,
+      "relatorios": 12,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.16,
+      "latenciaMedianaMs": 2998.1,
+      "latenciaP95Ms": 3948.2
+    },
+    {
+      "modo": "concorrente",
+      "clientes": 4,
+      "relatorios": 14,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.34,
+      "latenciaMedianaMs": 2250.3,
+      "latenciaP95Ms": 5179.9
+    },
+    {
+      "modo": "sequencial",
+      "clientes": 10,
+      "relatorios": 10,
+      "erros": 0,
+      "relatoriosPorSegundo": 0.87,
+      "latenciaMedianaMs": 10857.9,
+      "latenciaP95Ms": 11441.3
+    },
+    {
+      "modo": "concorrente",
+      "clientes": 10,
+      "relatorios": 13,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.05,
+      "latenciaMedianaMs": 9915.5,
+      "latenciaP95Ms": 12429.7
+    }
+  ]
+}

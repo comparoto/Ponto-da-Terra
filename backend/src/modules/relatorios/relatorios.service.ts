@@ -1,14 +1,19 @@
 import { Prisma, StatusPedido } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { getRedis } from '../../config/redis';
+import { executarGrupo, type OpcoesExecucao } from '../../shared/execucao';
 import { z } from '../../shared/zod';
 
 /**
  * Relatórios do admin (HU9) e do artesão (HU18).
  *
  * FCCPD — "processamento paralelo em relatórios": cada relatório dispara suas agregações
- * independentes AO MESMO TEMPO (Promise.all), em vez de uma depois da outra. O tempo total
- * passa a ser o da consulta mais lenta, e não a soma de todas.
+ * independentes AO MESMO TEMPO (modo "concorrente", o padrão), em vez de uma depois da outra.
+ * O tempo total tende ao da consulta mais lenta, e não à soma de todas.
+ *
+ * O modo "sequencial" existe para comparação (benchmark e testes de equivalência): executa
+ * exatamente as mesmas consultas, uma por vez. Veja `shared/execucao.ts` e `docs/md/RELATORIO_FCCPD_U2.md`.
+ * As rotas da API usam sempre o padrão (concorrente), então o contrato HTTP não muda.
  */
 const PAGOS: StatusPedido[] = [StatusPedido.PAGO, StatusPedido.EM_PRODUCAO, StatusPedido.DESPACHADO, StatusPedido.ENTREGUE];
 const pagosSql = Prisma.join(PAGOS.map(s => Prisma.sql`${s}::"StatusPedido"`));
@@ -45,24 +50,31 @@ export function periodoPadrao(de?: Date, ate?: Date, mesesAtras?: number): Perio
 
 export const relatoriosService = {
   /** HU9: indicadores consolidados da plataforma no período. */
-  async dashboardAdmin({ de, ate }: Periodo) {
+  async dashboardAdmin({ de, ate }: Periodo, opcoes: OpcoesExecucao = {}) {
     const noPeriodo = { dataPedido: { gte: de, lte: ate } };
     const pagosNoPeriodo: Prisma.PedidoWhereInput = { ...noPeriodo, status: { in: PAGOS } };
     const inicio = performance.now();
 
-    const [receita, concluidos, novosArtesaos, porArtesao, maisVendidas, porStatus, serie, termos] = await Promise.all([
-      prisma.pedido.aggregate({ where: pagosNoPeriodo, _sum: { valorTotal: true }, _count: true }),
-      prisma.pedido.count({ where: { ...noPeriodo, status: StatusPedido.ENTREGUE } }),
-      prisma.artesao.count({ where: { dataCadastro: { gte: de, lte: ate } } }),
-      prisma.pedido.groupBy({ by: ['artesaoId'], where: pagosNoPeriodo, _sum: { valorTotal: true }, _count: { _all: true }, orderBy: { _sum: { valorTotal: 'desc' } }, take: 5 }),
-      prisma.itemPedido.groupBy({ by: ['produtoId', 'tituloProduto'], where: { pedido: pagosNoPeriodo }, _sum: { quantidade: true }, orderBy: { _sum: { quantidade: 'desc' } }, take: 5 }),
-      prisma.pedido.groupBy({ by: ['status'], where: noPeriodo, _count: { _all: true } }),
-      prisma.$queryRaw<{ dia: Date; receita: number; pedidos: number }[]>`
-        SELECT date_trunc('day', "dataPedido") AS dia, SUM("valorTotal")::float AS receita, COUNT(*)::int AS pedidos
-        FROM "Pedido" WHERE "status" IN (${pagosSql}) AND "dataPedido" BETWEEN ${de} AND ${ate}
-        GROUP BY 1 ORDER BY 1`,
-      getRedis()?.zrevrange(BUSCAS_KEY, 0, 9, 'WITHSCORES').catch(() => []) ?? Promise.resolve([] as string[]),
-    ]);
+    // Oito consultas independentes entre si (7 no PostgreSQL e 1 no Redis). A consulta dos nomes dos
+    // artesãos DEPENDE do resultado de `porArtesao`, por isso vem depois, fora do grupo.
+    const { receita, concluidos, novosArtesaos, porArtesao, maisVendidas, porStatus, serie, termos } = await executarGrupo(
+      {
+        receita: () => prisma.pedido.aggregate({ where: pagosNoPeriodo, _sum: { valorTotal: true }, _count: true }),
+        concluidos: () => prisma.pedido.count({ where: { ...noPeriodo, status: StatusPedido.ENTREGUE } }),
+        novosArtesaos: () => prisma.artesao.count({ where: { dataCadastro: { gte: de, lte: ate } } }),
+        porArtesao: () =>
+          prisma.pedido.groupBy({ by: ['artesaoId'], where: pagosNoPeriodo, _sum: { valorTotal: true }, _count: { _all: true }, orderBy: [{ _sum: { valorTotal: 'desc' } }, { artesaoId: 'asc' }], take: 5 }),
+        maisVendidas: () =>
+          prisma.itemPedido.groupBy({ by: ['produtoId', 'tituloProduto'], where: { pedido: pagosNoPeriodo }, _sum: { quantidade: true }, orderBy: [{ _sum: { quantidade: 'desc' } }, { produtoId: 'asc' }], take: 5 }),
+        porStatus: () => prisma.pedido.groupBy({ by: ['status'], where: noPeriodo, _count: { _all: true }, orderBy: { status: 'asc' } }),
+        serie: () => prisma.$queryRaw<{ dia: Date; receita: number; pedidos: number }[]>`
+          SELECT date_trunc('day', "dataPedido") AS dia, SUM("valorTotal")::float AS receita, COUNT(*)::int AS pedidos
+          FROM "Pedido" WHERE "status" IN (${pagosSql}) AND "dataPedido" BETWEEN ${de} AND ${ate}
+          GROUP BY 1 ORDER BY 1`,
+        termos: () => getRedis()?.zrevrange(BUSCAS_KEY, 0, 9, 'WITHSCORES').catch(() => [] as string[]) ?? Promise.resolve([] as string[]),
+      },
+      opcoes,
+    );
 
     const nomes = await prisma.artesao.findMany({ where: { id: { in: porArtesao.map(a => a.artesaoId) } }, select: { id: true, usuario: { select: { nome: true } } } });
     const nomePorId = new Map(nomes.map(n => [n.id, n.usuario.nome]));
@@ -86,24 +98,29 @@ export const relatoriosService = {
   },
 
   /** HU18: indicadores do artesão (faturamento mensal, mais vendidas, taxa de conclusão, pedidos por polo). */
-  async indicadoresArtesao(artesaoId: string, { de, ate }: Periodo) {
+  async indicadoresArtesao(artesaoId: string, { de, ate }: Periodo, opcoes: OpcoesExecucao = {}) {
     const noPeriodo = { artesaoId, dataPedido: { gte: de, lte: ate } };
     const pagos: Prisma.PedidoWhereInput = { ...noPeriodo, status: { in: PAGOS } };
 
-    const [faturamento, maisVendidas, porStatus, porPolo, porMes] = await Promise.all([
-      prisma.pedido.aggregate({ where: pagos, _sum: { valorTotal: true }, _count: true }),
-      prisma.itemPedido.groupBy({ by: ['produtoId', 'tituloProduto'], where: { pedido: pagos }, _sum: { quantidade: true }, orderBy: { _sum: { quantidade: 'desc' } }, take: 5 }),
-      prisma.pedido.groupBy({ by: ['status'], where: noPeriodo, _count: { _all: true } }),
-      prisma.$queryRaw<{ polo: string; pedidos: number; receita: number }[]>`
-        SELECT pr."poloOrigem" AS polo, COUNT(DISTINCT p."id")::int AS pedidos, SUM(i."precoUnitario" * i."quantidade")::float AS receita
-        FROM "ItemPedido" i JOIN "Pedido" p ON p."id" = i."pedidoId" JOIN "Produto" pr ON pr."id" = i."produtoId"
-        WHERE p."artesaoId" = ${artesaoId} AND p."status" IN (${pagosSql}) AND p."dataPedido" BETWEEN ${de} AND ${ate}
-        GROUP BY pr."poloOrigem" ORDER BY pedidos DESC`,
-      prisma.$queryRaw<{ mes: Date; receita: number; pedidos: number }[]>`
-        SELECT date_trunc('month', "dataPedido") AS mes, SUM("valorTotal")::float AS receita, COUNT(*)::int AS pedidos
-        FROM "Pedido" WHERE "artesaoId" = ${artesaoId} AND "status" IN (${pagosSql}) AND "dataPedido" BETWEEN ${de} AND ${ate}
-        GROUP BY 1 ORDER BY 1`,
-    ]);
+    // Cinco consultas independentes entre si
+    const { faturamento, maisVendidas, porStatus, porPolo, porMes } = await executarGrupo(
+      {
+        faturamento: () => prisma.pedido.aggregate({ where: pagos, _sum: { valorTotal: true }, _count: true }),
+        maisVendidas: () =>
+          prisma.itemPedido.groupBy({ by: ['produtoId', 'tituloProduto'], where: { pedido: pagos }, _sum: { quantidade: true }, orderBy: [{ _sum: { quantidade: 'desc' } }, { produtoId: 'asc' }], take: 5 }),
+        porStatus: () => prisma.pedido.groupBy({ by: ['status'], where: noPeriodo, _count: { _all: true }, orderBy: { status: 'asc' } }),
+        porPolo: () => prisma.$queryRaw<{ polo: string; pedidos: number; receita: number }[]>`
+          SELECT pr."poloOrigem" AS polo, COUNT(DISTINCT p."id")::int AS pedidos, SUM(i."precoUnitario" * i."quantidade")::float AS receita
+          FROM "ItemPedido" i JOIN "Pedido" p ON p."id" = i."pedidoId" JOIN "Produto" pr ON pr."id" = i."produtoId"
+          WHERE p."artesaoId" = ${artesaoId} AND p."status" IN (${pagosSql}) AND p."dataPedido" BETWEEN ${de} AND ${ate}
+          GROUP BY pr."poloOrigem" ORDER BY pedidos DESC, polo ASC`,
+        porMes: () => prisma.$queryRaw<{ mes: Date; receita: number; pedidos: number }[]>`
+          SELECT date_trunc('month', "dataPedido") AS mes, SUM("valorTotal")::float AS receita, COUNT(*)::int AS pedidos
+          FROM "Pedido" WHERE "artesaoId" = ${artesaoId} AND "status" IN (${pagosSql}) AND "dataPedido" BETWEEN ${de} AND ${ate}
+          GROUP BY 1 ORDER BY 1`,
+      },
+      opcoes,
+    );
 
     // Série mensal com zeros nos meses sem venda (HU18 cenário 2)
     const meses: { mes: string; receita: number; pedidos: number }[] = [];

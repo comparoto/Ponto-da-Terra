@@ -1,0 +1,72 @@
+%% Arquitetura distribuída do Ponto da Terra (somente componentes que existem no código)
+%% Linhas cheias: fluxo síncrono (HTTP, SQL, Redis). Linhas tracejadas: fluxo assíncrono (eventos).
+flowchart TB
+  U([Usuário<br/>navegador]):::ator
+
+  subgraph FE["Frontend · Next.js (Vercel)"]
+    PAG["Páginas e componentes<br/>app/ · components/"]
+    SRV["Camada de serviços<br/>src/services · contrato ApiResult&lt;T&gt;"]
+    PAG --> SRV
+  end
+
+  subgraph API["Backend · Express 5 · monólito modular"]
+    MW["Middlewares<br/>autenticar → autorizar → validar (Zod)"]
+    subgraph MOD["Módulos de negócio (rota → serviço)"]
+      direction LR
+      M1["auth · artesaos<br/>produtos · carrinho"]
+      M2["compras · pedidos<br/>comprador · interacao"]
+      M3["notificacoes · admin<br/>jobs"]
+      REL["<b>relatorios</b><br/>dashboardAdmin (8 consultas)<br/>indicadoresArtesao (5 consultas)<br/><b>executadas em paralelo</b><br/>shared/execucao.ts"]
+    end
+    CACHE["Cache da vitrine<br/>shared/cache.ts<br/>(HIT / MISS)"]
+    OUTBOX["Outbox<br/>shared/eventos.ts"]
+    RELAY["Relay<br/>jobs/outbox.ts"]
+    MW --> MOD
+    MOD --> CACHE
+    MOD --> OUTBOX
+  end
+
+  PG[("PostgreSQL 16<br/>Prisma 7 + pool de conexões<br/>local: Docker · produção: Neon")]:::dados
+  RD[("Redis 7<br/>cache · termos mais buscados · filas locais<br/>local: Docker · produção: Upstash")]:::dados
+
+  subgraph FILA["Processamento assíncrono"]
+    direction TB
+    subgraph LOC["Ambiente local"]
+      BULL["BullMQ<br/>fila 'eventos' e 'manutencao'"]
+      WRK["Worker (processo separado)<br/>worker.ts"]
+      BULL -.-> WRK
+    end
+    subgraph PRD["Produção (Vercel)"]
+      QST["Upstash QStash"]
+      ROTA["POST /api/jobs/evento<br/>(mesma API, assinatura verificada)"]
+      QST -.-> ROTA
+    end
+    PROC["processarEvento<br/>notificação in-app + e-mail"]
+    IMG["processar-imagem<br/>Sharp → WebP até 1600 px"]
+  end
+
+  SMTP["SMTP de testes<br/>(Mailtrap)"]:::externo
+  STO["Armazenamento de fotos<br/>local: disco · produção: Vercel Blob"]:::externo
+
+  U -->|HTTPS| PAG
+  SRV -->|"HTTP/REST · JSON · JWT"| MW
+  MOD -->|"SQL (Prisma/pg)"| PG
+  REL ==>|"até 10 conexões simultâneas<br/>(3 na Vercel)"| PG
+  REL -->|"zrevrange"| RD
+  CACHE -->|"get/set · TTL 60 s"| RD
+  OUTBOX -->|"mesma transação"| PG
+  RELAY -->|"lê pendentes"| PG
+  RELAY -.->|"local"| BULL
+  RELAY -.->|"produção"| QST
+  WRK -.-> PROC
+  ROTA -.-> PROC
+  WRK -.-> IMG
+  ROTA -.-> IMG
+  PROC -->|"grava NotificacaoLog"| PG
+  PROC -->|SMTP| SMTP
+  IMG --> STO
+  BULL --- RD
+
+  classDef ator fill:#fff,stroke:#333,stroke-width:1.5px
+  classDef dados fill:#e8f1ff,stroke:#2b5aa8
+  classDef externo fill:#f5f5f5,stroke:#777,stroke-dasharray: 3 3

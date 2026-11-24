@@ -6,6 +6,9 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: ponto-da-terra-postgres
+    # Memória compartilhada (/dev/shm): o padrão do Docker é 64 MB. Consultas paralelas simultâneas (benchmark de paralelismo,
+    # docs/md/RELATORIO_FCCPD_U2.md) a esgotam e o PostgreSQL responde "No space left on device" (erro 53100).
+    shm_size: 256mb
     environment:
       POSTGRES_USER: pdt
       POSTGRES_PASSWORD: pdt

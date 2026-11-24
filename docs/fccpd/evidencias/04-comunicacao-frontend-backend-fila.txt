@@ -1,0 +1,21 @@
+
+=== 1. Backend em funcionamento (GET /api/health: API, banco e Redis) ===
+HTTP 200 {"api":"ok","banco":"ok","redis":"ok"}
+
+=== 2. Backend → Redis: o cache da vitrine (cabeçalho X-Cache) ===
+GET /api/produtos?limit=12&ordenacao=preco-desc&precoMin=0.01 → HTTP 200 · X-Cache: MISS · 12 peças
+GET /api/produtos?limit=12&ordenacao=preco-desc&precoMin=0.01 → HTTP 200 · X-Cache: HIT · 12 peças
+
+=== 3. Backend → PostgreSQL: dados lidos e gravados (compra pela API) ===
+POST /api/auth/login → HTTP 200 (perfil: CONSUMIDOR)
+POST /api/checkout → HTTP 201 · compra PT-MWVATQS4-1D18 · pedidos: 1
+POST /api/compras/PT-MWVATQS4-1D18/pagamento (PIX) → HTTP 201
+CODIGO_COMPRA=PT-MWVATQS4-1D18
+
+=== 4. Frontend → Backend: chamadas HTTP feitas pelo navegador ao abrir a vitrine ===
+Página aberta: http://localhost:3002/vitrine
+  GET /api/artesaos?… → HTTP 200
+  GET /api/produtos?… → HTTP 200
+
+=== 5. Aguardando o worker (fila) processar o evento do novo pedido ===
+Notificação do artesão criada pelo worker: tipo=NOVO_PEDIDO, compra=PT-MWVATQS4-1D18

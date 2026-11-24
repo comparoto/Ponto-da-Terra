@@ -1,0 +1,15 @@
+# Testes de equivalência e de sobreposição (tests/relatorios-modos.test.ts), executados em 2026-11-24 20:06
+# $ npx jest --runInBand tests/relatorios-modos.test.ts --verbose
+  executarGrupo (abstração dos modos)
+    √ os dois modos devolvem os mesmos resultados, com os mesmos nomes (298 ms)
+    √ sequencial: cada tarefa só começa depois que a anterior terminou (nenhuma sobreposição) (232 ms)
+    √ concorrente: todas as tarefas ficam em andamento ao mesmo tempo e o total é muito menor que a soma (308 ms)
+    √ o padrão é concorrente, e um erro em uma tarefa rejeita o grupo nos dois modos (53 ms)
+  Relatórios · equivalência entre o modo sequencial e o concorrente
+    √ dashboard do administrador: os dois modos devolvem exatamente o mesmo conteúdo (ignorando o tempo medido) (228 ms)
+    √ empates nos rankings têm ordem determinística (por id) em qualquer modo (32 ms)
+    √ dashboard: sequencial não tem consultas sobrepostas; concorrente dispara as 8 ao mesmo tempo (31 ms)
+    √ indicadores do artesão: equivalentes nos dois modos e com 5 consultas em grupo (48 ms)
+    √ sem opções, o resultado é o mesmo do modo concorrente (o comportamento da API não muda) (29 ms)
+Test Suites: 1 passed, 1 total
+Tests:       9 passed, 9 total

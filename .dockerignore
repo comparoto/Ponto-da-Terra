@@ -1,0 +1,35 @@
+
+# Dependências instaladas localmente
+node_modules
+
+# Arquivos gerados pelo Next.js
+.next
+out
+
+# Controle de versão
+.git
+.gitignore
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Arquivos do sistema operacional
+.DS_Store
+
+# Arquivos de testes e cobertura
+coverage
+test-results
+playwright-report
+
+# Arquivos do Docker
+Dockerfile
+.dockerignore
+
+# Documentação
+README.md

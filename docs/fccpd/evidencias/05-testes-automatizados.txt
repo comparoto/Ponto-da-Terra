@@ -1,0 +1,19 @@
+# Validação final (executada em 2026-11-24 20:02, branch fccpd-u2-paralelismo)
+
+$ npm run typecheck
+typecheck OK
+
+$ npm run lint  (inclui as regras que proíbem o tipo any)
+lint OK
+
+$ npm run build
+> ponto-da-terra-api@0.1.0 build
+> tsc -p tsconfig.build.json
+
+build: código de saída = 0
+
+$ npm test  (Jest + Supertest, banco de teste real; inclui tests/relatorios-modos.test.ts)
+Test Suites: 18 passed, 18 total
+Tests:       157 passed, 157 total
+Snapshots:   0 total
+Time:        87.783 s, estimated 127 s

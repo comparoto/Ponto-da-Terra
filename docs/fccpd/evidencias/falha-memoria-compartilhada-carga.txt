@@ -1,0 +1,26 @@
+# Falha observada na 1ª execução da etapa de carga (vários clientes simultâneos)
+# Registrada como limitação encontrada; correção aplicada em seguida (shm_size no docker-compose).
+# Data: 2026-11-24. Caminhos locais foram substituídos por <repo>.
+
+▶ Carga com vários clientes simultâneos (dashboard, período ano)
+PrismaClientKnownRequestError: 
+Invalid `prisma.itemPedido.groupBy()` invocation in
+<repo>\backend\src\modules\relatorios\relatorios.service.ts:68:29
+
+  65 porArtesao: () =>
+  66   prisma.pedido.groupBy({ by: ['artesaoId'], where: pagosNoPeriodo, _sum: { valorTotal: true }, _count: { _all: true }, orderBy: [{ _sum: { valorTotal: 'desc' } }, { artesaoId: 'asc' }], take: 5 }),
+  67 maisVendidas: () =>
+→ 68   prisma.itemPedido.groupBy(
+Database error. Code: `53100`. Message: `could not resize shared memory segment "/PostgreSQL.3374197154" to 8388608 bytes: No space left on device`
+    at vn.handleRequestError (<repo>\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:238:13)
+    at vn.handleAndLogRequestError (<repo>\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:184:12)
+    at vn.request (<repo>\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:153:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (<repo>\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1012:24)
+    at async rodar (<repo>\backend\src\shared\execucao.ts:37:14)
+    at async executarGrupo (<repo>\backend\src\shared\execucao.ts:45:44)
+    at async Object.dashboardAdmin (<repo>\backend\src\modules\relatorios\relatorios.service.ts:60:104)
+    at async comRetentativa (<repo>\backend\scripts\benchmark-paralelismo.ts:108:14)
+    at async <anonymous> (<repo>\backend\scripts\benchmark-paralelismo.ts:247:11) {
+  code: 'P2039',
+  meta: {

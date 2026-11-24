@@ -25,6 +25,8 @@
     "test:carga:vitrine": "k6 run tests/carga/vitrine-cache.k6.js",
     "limpar:testes": "tsx scripts/limpar-dados-teste.ts",
     "docs:diagrama": "tsx scripts/gerar-diagrama-de-classes.ts",
+    "benchmark:paralelismo": "tsx scripts/benchmark-paralelismo.ts",
+    "demo:paralelismo": "tsx scripts/demonstrar-paralelismo.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

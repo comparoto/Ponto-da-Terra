@@ -1,0 +1,40 @@
+%% Como o relatório do administrador (dashboardAdmin) usa o pool de conexões: modo sequencial x concorrente
+sequenceDiagram
+  autonumber
+  participant C as Rota da API
+  participant S as relatoriosService
+  participant X as executarGrupo
+  participant P as Pool pg (até 10 conexões)
+  participant D as PostgreSQL (um processo por conexão)
+  participant R as Redis
+
+  Note over C,R: MODO SEQUENCIAL (linha de base): cada consulta só começa quando a anterior termina
+  C->>S: dashboardAdmin(período, modo = sequencial)
+  S->>X: 8 tarefas independentes
+  loop para cada tarefa, uma de cada vez
+    X->>P: pega UMA conexão
+    P->>D: consulta
+    D-->>P: resultado
+    P-->>X: devolve a conexão
+  end
+  X-->>S: resultados (tempo total ≈ soma das 8 consultas)
+
+  Note over C,R: MODO CONCORRENTE (padrão da API): as 8 consultas são disparadas ao mesmo tempo
+  C->>S: dashboardAdmin(período)
+  S->>X: 8 tarefas independentes
+  par 7 consultas SQL
+    X->>P: tarefa 1
+    P->>D: consulta 1 (conexão A)
+  and
+    X->>P: tarefa 2
+    P->>D: consulta 2 (conexão B)
+  and
+    X->>P: tarefas 3 a 7
+    P->>D: consultas 3 a 7 (conexões C a G)
+  and 1 consulta Redis
+    X->>R: termos mais buscados
+  end
+  D-->>X: resultados (cada consulta termina quando termina)
+  X-->>S: resultados (tempo total ≈ a consulta mais lenta)
+
+  Note over S,D: Depois do grupo, uma consulta DEPENDENTE busca os nomes dos artesãos do ranking. Ela não é paralelizada: precisa do resultado anterior.
