@@ -200,6 +200,160 @@ Todas as evidências abaixo, com capturas de tela, logs e medições, estão reu
 
 ---
 
+## FCCPD · Unidade 2: arquitetura distribuída, paralelismo e desempenho
+
+Entrega de **Fundamentos de Computação Concorrente, Paralela e Distribuída**. O relatório completo está em [docs/md/RELATORIO_FCCPD_U2.md](docs/md/RELATORIO_FCCPD_U2.md) ([PDF](docs/fccpd/Relatorio-FCCPD-Unidade-2.pdf)) e as evidências, em [docs/md/EVIDENCIAS_FCCPD_U2.md](docs/md/EVIDENCIAS_FCCPD_U2.md).
+
+<details open>
+<summary><b>01. Arquitetura distribuída</b></summary>
+
+### Descrição da arquitetura
+O sistema é um **monólito modular em camadas**, dividido em poucos componentes que rodam em processos e ambientes diferentes: o frontend, a API (backend), o banco de dados, o cache, a fila de eventos e o worker. Não são microsserviços: o estoque e a compra exigem uma **transação única** no mesmo banco, e dividir o domínio em serviços traria rede, deploy múltiplo e consistência distribuída sem benefício para o escopo.
+
+### Tecnologias utilizadas
+| Componente | Tecnologia (local → produção) |
+|---|---|
+| Frontend | Next.js 16, React 19 e Chakra UI (Vercel) |
+| Backend | Node.js 22, Express 5 e TypeScript (função serverless na Vercel) |
+| Banco de dados | PostgreSQL 16 com Prisma 7 e pool de conexões (Docker → Neon) |
+| Cache | Redis 7 (Docker → Upstash) |
+| Fila de eventos | BullMQ (local) → Upstash QStash (Vercel), com *Transactional Outbox* |
+| Processamento assíncrono | Worker separado (local) → rota `/api/jobs/evento` da própria API (Vercel) |
+| Arquivos e e-mail | Disco → Vercel Blob; SMTP de testes (Mailtrap) |
+
+### Diagrama da arquitetura distribuída
+![Arquitetura distribuída do Ponto da Terra](docs/fccpd/arquitetura.png)
+
+Código-fonte do diagrama (Mermaid): [`docs/fccpd/arquitetura.mmd`](docs/fccpd/arquitetura.mmd). Linhas cheias: fluxo síncrono. Linhas tracejadas: fluxo assíncrono (eventos).
+
+### Responsabilidade de cada módulo e serviço
+| Componente | Responsabilidade |
+|---|---|
+| **Frontend** | Telas, estado do cliente e acesso à API pela camada `src/services`, com o contrato `ApiResult<T>`. |
+| **Backend** | Regras de negócio, autenticação e autorização (JWT) e validação (Zod), em módulos no padrão rota → serviço: `auth`, `artesaos`, `produtos`, `carrinho`, `compras`, `pedidos`, `comprador`, `interacao`, `notificacoes`, `admin`, `jobs` e `relatorios`. |
+| **PostgreSQL** | Persistência e consistência transacional (reserva atômica de estoque, compra dividida em pedidos). |
+| **Redis** | Cache da vitrine (resposta `HIT` ou `MISS`), ranking dos termos mais buscados e as filas locais. |
+| **Fila e worker** | Notificações, e-mail simulado, otimização de imagens (Sharp) e expiração de reservas de PIX e boleto. |
+| **Módulo de relatórios** | Agregações do administrador e do artesão, executadas em paralelo (seção 02). |
+
+### Justificativa da separação dos serviços
+- **Frontend separado do backend:** a interface muda por motivos diferentes das regras de negócio, e as regras precisam ficar no servidor porque o cliente não é confiável (preço, perfil e estoque são conferidos lá).
+- **PostgreSQL para persistência:** o modelo é relacional e o estoque exige transação.
+- **Redis para cache:** leituras repetidas da vitrine não devem sobrecarregar o banco.
+- **Fila e worker separados:** trabalhos lentos ou que podem falhar não devem atrasar a resposta ao comprador, e o worker pode falhar e escalar de forma independente.
+
+### Como os serviços se comunicam
+| De → Para | Protocolo |
+|---|---|
+| Navegador → Frontend | HTTPS |
+| Frontend → Backend | HTTP/REST com JSON e JWT no cabeçalho |
+| Backend → PostgreSQL | SQL pelo Prisma e pelo driver `pg`, com pool de conexões |
+| Backend → Redis | Protocolo Redis (`ioredis`): cache e ranking |
+| Backend → fila | Evento gravado na tabela *outbox*, na mesma transação da operação |
+| Relay → fila → worker | BullMQ (local) ou QStash por HTTP (Vercel), consumo idempotente |
+
+As evidências de execução dessa comunicação estão em [`docs/fccpd/evidencias/`](docs/fccpd/evidencias).
+
+</details>
+
+<details open>
+<summary><b>02. Implementação do paralelismo</b></summary>
+
+### Funcionalidade escolhida
+Os **relatórios do produto**: o dashboard do administrador (HU9), com 8 consultas independentes (7 no PostgreSQL e 1 no Redis), e os indicadores do artesão (HU18), com 5 consultas no PostgreSQL. As consultas não dependem umas das outras, então podem rodar ao mesmo tempo. Uma única consulta depende de outra (os nomes dos artesãos do ranking) e por isso ficou **fora** do grupo paralelo.
+
+### Como funcionava a execução sequencial
+Cada consulta só começa depois que a anterior termina, e o tempo total é a **soma** do tempo de todas. Esse modo foi criado como linha de base da comparação: ele executa exatamente as mesmas consultas, uma por vez. (A versão original do código já disparava as consultas juntas com `Promise.all`, mas não havia modo sequencial para comparar nem medição de que elas realmente se sobrepunham.)
+
+### Como funciona a execução paralela
+Todas as consultas do grupo são **disparadas ao mesmo tempo**. Cada uma usa uma conexão diferente do pool, e o PostgreSQL atende cada conexão em um processo próprio. O tempo total tende ao da consulta **mais lenta**, e não à soma.
+
+### Estratégia de paralelismo
+É **concorrência assíncrona de E/S** (várias consultas em andamento ao mesmo tempo, com `Promise.all`) sobre um **pool de conexões**, e não threads. O Node.js executa o JavaScript em uma única thread; o paralelismo real acontece **fora** do Node, nos processos do PostgreSQL. Usar `Promise.all` não é prova de paralelismo, então a sobreposição foi **medida**: no cliente (início e fim de cada consulta) e no servidor (processos ativos em `pg_stat_activity`).
+
+### Arquivos de código responsáveis
+| Arquivo | O que contém |
+|---|---|
+| [`backend/src/shared/execucao.ts`](backend/src/shared/execucao.ts) | `executarGrupo`: executa um grupo de tarefas nos modos `sequencial` e `concorrente`, e mede a sobreposição |
+| [`backend/src/modules/relatorios/relatorios.service.ts`](backend/src/modules/relatorios/relatorios.service.ts) | `dashboardAdmin` e `indicadoresArtesao`, com as consultas passadas ao `executarGrupo` |
+| [`backend/src/config/prisma.ts`](backend/src/config/prisma.ts) | Pool de conexões (10 no local, 3 na Vercel) |
+| [`backend/tests/relatorios-modos.test.ts`](backend/tests/relatorios-modos.test.ts) | 9 testes: os dois modos dão o mesmo resultado, o sequencial nunca sobrepõe e o concorrente dispara todas juntas |
+
+O modo padrão da API continua sendo o concorrente, e o contrato HTTP não mudou.
+
+### Benefícios e limitações
+**Benefícios** (mediana de 15 repetições, um cliente por vez): o tempo dos relatórios caiu entre **28,6% e 55,8%** (*speedup* de 1,40× a 2,26×), com resultados **idênticos** aos do modo sequencial. No caso mais pesado (dashboard de 12 meses com 300 mil pedidos), caiu de **1.334 ms para 923 ms** (1,45×).
+
+| Pedidos | Dashboard, 12 meses: sequencial → concorrente | *Speedup* |
+|---:|---|---:|
+| 20.000 | 140,9 ms → 79,4 ms | 1,77× |
+| 100.000 | 486,1 ms → 281,9 ms | 1,72× |
+| 300.000 | 1.334,2 ms → 923,3 ms | 1,45× |
+
+**Limitações:**
+- O ganho depende do pool de conexões: com **1 conexão** foi 1,04×; com 4, 1,48×.
+- É **limitado pela consulta mais lenta** (lei de Amdahl) e **diminui com o volume**, porque uma consulta passa a dominar e as demais disputam CPU, memória e disco. O próprio PostgreSQL já paraleliza essa consulta por dentro, o que também compete pelos mesmos núcleos.
+- Reduz a **latência de um pedido isolado**, mas **não aumenta a capacidade total** do banco. Sob carga com vários clientes o resultado foi inconclusivo (uma execução de 30 s por célula).
+- Tudo foi medido em uma só máquina, com dados sintéticos; os números valem como comparação entre os modos, não como capacidade de produção. As limitações completas estão no [relatório](docs/md/RELATORIO_FCCPD_U2.md#15-limitações).
+
+</details>
+
+<details open>
+<summary><b>03. Metodologia do benchmark</b></summary>
+
+### O que foi medido
+O **tempo de resposta** de cada relatório nos modos sequencial e concorrente: média, mediana, p95, desvio-padrão, mínimo e máximo. Também a **vazão** (relatórios por segundo), o ***speedup*** (sequencial ÷ concorrente), a **redução percentual** do tempo, a **sobreposição** das consultas (no cliente e no servidor) e a **equivalência** dos resultados (conferida em toda repetição). As tabelas usam a mediana.
+
+### Ferramentas utilizadas
+Node.js e TypeScript (`tsx`), Prisma e `pg`, Docker, PostgreSQL 16 e Redis 7. O script é [`backend/scripts/benchmark-paralelismo.ts`](backend/scripts/benchmark-paralelismo.ts). Os gráficos e o PDF vêm de roteiros em `e2e/` (Playwright). Não há atrasos artificiais no código.
+
+### Especificações da máquina utilizada
+| Item | Valor |
+|---|---|
+| Processador | Intel Core i7-1355U (12 threads) |
+| Memória | 15,7 GB de RAM (8 GB disponíveis para o Docker, com 12 CPUs) |
+| Sistema | Windows 11, Docker 29.8.2 |
+| Banco | PostgreSQL 16.15 em contêiner (`shared_buffers` 128 MB, `work_mem` 4 MB, `max_parallel_workers_per_gather` 2) |
+| Aplicação | Node.js v24.22.0, Prisma 7.10.1, pool de 10 conexões |
+
+### Volume de dados processados
+Dados sintéticos e **determinísticos** (os mesmos em toda execução), em um banco isolado:
+
+| Volume | Pedidos | Itens de pedido |
+|---|---:|---:|
+| Pequeno | 20.000 | 60.000 |
+| Médio | 100.000 | 300.000 |
+| Grande | 300.000 | 900.000 |
+
+Todos com 200 artesãos, 4.000 produtos e 5.000 compradores, e pedidos distribuídos em 12 meses.
+
+### Número de repetições
+**15 repetições** por célula, mais **3 de aquecimento** descartadas. Foram 12 comparações (3 volumes × 2 períodos × 2 relatórios), mais a variação do pool (1, 2, 4 e 10 conexões) e a carga com 1, 4 e 10 clientes simultâneos (30 s cada).
+
+### Condições de execução
+- Banco **isolado** (`pontodaterra_bench`, no Docker local). O script **recusa** rodar em qualquer banco cujo nome não termine em `_bench`, para não tocar em desenvolvimento nem em produção.
+- A **ordem dos modos é alternada** a cada repetição, para nenhum modo se favorecer do cache do banco.
+- Cliente, API, PostgreSQL e Redis na mesma máquina; resultados salvos em [`docs/fccpd/resultados/`](docs/fccpd/resultados) (JSON e CSV).
+
+### Comandos para reproduzir os testes
+```bash
+cd backend && npm install && npm run db:up                       # PostgreSQL e Redis (Docker)
+docker exec ponto-da-terra-postgres psql -U pdt -d pontodaterra -c "CREATE DATABASE pontodaterra_bench"
+DATABASE_URL="postgresql://pdt:pdt@localhost:5434/pontodaterra_bench?schema=public" \
+DATABASE_URL_UNPOOLED="postgresql://pdt:pdt@localhost:5434/pontodaterra_bench?schema=public" \
+npx prisma migrate deploy                                        # cria as tabelas no banco do benchmark
+
+npm run benchmark:paralelismo                                    # benchmark completo (cerca de 10 minutos)
+npm run benchmark:paralelismo -- --rapido                        # teste rápido (2 minutos)
+npm run benchmark:paralelismo -- --fase=carga --escalas=300000 --duracao-carga=30 --clientes=1,4,10
+npm run demo:paralelismo                                         # linha do tempo das consultas, para demonstrar
+npx jest --runInBand tests/relatorios-modos.test.ts              # testes de equivalência
+```
+
+</details>
+
+---
+
 ## Como executar localmente
 
 ### Pré-requisitos
