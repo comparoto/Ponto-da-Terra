@@ -1,0 +1,15 @@
+# Backend → PostgreSQL e Redis: o que a compra gravou (compra PT-MWVATQS4-1D18)
+
+$ Compra, pagamento e pedido gravados no PostgreSQL
+codigo | compra | metodo | pagamento | pedido | valorTotal
+PT-MWVATQS4-1D18 | AGUARDANDO_PAGAMENTO | PIX | PENDENTE | AGUARDANDO_PAGAMENTO | 107.90
+(1 row)
+
+$ Chaves de cache da vitrine no Redis (db 0)
+  catalogo:v290:vitrine:1eff766a8ec7c9f61742cb9b019f5998fde61445
+  catalogo:versao
+  catalogo:v289:vitrine:c3872da3d9c79a13b30d5f50809225439068140c
+  total de chaves catalogo:*: 5
+
+$ Versão do cache (invalidação por versão)
+290

@@ -1,0 +1,19 @@
+# Infraestrutura local em funcionamento (Docker): PostgreSQL e Redis
+# Coletado em 2026-11-24 20:01 — portas do host: PostgreSQL 5434, Redis 6380
+
+$ docker ps (contêineres do projeto)
+NAMES                     IMAGE                STATUS                    PORTS
+ponto-da-terra-postgres   postgres:16-alpine   Up 20 minutes (healthy)   0.0.0.0:5434->5432/tcp, [::]:5434->5432/tcp
+ponto-da-terra-redis      redis:7-alpine       Up 2 days (healthy)       0.0.0.0:6380->6379/tcp, [::]:6380->6379/tcp
+
+$ saúde (healthcheck) e memória compartilhada do PostgreSQL
+/ponto-da-terra-postgres: health=healthy shm_size=268435456
+/ponto-da-terra-redis: health=healthy shm_size=67108864
+
+$ versão do PostgreSQL
+version
+PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+
+$ Redis: PING e versão
+PONG
+redis_version:7.4.12

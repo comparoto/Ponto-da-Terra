@@ -1,0 +1,82 @@
+{
+  "metodologia": {
+    "duracaoPorCelulaS": 30,
+    "pedidos": 300000,
+    "retentativasPorConexaoInterrompida": 0
+  },
+  "ambiente": {
+    "dataExecucao": "2026-11-24T22:57:13.697Z",
+    "sistema": "win32 10.0.26200",
+    "processador": "13th Gen Intel(R) Core(TM) i7-1355U (12 threads)",
+    "memoriaTotalGB": 15.7,
+    "node": "v24.22.0",
+    "docker": "CPUs=12 memoria=8165019648 servidor=29.8.2",
+    "postgres": "PostgreSQL 16.15",
+    "ajustesPostgres": {
+      "max_connections": "100",
+      "max_parallel_workers_per_gather": "2",
+      "max_worker_processes": "8",
+      "shared_buffers": "16384",
+      "work_mem": "4096"
+    },
+    "poolDeConexoesPorInstancia": 10,
+    "banco": "pontodaterra_bench",
+    "redis": "Redis 7 (Docker), db 2"
+  },
+  "cargaComVariosClientes": [
+    {
+      "modo": "sequencial",
+      "clientes": 1,
+      "relatorios": 23,
+      "erros": 0,
+      "relatoriosPorSegundo": 0.75,
+      "latenciaMedianaMs": 1316.1,
+      "latenciaP95Ms": 1409.3
+    },
+    {
+      "modo": "concorrente",
+      "clientes": 1,
+      "relatorios": 33,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.08,
+      "latenciaMedianaMs": 896.1,
+      "latenciaP95Ms": 1074.8
+    },
+    {
+      "modo": "sequencial",
+      "clientes": 4,
+      "relatorios": 43,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.34,
+      "latenciaMedianaMs": 2890.8,
+      "latenciaP95Ms": 3517.2
+    },
+    {
+      "modo": "concorrente",
+      "clientes": 4,
+      "relatorios": 36,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.1,
+      "latenciaMedianaMs": 2656.4,
+      "latenciaP95Ms": 6622.8
+    },
+    {
+      "modo": "sequencial",
+      "clientes": 10,
+      "relatorios": 30,
+      "erros": 0,
+      "relatoriosPorSegundo": 0.88,
+      "latenciaMedianaMs": 9351.3,
+      "latenciaP95Ms": 16422.7
+    },
+    {
+      "modo": "concorrente",
+      "clientes": 10,
+      "relatorios": 39,
+      "erros": 0,
+      "relatoriosPorSegundo": 1.14,
+      "latenciaMedianaMs": 6975.6,
+      "latenciaP95Ms": 13797.8
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+Banco 300.000 pedidos · período de 12 meses · pool de 10 conexões
+
+MODO SEQUENCIAL: cada consulta só começa quando a anterior termina
+consulta          início      fim  duração  linha do tempo
+receita              0ms    242ms    242ms  █████████
+concluidos         242ms    262ms     19ms           █
+novosArtesaos      262ms    264ms      2ms            █
+porArtesao         264ms    430ms    166ms            ██████
+maisVendidas       430ms   1387ms    956ms                  ███████████████████████████████████
+porStatus         1387ms   1451ms     64ms                                                    ██
+serie             1451ms   1650ms    199ms                                                       ███████
+termos            1650ms   1653ms      3ms                                                              █
+tempo total: 1657 ms · pico de consultas ao mesmo tempo: 1
+
+MODO CONCORRENTE (padrão da API): as 8 consultas são disparadas ao mesmo tempo
+consulta          início      fim  duração  linha do tempo
+receita              0ms    494ms    494ms  █████████████████████
+concluidos           0ms     41ms     40ms  ██
+novosArtesaos        0ms      5ms      4ms  █
+porArtesao           0ms    235ms    235ms  ██████████
+maisVendidas         0ms   1388ms   1388ms  ████████████████████████████████████████████████████████████
+porStatus            0ms     87ms     86ms  ████
+serie                0ms    464ms    464ms  ████████████████████
+termos               0ms      4ms      4ms  █
+tempo total: 1394 ms · pico de consultas ao mesmo tempo: 8
+
+speedup desta execução: 1.19x · redução do tempo: 15.9%

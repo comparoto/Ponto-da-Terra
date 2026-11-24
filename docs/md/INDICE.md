@@ -19,6 +19,13 @@
 | [RELATORIO_TESTES.md](RELATORIO_TESTES.md) | Histórico dos testes durante o desenvolvimento: defeitos encontrados e corrigidos, segurança, carga e desempenho do cache |
 | [EVIDENCIAS_AVALIACAO_2.md](EVIDENCIAS_AVALIACAO_2.md) | Evidências da Avaliação 2: banco de dados, recomendação, assíncrono e cache. As capturas ficam em [`evidencias/`](../evidencias) |
 
+## Computação concorrente, paralela e distribuída (FCCPD)
+
+| Documento | O que traz |
+|---|---|
+| [RELATORIO_FCCPD_U2.md](RELATORIO_FCCPD_U2.md) | Relatório da Unidade 2: diagrama da arquitetura distribuída, justificativas, paralelismo nos relatórios (sequencial × concorrente), benchmark e interpretação. [PDF](../fccpd/Relatorio-FCCPD-Unidade-2.pdf) |
+| [EVIDENCIAS_FCCPD_U2.md](EVIDENCIAS_FCCPD_U2.md) | Índice das evidências de comunicação entre os componentes, do paralelismo e dos testes. Arquivos em [`docs/fccpd/`](../fccpd) |
+
 ## Qualidade de código e uso de IA
 
 | Documento | O que traz |

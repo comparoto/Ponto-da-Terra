@@ -308,6 +308,7 @@ type ApiResult<T> = {
   - [Refatoração de code smells: moderação de contas](docs/md/REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](docs/md/REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](docs/md/ANALISE_CODE_SMELLS.md)
   - ADR individual: disponível na branch `adr-paulo-marrocos`
 - **Fundamentos de Computação Concorrente, Paralela e Distribuída:**
+  - **Unidade 2:** [Relatório de arquitetura distribuída, paralelismo e desempenho](docs/md/RELATORIO_FCCPD_U2.md) ([PDF](docs/fccpd/Relatorio-FCCPD-Unidade-2.pdf)) · [Evidências](docs/md/EVIDENCIAS_FCCPD_U2.md) · [Diagrama da arquitetura](docs/fccpd/arquitetura.mmd) · benchmark: `cd backend && npm run benchmark:paralelismo`
   - Reserva atômica de estoque (`UPDATE` condicional e `CHECK`), fila de eventos (BullMQ ou QStash, com Transactional Outbox), worker idempotente (`backend/src/worker.ts`) e teste de carga com k6 (`npm run test:carga`).
 - **Gestão e rastreamento:**
   - [Issues](https://github.com/comparoto/Ponto-da-Terra/issues) · [Backlog (Trello)](https://trello.com/b/KZIZUnYE/ponto-da-terra)

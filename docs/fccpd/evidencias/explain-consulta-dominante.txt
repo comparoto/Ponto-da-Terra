@@ -1,0 +1,33 @@
+# Plano de execução da consulta dominante do dashboard (maisVendidas), no banco do benchmark (300 mil pedidos)
+# O PostgreSQL já a executa em paralelo por conta própria (Parallel Seq Scan / Parallel Hash Join, 3 processos).
+# Ajustes: max_parallel_workers_per_gather = 2 (padrão). Gerado em 2026-11-24 com EXPLAIN (ANALYZE).
+
+Limit  (cost=110258.33..110258.34 rows=5 width=57) (actual rows=5 loops=1)
+  ->  Sort  (cost=110258.33..110483.33 rows=90000 width=57) (actual rows=5 loops=1)
+        Sort Key: (sum(i.quantidade)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        ->  Finalize GroupAggregate  (cost=81469.05..108763.46 rows=90000 width=57) (actual rows=4000 loops=1)
+              Group Key: i."produtoId", i."tituloProduto"
+              ->  Gather Merge  (cost=81469.05..106513.46 rows=180000 width=57) (actual rows=12000 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    ->  Partial GroupAggregate  (cost=80469.02..84736.97 rows=90000 width=57) (actual rows=4000 loops=3)
+                          Group Key: i."produtoId", i."tituloProduto"
+                          ->  Sort  (cost=80469.02..81311.01 rows=336795 width=53) (actual rows=269645 loops=3)
+                                Sort Key: i."produtoId", i."tituloProduto"
+                                Sort Method: external merge  Disk: 17088kB
+                                Worker 0:  Sort Method: external merge  Disk: 17504kB
+                                Worker 1:  Sort Method: external merge  Disk: 17648kB
+                                ->  Parallel Hash Join  (cost=11798.31..38033.70 rows=336795 width=53) (actual rows=269645 loops=3)
+                                      Hash Cond: (i."pedidoId" = "Pedido".id)
+                                      ->  Parallel Seq Scan on "ItemPedido" i  (cost=0.00..25251.00 rows=375000 width=86) (actual rows=300000 loops=3)
+                                      ->  Parallel Hash  (cost=10395.00..10395.00 rows=112265 width=33) (actual rows=89882 loops=3)
+                                            Buckets: 524288  Batches: 1  Memory Usage: 23168kB
+                                            ->  Parallel Seq Scan on "Pedido"  (cost=0.00..10395.00 rows=112265 width=33) (actual rows=89882 loops=3)
+                                                  Filter: (("dataPedido" >= '2025-12-01 00:00:00'::timestamp without time zone) AND ("dataPedido" <= '2026-12-01 00:00:00'::timestamp without time zone) AND (status = ANY ('{PAGO,EM_PRODUCAO,DESPACHADO,ENTREGUE}'::"StatusPedido"[])))
+                                                  Rows Removed by Filter: 10118
+Planning Time: 3.875 ms
+JIT:
+  Functions: 55
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+Execution Time: 854.577 ms
