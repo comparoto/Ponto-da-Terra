@@ -9,7 +9,11 @@ import { env, naVercel } from './env';
  * (PgBouncer em modo transação) — o antigo parâmetro `pgbouncer=true` deixou de ser necessário.
  * Nas funções serverless da Vercel, cada instância abre poucas conexões: quem multiplexa é o pooler.
  */
-export const criarPrisma = (connectionString: string, maxConexoes = naVercel ? 3 : 10) =>
+// Tamanho do pool: 10 conexões por instância no ambiente local e 3 na Vercel. `DB_POOL_MAX` só existe para os
+// experimentos de benchmark (docs/md/RELATORIO_FCCPD_U2.md); sem ela, o comportamento é exatamente o de antes.
+const poolPadrao = Number(process.env.DB_POOL_MAX) || (naVercel ? 3 : 10);
+
+export const criarPrisma = (connectionString: string, maxConexoes = poolPadrao) =>
   new PrismaClient({ adapter: new PrismaPg({ connectionString, max: maxConexoes }) });
 
 export const prisma = criarPrisma(env.DATABASE_URL);
