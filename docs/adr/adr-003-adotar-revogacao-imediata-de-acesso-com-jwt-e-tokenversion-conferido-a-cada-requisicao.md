@@ -1,4 +1,4 @@
-# ADR: Adotar revogação imediata de acesso com JWT e tokenVersion conferido a cada requisição
+# ADR-003: Adotar revogação imediata de acesso com JWT e tokenVersion conferido a cada requisição
 
 - **Status:** Aceita
 - **Data:** 2026-11-22
