@@ -1,5 +1,9 @@
 # Desafio: revisão de código, code smells e refatoração
 
+Aluno(a): Paulo Marrocos  
+Módulo analisado: backend/src/modules/admin/usuarios.routes.ts (código movido para backend/src/modules/admin/usuarios.service.ts)  
+Método: suspender e inativar (HU16), unificados na função restringirConta
+
 **Parte analisada:** moderação de contas pelo administrador (HU16: suspender, inativar e reativar), em `backend/src/modules/admin/`.
 **Decisão:** refatorar.
 **Técnicas:** *Extract Function* (com parametrização), *Move Function* para uma camada de serviço e substituição de mensagens duplicadas por uma tabela.
