@@ -5,7 +5,7 @@ ciclo();
 /**
  * Testes de CARACTERIZAÇÃO da moderação de contas (HU16: suspender, inativar, reativar).
  *
- * Foram escritos ANTES da refatoração do módulo (ver docs/md/REFATORACAO_MODERACAO_CONTAS.md) para fixar o
+ * Foram escritos ANTES da refatoração do módulo (ver docs/code_smells/REFATORACAO_MODERACAO_CONTAS.md) para fixar o
  * comportamento observável: status HTTP, mensagens, campos gravados e efeito nas sessões (tokenVersion).
  * Eles passam no código antigo e devem continuar passando, sem alteração, depois da refatoração.
  */
