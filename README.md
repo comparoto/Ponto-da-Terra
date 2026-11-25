@@ -459,7 +459,7 @@ type ApiResult<T> = {
   - [Relatório de testes · 2ª rodada](docs/md/RELATORIO_2A_RODADA_TESTES.md) · [1ª rodada (histórico de defeitos)](docs/md/RELATORIO_TESTES.md)
   - [Evidências da Avaliação 2](docs/md/EVIDENCIAS_AVALIACAO_2.md)
   - [Uso de IA na 2ª unidade](docs/md/USO_DE_IA_2A_UNIDADE.md)
-  - [Refatoração de code smells: moderação de contas](docs/md/REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](docs/md/REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](docs/md/ANALISE_CODE_SMELLS.md)
+  - [Refatoração de code smells: moderação de contas](docs/code_smells/REFATORACAO_MODERACAO_CONTAS.md) · [Refatoração do checkout](docs/md/REFATORACAO_CHECKOUT_LONG_METHOD.md) · [Análise de code smells](docs/md/ANALISE_CODE_SMELLS.md)
   - ADR individual: disponível na branch `adr-paulo-marrocos`
 - **Fundamentos de Computação Concorrente, Paralela e Distribuída:**
   - **Unidade 2:** [Relatório de arquitetura distribuída, paralelismo e desempenho](docs/md/RELATORIO_FCCPD_U2.md) ([PDF](docs/fccpd/Relatorio-FCCPD-Unidade-2.pdf)) · [Evidências](docs/md/EVIDENCIAS_FCCPD_U2.md) · [Diagrama da arquitetura](docs/fccpd/arquitetura.mmd) · benchmark: `cd backend && npm run benchmark:paralelismo`

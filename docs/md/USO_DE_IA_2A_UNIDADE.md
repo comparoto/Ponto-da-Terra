@@ -14,7 +14,7 @@ Este documento declara como a IA generativa foi usada no desenvolvimento da 2ª 
 |---|---|---|
 | Código do backend e da integração | Escreveu e alterou código a partir de pedidos do autor: API Express, banco com Prisma, fila de eventos, e-mails, redefinição de senha, otimização de imagens, integração das telas com a API | `backend/`, `src/` |
 | Testes | Escreveu os testes de API (Jest + Supertest), o teste de contrato, o teste de carga (k6) e os roteiros de navegador (Playwright) | `backend/tests/`, `e2e/` |
-| Refatoração de code smells | Apontou os smells em `usuarios.routes.ts` e propôs a extração do `usuarios.service.ts`. Os testes de caracterização foram escritos **antes** de mexer no código | [REFATORACAO_MODERACAO_CONTAS.md](REFATORACAO_MODERACAO_CONTAS.md) |
+| Refatoração de code smells | Apontou os smells em `usuarios.routes.ts` e propôs a extração do `usuarios.service.ts`. Os testes de caracterização foram escritos **antes** de mexer no código | [REFATORACAO_MODERACAO_CONTAS.md](../code_smells/REFATORACAO_MODERACAO_CONTAS.md) |
 | ADR | Ajudou a redigir o ADR de revogação imediata de acesso (JWT + `tokenVersion`) e escreveu o teste do cenário e o script de medição de custo. O ADR está na branch `adr-paulo-marrocos` | branch `adr-paulo-marrocos` |
 | Relatório da 2ª rodada de testes | Executou os 16 casos, coletou os resultados e redigiu o relatório | [RELATORIO_2A_RODADA_TESTES.md](RELATORIO_2A_RODADA_TESTES.md) |
 | Documentação | Redigiu e atualizou README, documentos de requisitos, deploy e este diagrama de classes (gerado do schema por um script) | raiz e `docs/` |
