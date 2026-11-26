@@ -17,6 +17,20 @@ Redes aplicadas ao projeto: **topologia** pelo fluxo do negócio, **requisitos d
 
 Marketplace de artesanato: site Next.js (Vercel) e API REST Express 5 (função serverless na Vercel), com PostgreSQL (Neon), Redis (Upstash), fila (QStash), fotos (Vercel Blob) e e-mail por SMTP. Os usuários são compradores, artesãos (muitas vezes em regiões com conexão limitada) e o administrador.
 
+### 1.1 Onde cada número foi medido
+
+Os números deste relatório vêm de ambientes diferentes. Para não misturar, cada medição está identificada:
+
+| Medição | Ambiente | Data | Onde está |
+|---|---|---|---|
+| Benchmark de rede **local** | Notebook, API direto no Node, banco de desenvolvimento | 25/11/2026 | Seção 7, `benchmark-rede-local.json` |
+| Benchmark de rede em **contêiner** | Notebook, Docker (API, banco e Redis em contêineres) | 25/11/2026 | Seção 7, `benchmark-rede-conteiner.json` |
+| Benchmark de rede em **produção** | Notebook em rede doméstica → API na Vercel, pela internet | 25/11/2026 | Seção 7, `benchmark-rede-producao.json` |
+| Decomposição dos enlaces (DNS, TCP, TLS, espera) | Notebook → API na Vercel | 25/11/2026 | Seção 2.1, `benchmark-enlaces-producao.json` |
+| **RTT do banco e do Redis, tempo da consulta ao painel** | **Dentro da função na Vercel (produção)**, medido pelo próprio painel | **26/11/2026** | Seção 6, `monitoramento-producao.json` |
+| Captura do painel e verificação de acessos | **Produção** (e, antes do deploy, desenvolvimento local) | 26/11/2026 (produção) | Seção 6, `docs/so/evidencias/` |
+| Threads e estruturas de dados (AED) | Notebook | 25/11/2026 | Relatórios de AED e da Unidade 1 |
+
 ## 2. Topologia
 
 A topologia segue o **fluxo do negócio** (coleta → curadoria → vitrine → pedido → pagamento → entrega): cada etapa é ligada ao componente de rede que a atende e cada ligação mostra o **protocolo e o motivo de existir**.
@@ -52,9 +66,9 @@ Para separar o que é rede de acesso do que é caminho interno do provedor, `npm
 | 2 | Internet → ponto de presença em São Paulo (`gru1`) | Internet pública das operadoras | **Conexão TCP: 18,7 a 19,7 ms** (≈ 1 RTT até o ponto de presença) | Perda de pacotes no trecho |
 | 3 | Handshake TLS 1.3 com o ponto de presença | Criptografia do canal | **116 a 117 ms** | Causa. TLS 1.3 gasta 1 RTT (≈ 19 ms aqui), então 117 ms é mais do que o esperado; **não sei explicar** (pode ser o cliente Node no Windows ou a borda). Em HTTP/2 com a conexão reaproveitada, paga-se uma vez por sessão. |
 | 4 | Ponto de presença `gru1` → função em `iad1` → de volta | Backbone do provedor | **Espera pelo servidor: 207 a 212 ms**. Descontado 1 RTT de acesso (≈ 19 ms), sobram **~190 ms** de caminho interno | O trecho isolado. É um resultado por subtração. |
-| 5 | Função ↔ PostgreSQL, Redis, QStash, Blob, SMTP | TCP com TLS (RESP, SQL), HTTPS, SMTP | Em produção, nada. O painel (Seção 6) passa a medir o RTT ao banco e ao Redis depois do deploy. | Todos os RTTs em produção |
+| 5 | Função ↔ PostgreSQL e Redis | TCP com TLS (SQL, RESP) | **Medido pelo painel em produção** (15 leituras em 26/11/2026, 5 sondas cada, de dentro da função): **PostgreSQL 2,7 ms** de RTT mediano (as medianas por leitura vão de 2,4 a 2,9 ms), jitter mediano 0,34 ms; **Redis 1,2 ms**, jitter mediano 0,23 ms; perda 0% | QStash, Blob e SMTP (sem sonda). A região exata do Neon, que não consultei no painel do provedor. |
 
-**Leitura.** (a) O **acesso do usuário não é o problema**: 19 ms até o ponto de presença. (b) O tempo de espera é praticamente **igual em `/health` e `/frete`** (212 contra 207 ms), embora `/health` consulte o banco e o Redis e `/frete` não; logo, o banco, **por si só**, não explica esse tempo. (c) O dado é **compatível** com função e banco em outra região (o cabeçalho `X-Vercel-Id: gru1::iad1::…` indica a função em Virgínia), o que **não foi isolado**. (d) Uma conexão nova custa ~350 ms no total; por isso o reaproveitamento de conexões (HTTP/2 e `keep-alive`) importa: a vitrine medida na Seção 7 já usa conexões reaproveitadas e leva 434 ms de mediana.
+**Leitura.** (a) O **acesso do usuário não é o problema**: 19 ms até o ponto de presença. (b) O tempo de espera é praticamente **igual em `/health` e `/frete`** (212 contra 207 ms), embora `/health` consulte o banco e o Redis e `/frete` não; logo, o banco, **por si só**, não explica esse tempo. (c) O dado é **compatível** com a função em outra região (o cabeçalho `X-Vercel-Id: gru1::iad1::…` indica Virgínia), o que **não foi isolado**; mas o **banco e o Redis estão a 1 a 3 ms da função** (linha 5), ou seja, **colados a ela**. Logo, a função **e** os dados estão longe de São Paulo, e os ~190 ms são o trecho entre o ponto de presença e a função, não o caminho até o banco. (d) Uma conexão nova custa ~350 ms no total; por isso o reaproveitamento de conexões (HTTP/2 e `keep-alive`) importa: a vitrine medida na Seção 7 já usa conexões reaproveitadas e leva 434 ms de mediana.
 
 ### 2.2 Fluxo de telemetria
 
@@ -87,7 +101,7 @@ Cada requisito de rede abaixo vem de um requisito funcional ou regra de negócio
 | RR10 | **Ajuste de estoque reenviável sem efeito colateral** (telemetria de campo em enlace instável) | Enlace de acesso do ateliê (premissa, Seção 2.1) e a rota `PATCH /produtos/:id/estoque` | A rota define a quantidade absoluta; repetir N vezes dá o mesmo resultado. O cliente pode reenviar com *backoff* (1, 2, 4, 8 s…) até receber 200, sem chave de idempotência | Por desenho da rota; o reenvio automático no cliente é proposta | Parcial (servidor pronto, cliente não) |
 | RR11 | **Defasagem do estoque na vitrine ≤ 60 s**, com exatidão garantida no momento da compra | TTL do cache da vitrine (60 s, [ADR-001](../adr/adr-001-adotar-cache-no-redis-com-fallback-para-o-postgresql-na-camada-de-servicos-da-vitrine.md)) e reserva atômica no servidor ([ADR-002](../adr/adr-002-centralizar-a-reserva-de-estoque-no-servidor-com-transacao-atomica.md), TC14) | A vitrine pode mostrar a quantidade com até 60 s de atraso; o carrinho e o checkout conferem o saldo real no banco, então o atraso nunca causa venda acima do estoque | Por desenho; testado pelo TC14 e pelo teste de concorrência do checkout | Sim |
 | RR12 | **Banda de telemetria de estoque e eventos desprezível** | Cenários da [Unidade 1](RELATORIO_SO_U1.md#4-cenários-de-carga-e-orçamento) | ~1 KB por evento (estimativa). No cenário alto, 600 mil eventos por mês = 600.000 ÷ (30 × 86.400 s) = **0,23 evento/s ≈ 0,23 KB/s**. Não exige enlace dedicado | Não medido; conta a partir de premissas | Sim (conta) |
-| RR13 | **O painel de monitoramento não pode pesar na API** | O painel consulta a cada 10 s | Cada consulta faz 5 idas e voltas ao banco, 5 ao Redis e 2 consultas de fila: ~12 operações. A 0,1 consulta/s, é pequena frente a 25 req/s (moderado) ou 300 req/s (alto), mas pode chegar a ~5% das requisições no cenário baixo (2 req/s), **só enquanto a página estiver aberta** | Não medido o custo por consulta em produção | Aceitável, a medir |
+| RR13 | **O painel de monitoramento não pode pesar na API** | O painel consulta a cada 10 s | Cada consulta faz 5 idas e voltas ao banco, 5 ao Redis e 2 consultas de fila: ~12 operações. A 0,1 consulta/s, é pequena frente a 25 req/s (moderado) ou 300 req/s (alto), mas pode chegar a ~5% das requisições no cenário baixo (2 req/s), **só enquanto a página estiver aberta** | **Em produção, a consulta leva 230 ms de mediana (p95 384 ms)** em 15 leituras, contra ~197 ms de um `/frete`: a diferença, ~33 ms, é da ordem do custo das ~12 operações mais a autenticação | Aceitável |
 
 ## 4. Protocolos e APIs
 
@@ -133,9 +147,31 @@ Cada requisito de rede abaixo vem de um requisito funcional ou regra de negócio
 | Laço de eventos, memória, fila de eventos pendentes | `monitorEventLoopDelay`, `process.memoryUsage`, contagem da tabela de outbox |
 | Sua conexão com a API | O **navegador do administrador** faz 10 chamadas a `/health` e calcula RTT, jitter e perda: a rede real entre quem olha e a API |
 
-![Painel de monitoramento](../so/evidencias/monitoramento-painel.png)
+### Em produção (Vercel), 26/11/2026
 
-*Captura da página `/admin/monitoramento` com a API ligada a um banco populado, após tráfego real de leitura. O ambiente de desenvolvimento do site infla alguns tempos (por exemplo `/auth/login` com 1 s, que é o custo do bcrypt).*
+![Painel de monitoramento em produção](../so/evidencias/monitoramento-painel-producao.png)
+
+*Captura de `ponto-da-terra-eight.vercel.app/admin/monitoramento`, logado como administrador, depois de tráfego real de leitura. Os números são da instância da função que respondeu.*
+
+Verificado **em produção** por [`e2e/so-evidencias-monitoramento.cjs`](../../e2e/so-evidencias-monitoramento.cjs) (8 de 8; resultado em [`monitoramento-resultado-producao.json`](../so/evidencias/monitoramento-resultado-producao.json)): sem token 401, comprador 403, artesão 403, comprador redirecionado, administrador vê o painel, a sondagem do navegador funciona e o celular não tem rolagem horizontal ([captura no celular](../so/evidencias/monitoramento-painel-celular-producao.png)).
+
+Coleta de 15 leituras (`npm run monitoramento:coletar`, 3 s entre elas; [`monitoramento-producao.json`](../so/resultados/monitoramento-producao.json)):
+
+| Medida (vista de dentro da função na Vercel) | Resultado |
+|---|---|
+| PostgreSQL: RTT mediano | **2,7 ms** (medianas por leitura de 2,4 a 2,9 ms), jitter mediano 0,34 ms, perda 0% |
+| Redis: RTT mediano | **1,2 ms** (1,1 a 1,5 ms), jitter mediano 0,23 ms, perda 0% |
+| Tempo de resposta da consulta ao painel | **230 ms** de mediana, p95 384 ms |
+| Fila de eventos pendentes | 0 |
+| Instâncias distintas que responderam | 1 (as 15 leituras caíram na mesma instância) |
+
+**Defeito conhecido do painel em serverless: o cartão "Laço de eventos".** Na captura de produção ele mostra **23.270 ms** e o aviso "processo saturado". **Isso não é saturação.** Em função serverless o processo fica **congelado entre as requisições**, e o medidor de atraso do laço de eventos conta o tempo congelado como atraso. Evidências: na coleta, com 3 s de pausa entre as leituras, o máximo foi 3.202 ms, que coincide com a pausa; nas demais leituras o p99 ficou em ~20 ms; o valor da captura é compatível com o intervalo ocioso da instância (explicação provável, não testada isoladamente). Esse cartão só é confiável em **servidor tradicional ou contêiner**; **na Vercel, ignore-o**. A correção seria não exibi-lo (ou mostrá-lo como "n/d") quando o ambiente for serverless; **não foi feita** nesta entrega.
+
+### Em desenvolvimento (local)
+
+![Painel de monitoramento, desenvolvimento local](../so/evidencias/monitoramento-painel.png)
+
+*Captura local (antes do deploy) da página `/admin/monitoramento` com a API ligada a um banco populado, após tráfego real de leitura. O ambiente de desenvolvimento do site infla alguns tempos (por exemplo `/auth/login` com 1 s, que é o custo do bcrypt).*
 
 Versão em celular (390 px, sem rolagem horizontal): [`monitoramento-painel-celular.png`](../so/evidencias/monitoramento-painel-celular.png).
 
@@ -147,6 +183,7 @@ Versão em celular (390 px, sem rolagem horizontal): [`monitoramento-painel-celu
 
 ### Limites conhecidos (importante)
 
+- **Visto na prática em produção:** as 15 leituras da coleta caíram em uma única instância, e a captura mostra 25 requisições medidas em ~8 min de vida da instância. É a limitação descrita a seguir, observada de verdade. O efeito mais enganoso é o cartão do laço de eventos (ver acima).
 - As **amostras de requisição ficam na memória da instância**. Em servidor tradicional ou contêiner há uma só instância, e o painel é completo. Em **função serverless (Vercel)**, cada instância tem as suas amostras e elas zeram quando a instância é reciclada: o painel mostra só o que a instância que respondeu viu, e o cartão "Instância" informa o ambiente e o tempo de vida. As **sondas ao banco e ao Redis** e a **fila de eventos** são consultadas na hora e valem em qualquer ambiente.
 - Para ter histórico entre instâncias seria preciso gravar as amostras em um serviço compartilhado (Redis ou banco), o que não foi feito para não alterar o produto além do pedido. É a evolução natural no cenário alto.
 - A latência medida é a **do servidor** (do recebimento ao fim da resposta); a do navegador inclui a rede e é medida pelo bloco "Sua conexão com a API".
@@ -202,7 +239,7 @@ Dados completos: `docs/so/resultados/benchmark-rede-{local,conteiner,producao}.j
 
 ## 8. Interpretação e gargalos
 
-1. **O custo dominante em produção está no caminho interno do provedor, não no acesso do usuário.** O `/frete` leva 1,2 ms de processamento local e **197 ms** em produção. A decomposição por conexão nova (Seção 2.1) mostra que o TCP até o ponto de presença de São Paulo leva só **~19 ms** e que a **espera pelo servidor é de 207 a 212 ms**, **igual em `/health` e `/frete`**, embora só o primeiro consulte banco e Redis. Sobram ~190 ms entre o ponto de presença e a função. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa em Virgínia, o que é **compatível** com esse valor, mas o trecho não foi isolado; a região do banco Neon também não foi verificada. A hipótese foi **reforçada, não provada**; o teste final está na Seção 9.
+1. **O custo dominante em produção está no caminho interno do provedor, não no acesso do usuário.** O `/frete` leva 1,2 ms de processamento local e **197 ms** em produção. A decomposição por conexão nova (Seção 2.1) mostra que o TCP até o ponto de presença de São Paulo leva só **~19 ms** e que a **espera pelo servidor é de 207 a 212 ms**, **igual em `/health` e `/frete`**. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica a função em Virgínia, e o painel em produção mediu o **banco a 2,7 ms e o Redis a 1,2 ms da função**: os dados estão colados a ela, então função e banco estão ambos longe de São Paulo e os ~190 ms são o trecho entre o ponto de presença e a função. A hipótese está agora **bem sustentada** (cabeçalho, subtração e RTTs), mas o trecho **não foi isolado** e a região do Neon não foi conferida no painel do provedor; o teste final está na Seção 9.
 2. **O requisito do frete passa, mas com pouca folga:** p95 205 ms contra 300 ms (RR1). Qualquer acréscimo (banco em outra região, cache frio) consome essa folga. Em local e contêiner a latência é de 3 a 6 ms, ou seja, **o software está longe de ser o limite**.
 3. **A vitrine é o ponto fraco:** p50 434 ms, p99 925 ms e **jitter 123 ms**, bem acima dos ~5 a 13 ms do `/frete` e `/categorias` no mesmo ambiente. A diferença de custo para esses dois endpoints é a **consulta ao banco** (e ao cache): a vitrine paga a ida e volta até o banco **além** da viagem até a função. O jitter alto indica variação entre acerto de cache (Redis, TTL 60 s) e falha, e talvez compute do Neon dormindo no plano gratuito (hipótese, não medida). **RR8 não atende** (123 ms > 100 ms).
 4. **A vazão em produção foi limitada pela latência por requisição, não por saturação:** com 1 conexão, 2,4 req/s (≈ 1 s ÷ 0,43 s); com 5, 10,6; com 10, 23,9: cresce quase proporcionalmente às conexões, sinal de que o limite ainda não apareceu. **Não medimos o teto da produção** (decisão deliberada de limitar a carga no ambiente de demonstração). O pico de 1.058 ms no p95 com 5 conexões é compatível com a Vercel criando instâncias novas sob concorrência (partidas a frio), mas não foi investigado.
@@ -255,6 +292,7 @@ Vercel Hobby, site e API em projetos separados, deploy manual por linha de coman
 | Região do Neon incompatível com o plano gratuito | Baixa | Confirmar a disponibilidade da região antes (a documentação do Neon lista `aws-sa-east-1`) |
 | Custo da fase 3 acima do estimado | Alta (a conta está incompleta) | Cotar armazenamento do RDS, balanceador, transferência e logs antes de decidir |
 | Painel de monitoramento sem histórico entre instâncias | Certa (limite conhecido) | Persistir as amostras em Redis na fase 2 ou 3 |
+| Mover só a função para `gru1` e deixar o banco onde está | Média | **Mover função e banco juntos** (Fase 2). Inferência: hoje o banco responde em 2,7 ms porque está junto da função; separar os dois passaria a custar, em cada consulta, uma ida e volta entre regiões (da ordem dos ~190 ms medidos entre São Paulo e a função), e uma requisição com várias consultas pioraria muito |
 | Migração feita sem medir antes e depois | Baixa | O critério de aceitação de cada fase é uma medição repetível (`benchmark:rede`) |
 
 ## 10. Limitações
@@ -262,7 +300,9 @@ Vercel Hobby, site e API em projetos separados, deploy manual por linha de coman
 - **Uma máquina cliente** (notebook, rede doméstica) mediu os três ambientes, em **um único dia e horário**. A latência de internet varia ao longo do dia; as conclusões de ordem de grandeza (200 ms contra 5 ms) são robustas, os decimais não.
 - **Produção medida com carga baixa por escolha** (máx. 10 conexões, 5 s). O teto não foi medido.
 - **Cliente HTTP/1.1** (o `fetch` do Node): o navegador real usaria HTTP/2 (negociado nos dois hosts), o que reduz o custo de várias requisições, então a vazão do navegador pode ser melhor que a medida.
-- A região do banco Neon e a função fixa em `iad1` são inferências a verificar nos painéis dos provedores.
+- A função em `iad1` vem do cabeçalho `X-Vercel-Id`; que o banco está junto dela vem do RTT de 2,7 ms medido pelo painel. **Não consultei os painéis da Vercel e do Neon** para confirmar as regiões.
+- Os dados do painel em produção são de **uma única instância** (15 leituras, em 26/11/2026); os benchmarks de rede e de enlaces são de 25/11/2026.
+- O cartão "Laço de eventos" do painel **induz a erro em serverless** (Seção 6); a correção não foi feita.
 - O RR2 (webhook < 2 s) **não foi medido em produção**.
 - A **decomposição dos enlaces** vem de um único cliente e de 30 conexões por caminho; o handshake TLS de ~117 ms **não foi explicado**; a banda de subida do artesão (1 Mbps) é premissa; o tamanho de ~1 KB por evento de telemetria é estimativa.
 - O **reenvio com *backoff*** e o envio em lote de ajustes de estoque são **proposta**, não código.

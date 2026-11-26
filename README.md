@@ -523,7 +523,7 @@ Protocolos justificados no [relatório](docs/md/RELATORIO_SO_U2.md#4-protocolos-
 
 Perda de **0%** em todas as baterias (amostras pequenas: o resultado é "sem perda observável"). Vazão da vitrine: 568 req/s (Node direto), 193 req/s (contêiner) e 23,9 req/s em produção com apenas 10 conexões (limitado de propósito).
 
-**Interpretação:** o `/frete` leva 1,2 ms de processamento e 197 ms em produção. O acesso do usuário não é o problema (TCP de ~19 ms até São Paulo); a espera de ~207 ms é igual com e sem banco. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa nos EUA, o que é **compatível**, mas não isolado: a hipótese foi **reforçada, não provada**, e o plano de migração a testa. O ponto fraco é a vitrine (jitter e p99 de 925 ms).
+**Interpretação:** o `/frete` leva 1,2 ms de processamento e 197 ms em produção. O acesso do usuário não é o problema (TCP de ~19 ms até São Paulo); a espera de ~207 ms é igual com e sem banco. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa nos EUA, o que é **compatível**, mas não isolado: o painel em produção mediu o banco a **2,7 ms** e o Redis a **1,2 ms** da função (colados a ela). A hipótese está **bem sustentada, mas não isolada**, e o plano de migração a testa; ele exige mover função e banco juntos. O ponto fraco é a vitrine (jitter e p99 de 925 ms).
 
 ![Latência p95](docs/so/resultados/grafico-6-latencia-p95.png)
 
@@ -535,10 +535,12 @@ Perda de **0%** em todas as baterias (amostras pequenas: o resultado é "sem per
 Somente o **administrador**: link *Monitoramento* no painel administrativo → `/admin/monitoramento`, dados de `GET /api/admin/monitoramento` (Swagger em `/api/docs`).
 
 - **Medido de verdade:** vazão, latência p50/p95/p99, jitter, falhas e conexões interrompidas (middleware que mede cada requisição em um buffer circular), RTT/jitter/perda de sondas ao PostgreSQL e ao Redis, atraso do laço de eventos, memória, fila de eventos pendentes e, no navegador, RTT/jitter/perda até a API.
-- **Acesso:** sem token → 401; comprador e artesão → 403; a tela redireciona quem não é administrador. Verificado por script de navegador (8/8) e 14 testes automatizados.
+- **Acesso:** sem token → 401; comprador e artesão → 403; a tela redireciona quem não é administrador. Verificado por script de navegador (8/8, **em desenvolvimento e em produção**) e 14 testes automatizados.
 - **Limite:** as amostras ficam na memória da instância; em serverless cada instância tem as suas. As sondas ao banco e ao Redis valem em qualquer ambiente.
 
-![Painel de monitoramento](docs/so/evidencias/monitoramento-painel.png)
+![Painel de monitoramento em produção](docs/so/evidencias/monitoramento-painel-producao.png)
+
+*Captura da **produção** (26/11/2026). Medido de dentro da função na Vercel: **banco a 2,7 ms e Redis a 1,2 ms** (15 leituras, perda 0%), e a consulta ao painel leva ~230 ms. O cartão "Laço de eventos" **não é confiável em serverless** (a função é congelada entre requisições e o tempo parado aparece como atraso): ignore-o na Vercel; o defeito está documentado no relatório e a correção não foi feita. As capturas de desenvolvimento local continuam em [`docs/so/evidencias/`](docs/so/evidencias).*
 
 </details>
 
