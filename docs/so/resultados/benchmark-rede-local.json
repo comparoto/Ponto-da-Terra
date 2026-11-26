@@ -1,0 +1,150 @@
+{
+  "geradoEm": "2026-11-26T01:52:16.927Z",
+  "rotulo": "local",
+  "alvo": "http://localhost:3333/api",
+  "cliente": {
+    "node": "v24.22.0",
+    "plataforma": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "nucleos": 12
+  },
+  "parametros": {
+    "amostras": 60,
+    "duracaoPorNivelS": 8,
+    "concorrencias": [
+      1,
+      5,
+      20
+    ],
+    "limiteDeTempoMs": 8000,
+    "descartadaPrimeiraRequisicao": true
+  },
+  "sequencial": [
+    {
+      "endpoint": "health",
+      "caminho": "/health",
+      "amostras": 60,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 2,
+        "p50": 4,
+        "p95": 9.2,
+        "p99": 19.5,
+        "max": 19.5
+      },
+      "jitterMs": 1.7,
+      "bytesPorResposta": 75,
+      "requisitoP95Ms": null,
+      "origemDoRequisito": null,
+      "atendeRequisito": null
+    },
+    {
+      "endpoint": "vitrine",
+      "caminho": "/produtos?limit=12",
+      "amostras": 60,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 4.4,
+        "p50": 7.9,
+        "p95": 15.4,
+        "p99": 16,
+        "max": 16
+      },
+      "jitterMs": 1.8,
+      "bytesPorResposta": 72494,
+      "requisitoP95Ms": null,
+      "origemDoRequisito": null,
+      "atendeRequisito": null
+    },
+    {
+      "endpoint": "categorias",
+      "caminho": "/categorias",
+      "amostras": 60,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 2,
+        "p50": 3.8,
+        "p95": 7.3,
+        "p99": 10,
+        "max": 10
+      },
+      "jitterMs": 1.4,
+      "bytesPorResposta": 396,
+      "requisitoP95Ms": null,
+      "origemDoRequisito": null,
+      "atendeRequisito": null
+    },
+    {
+      "endpoint": "frete",
+      "caminho": "/frete?cep=01001000",
+      "amostras": 60,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 0.7,
+        "p50": 1.2,
+        "p95": 2.9,
+        "p99": 3.4,
+        "max": 3.4
+      },
+      "jitterMs": 0.6,
+      "bytesPorResposta": 118,
+      "requisitoP95Ms": 300,
+      "origemDoRequisito": "RN16: frete em < 300 ms",
+      "atendeRequisito": true
+    }
+  ],
+  "sobCarga": [
+    {
+      "endpoint": "vitrine",
+      "conexoes": 1,
+      "duracaoS": 8,
+      "respostas": 1295,
+      "falhas": 0,
+      "perdaPct": 0,
+      "vazaoReqPorSeg": 161.8,
+      "vazaoKbPorSeg": 11453,
+      "latenciaMs": {
+        "p50": 5,
+        "p95": 13.8,
+        "p99": 18.3
+      },
+      "jitterMs": 2.1
+    },
+    {
+      "endpoint": "vitrine",
+      "conexoes": 5,
+      "duracaoS": 8,
+      "respostas": 3209,
+      "falhas": 0,
+      "perdaPct": 0,
+      "vazaoReqPorSeg": 400.5,
+      "vazaoKbPorSeg": 28354.7,
+      "latenciaMs": {
+        "p50": 10.8,
+        "p95": 24.5,
+        "p99": 30.6
+      },
+      "jitterMs": 1.4
+    },
+    {
+      "endpoint": "vitrine",
+      "conexoes": 20,
+      "duracaoS": 8,
+      "respostas": 4570,
+      "falhas": 0,
+      "perdaPct": 0,
+      "vazaoReqPorSeg": 568.1,
+      "vazaoKbPorSeg": 40221.3,
+      "latenciaMs": {
+        "p50": 31.2,
+        "p95": 63.1,
+        "p99": 90.5
+      },
+      "jitterMs": 1.4
+    }
+  ]
+}

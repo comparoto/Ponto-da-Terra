@@ -1,0 +1,150 @@
+{
+  "geradoEm": "2026-11-26T01:53:22.252Z",
+  "rotulo": "producao",
+  "alvo": "https://ponto-da-terra-api.vercel.app/api",
+  "cliente": {
+    "node": "v24.22.0",
+    "plataforma": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "nucleos": 12
+  },
+  "parametros": {
+    "amostras": 40,
+    "duracaoPorNivelS": 5,
+    "concorrencias": [
+      1,
+      5,
+      10
+    ],
+    "limiteDeTempoMs": 8000,
+    "descartadaPrimeiraRequisicao": true
+  },
+  "sequencial": [
+    {
+      "endpoint": "health",
+      "caminho": "/health",
+      "amostras": 40,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 193.2,
+        "p50": 206.6,
+        "p95": 354.9,
+        "p99": 409.3,
+        "max": 409.3
+      },
+      "jitterMs": 34.5,
+      "bytesPorResposta": 75,
+      "requisitoP95Ms": null,
+      "origemDoRequisito": null,
+      "atendeRequisito": null
+    },
+    {
+      "endpoint": "vitrine",
+      "caminho": "/produtos?limit=12",
+      "amostras": 40,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 222.8,
+        "p50": 433.8,
+        "p95": 499.9,
+        "p99": 925.1,
+        "max": 925.1
+      },
+      "jitterMs": 123.2,
+      "bytesPorResposta": 90606,
+      "requisitoP95Ms": null,
+      "origemDoRequisito": null,
+      "atendeRequisito": null
+    },
+    {
+      "endpoint": "categorias",
+      "caminho": "/categorias",
+      "amostras": 40,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 193.4,
+        "p50": 201.1,
+        "p95": 220.8,
+        "p99": 344.8,
+        "max": 344.8
+      },
+      "jitterMs": 12.9,
+      "bytesPorResposta": 396,
+      "requisitoP95Ms": null,
+      "origemDoRequisito": null,
+      "atendeRequisito": null
+    },
+    {
+      "endpoint": "frete",
+      "caminho": "/frete?cep=01001000",
+      "amostras": 40,
+      "falhas": 0,
+      "perdaPct": 0,
+      "latenciaMs": {
+        "min": 191.6,
+        "p50": 196.7,
+        "p95": 205.1,
+        "p99": 213.4,
+        "max": 213.4
+      },
+      "jitterMs": 5.3,
+      "bytesPorResposta": 118,
+      "requisitoP95Ms": 300,
+      "origemDoRequisito": "RN16: frete em < 300 ms",
+      "atendeRequisito": true
+    }
+  ],
+  "sobCarga": [
+    {
+      "endpoint": "vitrine",
+      "conexoes": 1,
+      "duracaoS": 5,
+      "respostas": 12,
+      "falhas": 0,
+      "perdaPct": 0,
+      "vazaoReqPorSeg": 2.4,
+      "vazaoKbPorSeg": 212.2,
+      "latenciaMs": {
+        "p50": 435.3,
+        "p95": 492.6,
+        "p99": 492.6
+      },
+      "jitterMs": 58.6
+    },
+    {
+      "endpoint": "vitrine",
+      "conexoes": 5,
+      "duracaoS": 5.4,
+      "respostas": 57,
+      "falhas": 0,
+      "perdaPct": 0,
+      "vazaoReqPorSeg": 10.6,
+      "vazaoKbPorSeg": 934.8,
+      "latenciaMs": {
+        "p50": 439.8,
+        "p95": 1058.5,
+        "p99": 2393.6
+      },
+      "jitterMs": 149.9
+    },
+    {
+      "endpoint": "vitrine",
+      "conexoes": 10,
+      "duracaoS": 5.4,
+      "respostas": 128,
+      "falhas": 0,
+      "perdaPct": 0,
+      "vazaoReqPorSeg": 23.9,
+      "vazaoKbPorSeg": 2111.1,
+      "latenciaMs": {
+        "p50": 432.6,
+        "p95": 499.6,
+        "p99": 759.3
+      },
+      "jitterMs": 125.1
+    }
+  ]
+}

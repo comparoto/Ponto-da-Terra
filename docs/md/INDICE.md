@@ -26,6 +26,19 @@
 | [RELATORIO_FCCPD_U2.md](RELATORIO_FCCPD_U2.md) | Relatório da Unidade 2: diagrama da arquitetura distribuída, justificativas, paralelismo nos relatórios (sequencial × concorrente), benchmark e interpretação. [PDF](../fccpd/Relatorio-FCCPD-Unidade-2.pdf) |
 | [EVIDENCIAS_FCCPD_U2.md](EVIDENCIAS_FCCPD_U2.md) | Índice das evidências de comunicação entre os componentes, do paralelismo e dos testes. Arquivos em [`docs/fccpd/`](../fccpd) |
 
+## Algoritmos e Estruturas de Dados (AED)
+
+| Documento | O que traz |
+|---|---|
+| [RELATORIO_AED.md](RELATORIO_AED.md) | Modelagem do domínio (lista, fila, pilha, hash, BST, buscas), inserção ordenada, complexidade teórica e medida com dados sintéticos, testes e como integrar. [PDF](../aed/Relatorio-AED.pdf) · gráficos e dados em [`docs/aed/`](../aed) |
+
+## Sistemas Operacionais (SO)
+
+| Documento | O que traz |
+|---|---|
+| [RELATORIO_SO_U1.md](RELATORIO_SO_U1.md) | Unidade 1: threads com sincronização e condição de corrida, containerização, CI/CD, três cenários de carga com orçamento e observabilidade. [PDF](../so/Relatorio-SO-Unidade-1.pdf) |
+| [RELATORIO_SO_U2.md](RELATORIO_SO_U2.md) | Unidade 2: topologia, requisitos de rede derivados do negócio, protocolos, benchmark de rede (local, contêiner e produção), painel de monitoramento do administrador e plano de implantação e migração. [PDF](../so/Relatorio-SO-Unidade-2.pdf) · gráficos, dados e evidências em [`docs/so/`](../so) |
+
 ## Qualidade de código e uso de IA
 
 | Documento | O que traz |

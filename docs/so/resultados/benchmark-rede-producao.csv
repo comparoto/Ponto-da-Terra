@@ -1,0 +1,8 @@
+rotulo,fase,endpoint,conexoes,p50_ms,p95_ms,p99_ms,jitter_ms,perda_pct,vazao_req_s
+producao,sequencial,health,1,206.6,354.9,409.3,34.5,0,
+producao,sequencial,vitrine,1,433.8,499.9,925.1,123.2,0,
+producao,sequencial,categorias,1,201.1,220.8,344.8,12.9,0,
+producao,sequencial,frete,1,196.7,205.1,213.4,5.3,0,
+producao,carga,vitrine,1,435.3,492.6,492.6,58.6,0,2.4
+producao,carga,vitrine,5,439.8,1058.5,2393.6,149.9,0,10.6
+producao,carga,vitrine,10,432.6,499.6,759.3,125.1,0,23.9

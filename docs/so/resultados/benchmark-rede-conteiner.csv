@@ -1,0 +1,8 @@
+rotulo,fase,endpoint,conexoes,p50_ms,p95_ms,p99_ms,jitter_ms,perda_pct,vazao_req_s
+conteiner,sequencial,health,1,6.7,10.9,17.9,1.3,0,
+conteiner,sequencial,vitrine,1,9.6,12.8,19.4,1.7,0,
+conteiner,sequencial,categorias,1,5.4,6.6,7.3,0.8,0,
+conteiner,sequencial,frete,1,5.1,6.3,7.3,0.9,0,
+conteiner,carga,vitrine,1,11.7,27.4,41.5,3.7,0,72.5
+conteiner,carga,vitrine,5,27,50.2,68.1,3.4,0,174.7
+conteiner,carga,vitrine,20,98.8,165.3,195,5.4,0,193
