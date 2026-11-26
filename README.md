@@ -352,6 +352,218 @@ npx jest --runInBand tests/relatorios-modos.test.ts              # testes de equ
 
 </details>
 
+## AED · Unidades 1 e 2: estruturas de dados e complexidade
+
+Entrega de **Algoritmos e Estruturas de Dados**. Relatório completo: [docs/md/RELATORIO_AED.md](docs/md/RELATORIO_AED.md). É um **módulo independente** (`backend/src/aed/`): nenhuma rota o importa, então o produto não muda; o estoque real continua no PostgreSQL com transação atômica.
+
+<details open>
+<summary><b>01. Modelagem do domínio e estruturas</b></summary>
+
+### Estruturas implementadas à mão
+| Conceito do domínio | Estrutura | Arquivo |
+|---|---|---|
+| Estoque: lotes que saem por validade (FEFO) | **Lista encadeada** com **inserção ordenada** (estável, com atalho O(1) na cauda) | [`lista-encadeada.ts`](backend/src/aed/estruturas/lista-encadeada.ts) |
+| Pedidos de saída de estoque | **Fila circular** (FIFO) e **fila de prioridade** (prioridade, depois ordem de chegada) | [`fila.ts`](backend/src/aed/estruturas/fila.ts) |
+| Histórico de movimentos, com **desfazer** | **Pilha** | [`pilha.ts`](backend/src/aed/estruturas/pilha.ts) |
+| Achar o produto pelo código | **Índice hash** (encadeamento, FNV-1a, redimensionamento com fator de carga 0,75) | [`indice-hash.ts`](backend/src/aed/estruturas/indice-hash.ts) |
+| Índice ordenado | **Árvore binária de busca** iterativa (inserir, buscar, remover nos 3 casos, percurso em ordem) | [`arvore-binaria-busca.ts`](backend/src/aed/estruturas/arvore-binaria-busca.ts) |
+| Busca em coleção ordenada | **Busca binária** e limite inferior | [`busca.ts`](backend/src/aed/estruturas/busca.ts) |
+| Domínio integrado | `EstoqueFefo` (hash → lista de lotes + pilha de histórico) e `ProcessadorDePedidos` | [`estoque.ts`](backend/src/aed/estoque.ts), [`pedidos.ts`](backend/src/aed/pedidos.ts) |
+
+![Composição das estruturas](docs/aed/estruturas.png)
+
+Código-fonte do diagrama: [`docs/aed/estruturas.mmd`](docs/aed/estruturas.mmd).
+
+### Regras implementadas e testadas
+- A saída consome o lote que **vence primeiro**; lote sem validade vai para o fim.
+- Se o estoque não basta, a saída é **recusada e não altera nada**.
+- `desfazer()` restaura **exatamente** o estado anterior (lotes esgotados e lote parcial).
+- Pedidos: o mais urgente sai primeiro; com estoque escasso, o de maior prioridade leva o estoque.
+
+### Como usar
+```ts
+import { EstoqueFefo, ProcessadorDePedidos } from './aed';
+const estoque = new EstoqueFefo();
+estoque.entrada({ id: 'L1', codigoProduto: 'PT-001', quantidade: 10, validade: new Date('2027-03-01') });
+estoque.saida('PT-001', 8);   // consome primeiro o lote que vence antes
+estoque.desfazer();           // volta ao estado anterior
+```
+
+</details>
+
+<details open>
+<summary><b>02. Complexidade e benchmark com dados sintéticos</b></summary>
+
+### O que foi medido
+Tempo por operação em volumes de **1 mil a 1 milhão** de itens (500 a 16 mil nas operações O(n²)), com dados determinísticos (gerador com semente fixa), 2 repetições de aquecimento e **9 repetições** (mediana). A **inclinação** da reta no gráfico log-log compara o crescimento medido com a complexidade teórica (≈0 = O(1), ≈0,1 = O(log n), ≈1 = O(n), ≈2 = O(n²)).
+
+### Resultados principais (µs por operação, mediana)
+| Operação | Teórica | Inclinação medida | 1 mil | 10 mil | 100 mil |
+|---|---|---:|---:|---:|---:|
+| Busca linear por código | O(n) | 0,90 | 3,35 | 20,5 | **210** |
+| Busca binária | O(log n) | 0,18 | 0,29 | 0,35 | 0,55 |
+| **Índice hash** | O(1) | 0,18 | 0,20 | 0,17 | **0,32** |
+| BST (chaves aleatórias) | O(log n) | 0,15 | 0,13 | 0,20 | 0,26 |
+| BST degenerada (chaves em ordem) | O(n) | **1,07** | 1,09 | | (16 mil: **19,1**) |
+| Lista: inserção ordenada aleatória | O(n) | 1,32 | 0,65 | | (16 mil: **31,6**) |
+
+![Busca por código](docs/aed/resultados/grafico-1-busca-por-codigo.png)
+
+Com 100 mil produtos, o índice hash acha um código **~650 vezes mais rápido** que a varredura. As operações O(1) e O(log n) saem com inclinação de 0,15 a 0,37, e não 0 e 0,1: é o efeito dos caches da CPU, discutido no relatório junto com uma anomalia do `Array.shift()`. Dados: [`docs/aed/resultados/`](docs/aed/resultados).
+
+### Comandos
+```bash
+cd backend
+npx jest tests/aed-                  # 32 testes: operações básicas, aleatórios contra Map/array ordenado, FEFO, desfazer
+npm run benchmark:aed                # benchmark completo (~3 min); -- --rapido para fumaça
+```
+
+</details>
+
+---
+
+## SO · Unidades 1 e 2: threads, contêineres, redes e monitoramento
+
+Entrega de **Sistemas Operacionais**. Relatórios: [Unidade 1](docs/md/RELATORIO_SO_U1.md) (threads, contêineres, CI/CD, cenários e orçamento) e [Unidade 2](docs/md/RELATORIO_SO_U2.md) (topologia, requisitos de rede, protocolos, benchmark e painel). **Dentro do produto entra apenas o painel de monitoramento do administrador**; o resto é módulo independente, infraestrutura e documentação.
+
+<details open>
+<summary><b>01. Threads, sincronização e condição de corrida (Unidade 1)</b></summary>
+
+O worker do projeto (BullMQ) é outro **processo**, não uma thread. O módulo [`backend/src/so/`](backend/src/so) usa `worker_threads` com memória compartilhada (`SharedArrayBuffer`): várias threads reservam as últimas unidades de estoque, em duas versões, **sem** e **com** sincronização (`Atomics.compareExchange`, *compare-and-swap*).
+
+| Versão (8 threads, 20 execuções, 6.000 pedidos) | Execuções com estoque inconsistente | Baixas perdidas (mediana) |
+|---|---:|---:|
+| Sem sincronização | **20 de 20** | 4.743 |
+| Com compare-and-swap | **0 de 20** | 0 |
+
+| Threads | 1 | 2 | 4 | 8 |
+|---|---:|---:|---:|---:|
+| Tempo (mediana) | 6.568 ms | 4.131 ms | 3.236 ms | 2.701 ms |
+| *Speedup* | 1,00× | 1,59× | 2,03× | 2,43× |
+
+O ganho **não é linear** (o tempo inclui criar as threads e carregar o `tsx`; o notebook tem núcleos desiguais); as causas estão no relatório, sem afirmar o que não foi medido. As threads são uma demonstração: a reserva real continua na transação do PostgreSQL ([ADR-002](docs/adr/adr-002-centralizar-a-reserva-de-estoque-no-servidor-com-transacao-atomica.md)). Testes: `npx jest tests/so-threads` (6). Benchmark: `npm run benchmark:threads`.
+
+![Condição de corrida](docs/so/resultados/grafico-5-condicao-de-corrida.png)
+
+</details>
+
+<details open>
+<summary><b>02. Containerização e CI/CD (Unidade 1)</b></summary>
+
+| Arquivo | Função |
+|---|---|
+| [`backend/Dockerfile`](backend/Dockerfile) | Imagem da **API e do worker** (multi-stage, Node 22 Alpine, usuário sem privilégios, `HEALTHCHECK`, migrations ao iniciar) |
+| [`backend/docker-compose.completo.yml`](backend/docker-compose.completo.yml) | Pilha completa: PostgreSQL, Redis, API, worker e site |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | CI: lint, tipos, testes, build e **job que constrói as imagens e sobe a pilha conferindo `/api/health`** |
+| [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) | CD para a Vercel após o CI na `main`; **só executa se os 4 segredos existirem** (sem eles, pula com aviso) |
+
+```bash
+cd backend && docker compose -f docker-compose.completo.yml up --build -d
+curl http://localhost:3333/api/health        # {"api":"ok","banco":"ok","redis":"ok"}
+docker compose -f docker-compose.completo.yml exec -e NODE_ENV=development api npx prisma db seed   # dados de demonstração
+docker compose -f docker-compose.completo.yml down -v
+```
+
+**Verificado em 25/11/2026:** imagem da API construída (967 MB), pilha *healthy*, 7 migrations aplicadas, worker em execução; imagem do site construída. **Ressalvas honestas:** o deploy de produção segue manual por linha de comando até o dono da conta Vercel cadastrar os segredos, e os workflows ainda não rodaram no GitHub (sintaxe validada localmente).
+
+</details>
+
+<details open>
+<summary><b>03. Cenários de carga e orçamento (Unidade 1)</b></summary>
+
+Cenários **hipotéticos** (o projeto não tem dados de uso). Preços oficiais consultados em 25/11/2026; câmbio PTAX de venda R$ 5,8825.
+
+| | Baixo | Moderado | Alto |
+|---|---|---|---|
+| Compradores ativos/mês · pedidos/mês | 200 · 300 | 5.000 · 5.000 | 100.000 · 100.000 |
+| Pico | 2 req/s | 25 req/s | 300 req/s |
+| Arquitetura | Vercel + Neon + Upstash (gratuitos) | Vercel Pro (`gru1`) + Neon Launch (São Paulo) | API em contêiner (ECS Fargate) + RDS Multi-AZ (São Paulo) + site na Vercel |
+| Custo mensal estimado | US$ 0 (acadêmico) · **US$ 20** (comercial, ≈ R$ 117,65) | **≈ US$ 45,2** (≈ R$ 265,65) | **≈ US$ 372,9** (≈ R$ 2.193,30), **conta incompleta** |
+
+O plano Hobby da Vercel **não permite uso comercial**; no cenário alto, faltam itens não confirmados (armazenamento do RDS, balanceador, transferência, logs). A memória de cálculo e as fontes estão no [relatório](docs/md/RELATORIO_SO_U1.md#4-cenários-de-carga-e-orçamento).
+
+</details>
+
+<details open>
+<summary><b>04. Topologia, requisitos de rede e protocolos (Unidade 2)</b></summary>
+
+![Topologia por fluxo de negócio](docs/so/topologia.png)
+
+A topologia segue o fluxo coleta → curadoria → vitrine → pedido → pagamento → entrega ([`topologia.mmd`](docs/so/topologia.mmd)). Além dela, a **topologia de rede** mostra os pontos de acesso, a internet, a borda em São Paulo, a região da função e os serviços de dados, com o tipo de enlace, o que foi medido em cada trecho e os fluxos de **telemetria** (ajuste de estoque do ateliê, eventos de pedido e métricas do painel):
+
+![Topologia de rede](docs/so/topologia-rede.png)
+
+Fonte: [`topologia-rede.mmd`](docs/so/topologia-rede.mmd). `npm run benchmark:enlaces` decompõe uma requisição em produção: **TCP até São Paulo ≈ 19 ms**, TLS ≈ 117 ms (não explicado) e **espera pelo servidor ≈ 207 a 212 ms**. Requisitos de rede **derivados** das regras de negócio:
+
+| Requisito | Origem | Medido em produção |
+|---|---|---|
+| Frete: p95 ≤ 300 ms | RN16 | **205 ms** |
+| Webhook de pagamento < 2 s, idempotente | RN19 / TC16 | não medido (gateway simulado) |
+| Vitrine ≤ 100 KB por página e p95 ≤ 800 ms | meta proposta pela equipe | 90,6 KB · 500 ms |
+| Jitter da vitrine ≤ 100 ms | meta proposta pela equipe | **123 ms (não atende)** |
+| TLS e HSTS em todo o tráfego | segurança | TLS 1.3 + HTTP/2 (ALPN `h2`) |
+| Ajuste de estoque do ateliê reenviável sem efeito colateral | rota `PATCH /produtos/:id/estoque` define a quantidade absoluta | por desenho (reenvio automático no cliente é proposta) |
+| Estoque na vitrine com defasagem ≤ 60 s e exatidão no checkout | TTL do cache (ADR-001) e reserva atômica (ADR-002) | por desenho |
+| Telemetria de estoque e eventos: banda desprezível | 600 mil eventos/mês = 0,23 evento/s | conta a partir de premissas |
+
+Protocolos justificados no [relatório](docs/md/RELATORIO_SO_U2.md#4-protocolos-e-apis): HTTPS + REST/JSON e JWT, PostgreSQL sobre TCP+TLS, RESP (Redis), webhook assinado (QStash e gateway, HMAC), SMTP/TLS, OpenAPI 3.
+
+</details>
+
+<details open>
+<summary><b>05. Benchmarking de rede (Unidade 2)</b></summary>
+
+`npm run benchmark:rede` mede latência (p50/p95/p99), vazão, perda e jitter com GETs de leitura, em três ambientes a partir do mesmo notebook (25/11/2026).
+
+| Endpoint | Local (p95) | Contêiner (p95) | **Produção (p95)** | Jitter em produção |
+|---|---:|---:|---:|---:|
+| `/health` | 9,2 ms | 10,9 ms | **354,9 ms** | 34,5 ms |
+| Vitrine | 15,4 ms | 12,8 ms | **499,9 ms** | **123,2 ms** |
+| `/frete` | 2,9 ms | 6,3 ms | **205,1 ms** | 5,3 ms |
+
+Perda de **0%** em todas as baterias (amostras pequenas: o resultado é "sem perda observável"). Vazão da vitrine: 568 req/s (Node direto), 193 req/s (contêiner) e 23,9 req/s em produção com apenas 10 conexões (limitado de propósito).
+
+**Interpretação:** o `/frete` leva 1,2 ms de processamento e 197 ms em produção. O acesso do usuário não é o problema (TCP de ~19 ms até São Paulo); a espera de ~207 ms é igual com e sem banco. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa nos EUA, o que é **compatível**, mas não isolado: a hipótese foi **reforçada, não provada**, e o plano de migração a testa. O ponto fraco é a vitrine (jitter e p99 de 925 ms).
+
+![Latência p95](docs/so/resultados/grafico-6-latencia-p95.png)
+
+</details>
+
+<details open>
+<summary><b>06. Painel de monitoramento (único item dentro do produto)</b></summary>
+
+Somente o **administrador**: link *Monitoramento* no painel administrativo → `/admin/monitoramento`, dados de `GET /api/admin/monitoramento` (Swagger em `/api/docs`).
+
+- **Medido de verdade:** vazão, latência p50/p95/p99, jitter, falhas e conexões interrompidas (middleware que mede cada requisição em um buffer circular), RTT/jitter/perda de sondas ao PostgreSQL e ao Redis, atraso do laço de eventos, memória, fila de eventos pendentes e, no navegador, RTT/jitter/perda até a API.
+- **Acesso:** sem token → 401; comprador e artesão → 403; a tela redireciona quem não é administrador. Verificado por script de navegador (8/8) e 14 testes automatizados.
+- **Limite:** as amostras ficam na memória da instância; em serverless cada instância tem as suas. As sondas ao banco e ao Redis valem em qualquer ambiente.
+
+![Painel de monitoramento](docs/so/evidencias/monitoramento-painel.png)
+
+</details>
+
+<details open>
+<summary><b>07. Plano de implantação e migração (Unidade 2)</b></summary>
+
+| Fase | Gatilho | O que muda | Validação | Reversão |
+|---|---|---|---|---|
+| 1 · Lançamento comercial | Primeira venda real | Vercel Pro, deploy automático (segredos), monitor externo de `/api/health` | Pipeline verde e saúde pós-deploy | Deploy manual por CLI; *rollback* da Vercel |
+| 2 · Aproximar do usuário | p95 do frete > ~250 ms ou p95 da vitrine > 800 ms | Neon em `aws-sa-east-1` (`pg_dump`/`pg_restore` em janela curta) e função fixa em `gru1` | `benchmark:rede` antes e depois; **expectativa** de frete ≤ 100 ms (a confirmar) | Restaurar as variáveis do banco antigo (mantido por 7 dias) |
+| 3 · Escala e alta disponibilidade | > ~100 req/s sustentados ou banco > 70% | API em contêiner (Fargate) com canário de 10%, depois RDS Multi-AZ | k6 a 300 req/s, p95 do frete ≤ 300 ms, 0% de falhas | DNS volta para a Vercel; banco de origem só leitura |
+
+Antes de cada corte, o painel deve mostrar **0 eventos pendentes** na fila (nenhum evento da Outbox perdido). Riscos e detalhes no [relatório](docs/md/RELATORIO_SO_U2.md#9-plano-de-implantação-e-migração).
+
+</details>
+
+### Reprodução de tudo (AED e SO)
+```bash
+cd backend
+npx jest tests/aed- tests/so-threads tests/monitoramento        # 52 testes novos
+npm run benchmark:aed && npm run benchmark:threads                # complexidade e threads
+npm run benchmark:rede -- --alvo=http://localhost:3333/api        # rede (acrescente --producao para a Vercel)
+cd ../e2e && node gerar-graficos-aed-so.cjs                       # gráficos
+```
+
 ---
 
 ## Como executar localmente

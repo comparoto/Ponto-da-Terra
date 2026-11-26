@@ -1,0 +1,47 @@
+{
+  "geradoEm": "2026-11-26T02:19:33.614Z",
+  "front": "http://localhost:3187",
+  "api": "http://localhost:3334/api",
+  "resultados": [
+    {
+      "nome": "API: sem token → 401",
+      "passou": true,
+      "detalhe": "status 401"
+    },
+    {
+      "nome": "API: comprador → 403",
+      "passou": true,
+      "detalhe": "status 403"
+    },
+    {
+      "nome": "API: artesão → 403",
+      "passou": true,
+      "detalhe": "status 403"
+    },
+    {
+      "nome": "Tela: comprador acessando /admin/monitoramento é redirecionado",
+      "passou": true,
+      "detalhe": "foi para /vitrine"
+    },
+    {
+      "nome": "Tela: o painel administrativo tem o link \"Monitoramento\"",
+      "passou": true,
+      "detalhe": ""
+    },
+    {
+      "nome": "Tela: o painel carrega as métricas reais",
+      "passou": true,
+      "detalhe": ""
+    },
+    {
+      "nome": "Tela: sondagem do navegador (RTT, jitter e perda) funciona",
+      "passou": true,
+      "detalhe": ""
+    },
+    {
+      "nome": "Tela: no celular (390 px) não há rolagem horizontal da página",
+      "passou": true,
+      "detalhe": "scrollWidth 390"
+    }
+  ]
+}

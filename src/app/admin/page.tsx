@@ -1,5 +1,6 @@
 ﻿'use client';
 import { useState } from 'react';
+import NextLink from 'next/link';
 import { Badge, Box, Button, Flex, Heading, HStack, Image, Input, Select, SimpleGrid, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
 import { Navbar } from '@/components/Navbar';
 import { OrderManager } from '@/components/OrderManager';
@@ -446,6 +447,9 @@ function AdminContent() {
               {label}
             </Button>
           ))}
+          <Button as={NextLink} href="/admin/monitoramento" variant="ghost">
+            Monitoramento
+          </Button>
         </Flex>
 
         {tab === 'overview' && <Dashboard />}

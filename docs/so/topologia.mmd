@@ -1,0 +1,43 @@
+flowchart LR
+  subgraph NEG["Fluxo do negócio (cadeia de valor)"]
+    direction LR
+    N1["1 Coleta<br/>artesão cadastra a peça<br/>(fotos, estoque)"] --> N2["2 Produção e curadoria<br/>admin aprova ou reprova"] --> N3["3 Vitrine<br/>comprador busca e escolhe"] --> N4["4 Pedido<br/>carrinho, frete, checkout<br/>reserva de estoque"] --> N5["5 Pagamento<br/>PIX, cartão, boleto<br/>webhook"] --> N6["6 Entrega<br/>rastreio e conclusão"]
+  end
+
+  subgraph BORDA["Borda: navegadores"]
+    ART["Artesão<br/>(navegador)"]
+    ADM["Administrador<br/>(navegador)"]
+    COM["Comprador<br/>(navegador)"]
+  end
+
+  subgraph VERCEL["Vercel (região da função)"]
+    SITE["Site Next.js<br/>(HTML, JS, CSS)"]
+    API["API Express<br/>função serverless<br/>REST + JWT"]
+  end
+
+  subgraph DADOS["Serviços de dados e mensagens"]
+    PG[("PostgreSQL<br/>Neon")]
+    RD[("Redis<br/>Upstash")]
+    QS["QStash<br/>fila de eventos"]
+    BL[("Vercel Blob<br/>fotos")]
+    SM["Servidor SMTP<br/>e-mails"]
+  end
+
+  ART -- "HTTPS · REST · JWT<br/>POST /produtos, fotos (multipart ≤ 4,5 MB)" --> API
+  ADM -- "HTTPS · REST · JWT<br/>aprovações, relatórios,<br/>GET /admin/monitoramento" --> API
+  COM -- "HTTPS · REST · JWT<br/>GET /produtos, /frete<br/>POST /checkout" --> API
+  ART & ADM & COM -- "HTTPS · HTTP/2<br/>páginas e ativos" --> SITE
+  API -- "TCP + TLS · SQL (Prisma)<br/>transação atômica do checkout" --> PG
+  API -- "TCP + TLS · RESP<br/>cache da vitrine, termos buscados" --> RD
+  API -- "HTTPS · publica evento<br/>(Transactional Outbox)" --> QS
+  QS -- "HTTPS · webhook assinado<br/>POST /api/jobs/evento" --> API
+  API -- "HTTPS · upload" --> BL
+  API -- "SMTP/TLS (porta 2525 ou 465)" --> SM
+  PGW["Gateway de pagamento<br/>(simulado)"] -- "HTTPS · webhook idempotente<br/>HMAC, resposta em menos de 2 s" --> API
+
+  N1 -.-> ART
+  N2 -.-> ADM
+  N3 -.-> COM
+  N4 -.-> API
+  N5 -.-> PGW
+  N6 -.-> QS

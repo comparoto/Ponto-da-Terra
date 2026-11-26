@@ -1,0 +1,50 @@
+experimento,teorica,inclinacao_esperada,inclinacao_medida,n,ms_por_operacao,ms_total,operacoes
+busca-linear,O(n),1,0.899,1000,0.003347,0.669,200
+busca-linear,O(n),1,0.899,10000,0.020455,4.091,200
+busca-linear,O(n),1,0.899,100000,0.210449,42.090,200
+busca-binaria,O(log n),0.1,0.175,1000,0.000289,0.578,2000
+busca-binaria,O(log n),0.1,0.175,10000,0.000350,0.700,2000
+busca-binaria,O(log n),0.1,0.175,100000,0.000546,1.092,2000
+busca-binaria,O(log n),0.1,0.175,1000000,0.000955,1.910,2000
+indice-hash-obter,O(1),0,0.176,1000,0.000197,0.393,2000
+indice-hash-obter,O(1),0,0.176,10000,0.000173,0.346,2000
+indice-hash-obter,O(1),0,0.176,100000,0.000316,0.632,2000
+indice-hash-obter,O(1),0,0.176,1000000,0.000622,1.245,2000
+bst-buscar-aleatoria,O(log n),0.1,0.153,1000,0.000126,0.252,2000
+bst-buscar-aleatoria,O(log n),0.1,0.153,10000,0.000202,0.405,2000
+bst-buscar-aleatoria,O(log n),0.1,0.153,100000,0.000255,0.511,2000
+bst-buscar-degenerada,O(n),1,1.070,1000,0.001091,0.545,500
+bst-buscar-degenerada,O(n),1,1.070,2000,0.002246,1.123,500
+bst-buscar-degenerada,O(n),1,1.070,4000,0.005681,2.840,500
+bst-buscar-degenerada,O(n),1,1.070,8000,0.012244,6.122,500
+bst-buscar-degenerada,O(n),1,1.070,16000,0.019051,9.525,500
+hash-inserir,O(1),0,0.371,1000,0.000326,0.326,1000
+hash-inserir,O(1),0,0.371,10000,0.000381,3.806,10000
+hash-inserir,O(1),0,0.371,100000,0.001800,180.025,100000
+bst-inserir-aleatoria,O(log n),0.1,0.140,1000,0.000276,0.276,1000
+bst-inserir-aleatoria,O(log n),0.1,0.140,10000,0.000394,3.945,10000
+bst-inserir-aleatoria,O(log n),0.1,0.140,100000,0.000527,52.721,100000
+lista-inserir-ordenado-aleatorio,O(n),1,1.319,500,0.000356,0.178,500
+lista-inserir-ordenado-aleatorio,O(n),1,1.319,1000,0.000647,0.647,1000
+lista-inserir-ordenado-aleatorio,O(n),1,1.319,2000,0.001815,3.631,2000
+lista-inserir-ordenado-aleatorio,O(n),1,1.319,4000,0.003640,14.559,4000
+lista-inserir-ordenado-aleatorio,O(n),1,1.319,8000,0.012486,99.890,8000
+lista-inserir-ordenado-aleatorio,O(n),1,1.319,16000,0.031632,506.115,16000
+lista-inserir-ordenado-crescente,O(1),0,-0.189,1000,0.000077,0.077,1000
+lista-inserir-ordenado-crescente,O(1),0,-0.189,10000,0.000040,0.396,10000
+lista-inserir-ordenado-crescente,O(1),0,-0.189,100000,0.000009,0.947,100000
+lista-inserir-ordenado-crescente,O(1),0,-0.189,1000000,0.000029,29.245,1000000
+fila-enfileirar-desenfileirar,O(1),0,-0.246,1000,0.000091,0.182,2000
+fila-enfileirar-desenfileirar,O(1),0,-0.246,10000,0.000043,0.853,20000
+fila-enfileirar-desenfileirar,O(1),0,-0.246,100000,0.000021,4.293,200000
+fila-enfileirar-desenfileirar,O(1),0,-0.246,1000000,0.000017,34.673,2000000
+array-shift-como-fila,O(n),1,1.777,1000,0.000086,0.086,1000
+array-shift-como-fila,O(n),1,1.777,10000,0.000070,0.140,2000
+array-shift-como-fila,O(n),1,1.777,100000,0.309271,618.542,2000
+pilha-empilhar-desempilhar,O(1),0,-0.136,1000,0.000041,0.082,2000
+pilha-empilhar-desempilhar,O(1),0,-0.136,10000,0.000008,0.169,20000
+pilha-empilhar-desempilhar,O(1),0,-0.136,100000,0.000010,1.948,200000
+pilha-empilhar-desempilhar,O(1),0,-0.136,1000000,0.000014,27.715,2000000
+estoque-saida-fefo,O(1),0,0.169,1000,0.001651,3.303,2000
+estoque-saida-fefo,O(1),0,0.169,10000,0.002571,5.141,2000
+estoque-saida-fefo,O(1),0,0.169,100000,0.003604,7.208,2000

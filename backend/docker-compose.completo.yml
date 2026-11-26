@@ -1,0 +1,75 @@
+name: ponto-da-terra-completo
+
+# Pilha completa em contêineres (SO · Unidade 1): PostgreSQL + Redis + API + worker + site.
+# Uso (na pasta backend/):
+#   docker compose -f docker-compose.completo.yml up --build -d
+#   curl http://localhost:3333/api/health        → {"api":"ok","banco":"ok","redis":"ok"}
+#   site em http://localhost:3000 (o navegador fala com a API em http://localhost:3333/api)
+#   docker compose -f docker-compose.completo.yml down        (acrescente -v para apagar o banco)
+# O banco começa vazio (só as migrations). Para criar as contas de demonstração:
+#   docker compose -f docker-compose.completo.yml exec -e NODE_ENV=development api npx prisma db seed   (apaga e recria os dados; o seed recusa NODE_ENV=production de propósito)
+# As portas externas (5435, 6381, 3333, 3000) são diferentes do docker-compose.yml de desenvolvimento para os dois poderem coexistir.
+# Os segredos abaixo são SÓ para demonstração local. Em produção, use variáveis do provedor (veja docs/md/RELATORIO_SO_U1.md).
+
+x-api-env: &api-env
+  NODE_ENV: production
+  PORT: "3333"
+  DATABASE_URL: postgresql://pdt:pdt@postgres:5432/pontodaterra?schema=public
+  DATABASE_URL_UNPOOLED: postgresql://pdt:pdt@postgres:5432/pontodaterra?schema=public
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: segredo-somente-para-demonstracao-local
+  CORS_ORIGIN: http://localhost:3000
+  PUBLIC_URL: http://localhost:3333
+  SITE_URL: http://localhost:3000
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    shm_size: 256mb
+    environment:
+      POSTGRES_USER: pdt
+      POSTGRES_PASSWORD: pdt
+      POSTGRES_DB: pontodaterra
+    ports: ["5435:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pdt -d pontodaterra"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6381:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    environment: *api-env
+    ports: ["3333:3333"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    volumes: [uploads:/app/uploads]
+
+  worker:
+    build: .
+    command: ["node", "dist/worker.js"]
+    environment: *api-env
+    depends_on:
+      api: { condition: service_healthy } # a API aplica as migrations antes
+    healthcheck: { disable: true }
+
+  web:
+    build: ..
+    ports: ["3000:3000"]
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  uploads:

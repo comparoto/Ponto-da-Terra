@@ -1,0 +1,78 @@
+{
+  "geradoEm": "2026-11-26T01:44:53.073Z",
+  "ambiente": {
+    "node": "v24.22.0",
+    "plataforma": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "nucleos": 12
+  },
+  "parametros": {
+    "pedidos": 6000,
+    "produtos": 8,
+    "repeticoes": 5,
+    "rodadasDeHash": 100,
+    "estoqueInicial": [
+      907,
+      942,
+      897,
+      888,
+      887,
+      933,
+      796,
+      952
+    ]
+  },
+  "escalonamento": [
+    {
+      "threads": 1,
+      "medianaMs": 6568,
+      "speedup": 1,
+      "eficiencia": 1,
+      "consistente": true,
+      "tentativasDeCasMediana": 0
+    },
+    {
+      "threads": 2,
+      "medianaMs": 4131.3,
+      "speedup": 1.59,
+      "eficiencia": 0.8,
+      "consistente": true,
+      "tentativasDeCasMediana": 0
+    },
+    {
+      "threads": 4,
+      "medianaMs": 3235.7,
+      "speedup": 2.03,
+      "eficiencia": 0.51,
+      "consistente": true,
+      "tentativasDeCasMediana": 1
+    },
+    {
+      "threads": 8,
+      "medianaMs": 2701,
+      "speedup": 2.43,
+      "eficiencia": 0.3,
+      "consistente": true,
+      "tentativasDeCasMediana": 2
+    }
+  ],
+  "corrida": {
+    "threads": 8,
+    "semSincronizacao": {
+      "execucoes": 20,
+      "inconsistentes": 20,
+      "atualizacoesPerdidasMediana": 4743,
+      "atualizacoesPerdidasMax": 5470,
+      "unidadesAcimaDoEstoqueMediana": 4668,
+      "unidadesAcimaDoEstoqueMax": 4807
+    },
+    "comSincronizacao": {
+      "execucoes": 20,
+      "inconsistentes": 0,
+      "atualizacoesPerdidasMediana": 0,
+      "atualizacoesPerdidasMax": 0,
+      "unidadesAcimaDoEstoqueMediana": 0,
+      "unidadesAcimaDoEstoqueMax": 0
+    }
+  }
+}

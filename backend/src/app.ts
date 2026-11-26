@@ -12,6 +12,7 @@ import { gerarOpenApi } from './docs/openapi';
 import { paginaSwagger } from './docs/swagger-ui';
 import { documentar } from './docs/registry';
 import { adminRoutes } from './modules/admin/admin.routes';
+import { monitoramentoRoutes } from './modules/admin/monitoramento.routes';
 import { adminExtrasRoutes } from './modules/admin/usuarios.routes';
 import { painelArtesaoRoutes } from './modules/artesaos/painel.routes';
 import { comprasRoutes } from './modules/compras/compras.routes';
@@ -26,6 +27,7 @@ import { notificacoesRoutes } from './modules/notificacoes/notificacoes.routes';
 import { produtosRoutes } from './modules/produtos/produtos.routes';
 import { ok } from './shared/api-result';
 import { rotaNaoEncontrada, tratarErros } from './shared/error-handler';
+import { medirRequisicoes } from './shared/metricas';
 import { z } from './shared/zod';
 
 /**
@@ -60,6 +62,7 @@ export function criarApp() {
       },
     }),
   );
+  app.use(medirRequisicoes); // métricas de rede do painel de monitoramento (admin)
   app.use(publicarAposResposta); // modo serverless: publica os eventos da outbox logo após responder
   if (!isTest) app.use(morgan('dev'));
 
@@ -92,6 +95,7 @@ export function criarApp() {
   api.use(pedidosRoutes);
   api.use(interacaoRoutes);
   api.use(painelArtesaoRoutes);
+  api.use(monitoramentoRoutes);
   api.use(adminExtrasRoutes);
   api.use(jobsRoutes);
   api.use(adminRoutes);

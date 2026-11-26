@@ -1,0 +1,28 @@
+flowchart TB
+  subgraph DOM["Domínio: estoque de artesanato com lotes perecíveis"]
+    EST["EstoqueFefo<br/>entrada · saida · desfazer · consultar"]
+    PROC["ProcessadorDePedidos<br/>enfileirar · processarProximo"]
+  end
+
+  subgraph EST_["Estruturas usadas pelo estoque"]
+    HASH["IndiceHash<br/>código do produto → lista de lotes<br/>busca O(1) em média"]
+    LISTA["ListaEncadeada<br/>lotes do produto<br/>inserção ordenada por validade"]
+    PILHA["Pilha<br/>histórico para desfazer<br/>LIFO"]
+  end
+
+  subgraph PED_["Estrutura usada pelos pedidos"]
+    FP["FilaDePrioridade<br/>inserção ordenada: prioridade,<br/>depois ordem de chegada"]
+    FILA["Fila circular<br/>FIFO com buffer que cresce"]
+  end
+
+  subgraph IND["Índices e buscas independentes"]
+    BST["ArvoreBinariaBusca<br/>O(log n) se equilibrada<br/>O(n) se degenerada"]
+    BUSCA["buscaLinear · buscaBinaria<br/>limiteInferior"]
+  end
+
+  EST --> HASH
+  HASH --> LISTA
+  EST --> PILHA
+  PROC --> FP
+  PROC -- "saída FEFO" --> EST
+  FP -. "mesma lista ordenada" .-> LISTA

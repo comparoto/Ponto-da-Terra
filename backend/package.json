@@ -28,6 +28,10 @@
     "docs:diagrama": "tsx scripts/gerar-diagrama-de-classes.ts",
     "benchmark:paralelismo": "tsx scripts/benchmark-paralelismo.ts",
     "demo:paralelismo": "tsx scripts/demonstrar-paralelismo.ts",
+    "benchmark:aed": "tsx scripts/benchmark-aed.ts",
+    "benchmark:threads": "tsx scripts/benchmark-threads.ts",
+    "benchmark:rede": "tsx scripts/benchmark-rede.ts",
+    "benchmark:enlaces": "tsx scripts/benchmark-enlaces.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
