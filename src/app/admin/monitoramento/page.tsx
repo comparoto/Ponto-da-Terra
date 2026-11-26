@@ -163,7 +163,11 @@ function Painel() {
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={4}>
-              <CartaoMetrica titulo="Laço de eventos (p99)" valor={ms(m.processo.lacoDeEventos.p99Ms)} detalhe={`máx ${ms(m.processo.lacoDeEventos.maxMs)} · alto = processo saturado`} />
+              {m.processo.lacoDeEventos ? (
+                <CartaoMetrica titulo="Laço de eventos (p99)" valor={ms(m.processo.lacoDeEventos.p99Ms)} detalhe={`máx ${ms(m.processo.lacoDeEventos.maxMs)} · alto = processo saturado`} />
+              ) : (
+                <CartaoMetrica titulo="Laço de eventos (p99)" valor="n/d" detalhe="função serverless: o processo congela entre requisições, a medição não vale" />
+              )}
               <CartaoMetrica titulo="Memória (RSS)" valor={`${num(m.processo.memoriaRssMb)} MB`} detalhe={`heap ${num(m.processo.memoriaHeapMb)} MB`} />
               <CartaoMetrica titulo="Eventos na fila (outbox)" valor={m.filaDeEventos.pendentes} detalhe={m.filaDeEventos.maisAntigoHaSegundos === null ? 'nenhum pendente' : `o mais antigo espera há ${duracao(m.filaDeEventos.maisAntigoHaSegundos)}`} />
               <CartaoMetrica titulo="Instância" valor={duracao(m.instancia.ativaHaSegundos)} detalhe={`${m.instancia.ambiente} · pid ${m.instancia.pid}`} />

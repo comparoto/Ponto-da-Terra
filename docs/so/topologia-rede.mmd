@@ -18,7 +18,7 @@ flowchart LR
 
   subgraph DADOS["Dados e mensagens"]
     direction TB
-    PG[("PostgreSQL Neon<br/>região a confirmar")]
+    PG[("PostgreSQL Neon<br/>junto da função")]
     RD[("Redis<br/>Upstash")]
     QS["Fila QStash"]
     BL[("Vercel Blob")]
@@ -30,8 +30,8 @@ flowchart LR
   ADMIN -- "acesso fixo" --> NET
   NET -- "TCP: 19 ms medido (1 RTT)<br/>TLS: 117 ms medido" --> POP
   POP -- "backbone do provedor<br/>cerca de 190 ms ida e volta<br/>por subtração, não isolado" --> FN
-  FN -- "TCP + TLS · SQL<br/>RTT em produção: a medir pelo painel" --> PG
-  FN -- "TCP + TLS · RESP" --> RD
+  FN -- "TCP + TLS · SQL<br/>RTT medido em produção: 2,7 ms" --> PG
+  FN -- "TCP + TLS · RESP<br/>RTT medido: 1,2 ms" --> RD
   FN -- "HTTPS" --> QS
   QS -- "HTTPS webhook assinado" --> FN
   FN -- "HTTPS" --> BL

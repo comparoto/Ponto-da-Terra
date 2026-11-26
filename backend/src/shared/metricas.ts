@@ -211,6 +211,13 @@ export const medirRequisicoes: RequestHandler = (req, res, next) => {
 const histograma = monitorEventLoopDelay({ resolution: 20 });
 histograma.enable();
 
+/**
+ * Em função serverless (Vercel) o processo fica CONGELADO entre uma requisição e outra, e o medidor do Node
+ * conta esse tempo parado como atraso do laço de eventos (em produção apareceu 23.270 ms sem haver saturação).
+ * Nesse ambiente a métrica não representa saturação, então o painel não a exibe (`null` = não disponível).
+ */
+export const emServerless = (): boolean => Boolean(process.env.VERCEL);
+
 /** Atraso do laço de eventos desde a última leitura, em ms (p50/p99/max). Valores altos = processo saturado. */
 export function lagDoLacoDeEventos(): { p50Ms: number; p99Ms: number; maxMs: number } {
   const ns = (v: number) => arredondar(Number.isNaN(v) ? 0 : v / 1e6);

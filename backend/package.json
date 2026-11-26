@@ -32,6 +32,7 @@
     "benchmark:threads": "tsx scripts/benchmark-threads.ts",
     "benchmark:rede": "tsx scripts/benchmark-rede.ts",
     "benchmark:enlaces": "tsx scripts/benchmark-enlaces.ts",
+    "monitoramento:coletar": "tsx scripts/coletar-monitoramento.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

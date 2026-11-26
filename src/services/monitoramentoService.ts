@@ -38,7 +38,8 @@ export type MonitoramentoApi = {
     cpuUsuarioMs: number;
     cpuSistemaMs: number;
     cargaMedia1min: number;
-    lacoDeEventos: { p50Ms: number; p99Ms: number; maxMs: number };
+    /** `null` em função serverless: o processo congela entre requisições e a medição não representa saturação. */
+    lacoDeEventos: { p50Ms: number; p99Ms: number; maxMs: number } | null;
   };
   filaDeEventos: { pendentes: number; maisAntigoHaSegundos: number | null };
 };
