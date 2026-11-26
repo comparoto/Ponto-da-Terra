@@ -94,3 +94,33 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:3333/api
+
+  imagens:
+    name: Imagens Docker (API + worker e site)
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construir a imagem da API e do worker
+        run: docker build -t ponto-da-terra-api:ci backend
+
+      - name: Construir a imagem do site
+        run: docker build -t ponto-da-terra-web:ci .
+
+      - name: Subir a pilha completa e conferir a saúde da API
+        working-directory: backend
+        run: |
+          docker compose -f docker-compose.completo.yml up -d postgres redis api worker
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3333/api/health; then exit 0; fi
+            sleep 5
+          done
+          docker compose -f docker-compose.completo.yml logs
+          exit 1
+
+      - name: Derrubar a pilha
+        if: always()
+        working-directory: backend
+        run: docker compose -f docker-compose.completo.yml down -v

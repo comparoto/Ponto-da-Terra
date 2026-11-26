@@ -1,0 +1,91 @@
+name: Deploy (Vercel)
+
+# Entrega contínua (SO · Unidade 1). Roda quando o CI termina com sucesso na main (ou manualmente).
+# Precisa de 4 segredos no repositório (Settings → Secrets and variables → Actions); sem eles o deploy é PULADO,
+# e o fluxo manual por linha de comando descrito em docs/md/DEPLOY_VERCEL.md continua valendo:
+#   VERCEL_TOKEN              token da conta (vercel.com/account/tokens)
+#   VERCEL_ORG_ID             id do time (.vercel/project.json → orgId)
+#   VERCEL_PROJECT_ID_API     id do projeto da API   (backend/.vercel/project.json → projectId)
+#   VERCEL_PROJECT_ID_SITE    id do projeto do site  (.vercel/project.json → projectId)
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-producao
+  cancel-in-progress: false
+
+jobs:
+  verificar-segredos:
+    name: Verificar segredos
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    outputs:
+      configurado: ${{ steps.checar.outputs.configurado }}
+    steps:
+      - id: checar
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID_API: ${{ secrets.VERCEL_PROJECT_ID_API }}
+          VERCEL_PROJECT_ID_SITE: ${{ secrets.VERCEL_PROJECT_ID_SITE }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID_API" ] && [ -n "$VERCEL_PROJECT_ID_SITE" ]; then
+            echo "configurado=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configurado=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Segredos da Vercel não configurados: deploy pulado."
+          fi
+
+  api:
+    name: Deploy da API
+    needs: verificar-segredos
+    if: needs.verificar-segredos.outputs.configurado == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Puxar a configuração do projeto
+        run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Build (aplica as migrations no banco de produção)
+        run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
+      - name: Publicar
+        id: publicar
+        run: echo "url=$(npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")" >> "$GITHUB_OUTPUT"
+      - name: Conferir a saúde da API publicada
+        run: |
+          for i in $(seq 1 10); do
+            if curl -fsS https://ponto-da-terra-api.vercel.app/api/health; then exit 0; fi
+            sleep 6
+          done
+          exit 1
+
+  site:
+    name: Deploy do site
+    needs: [verificar-segredos, api]
+    if: needs.verificar-segredos.outputs.configurado == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SITE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
+      - run: npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
