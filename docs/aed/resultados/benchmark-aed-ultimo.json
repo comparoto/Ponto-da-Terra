@@ -1,0 +1,461 @@
+{
+  "geradoEm": "2026-11-26T01:30:21.080Z",
+  "ambiente": {
+    "node": "v24.22.0",
+    "plataforma": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "nucleos": 12,
+    "memoriaGB": 16
+  },
+  "parametros": {
+    "repeticoes": 9,
+    "aquecimento": 2,
+    "volumes": [
+      1000,
+      10000,
+      100000,
+      1000000
+    ],
+    "volumesQuadraticos": [
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "volumesArvoreDegenerada": [
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ]
+  },
+  "experimentos": [
+    {
+      "id": "busca-linear",
+      "titulo": "Busca linear em array",
+      "estrutura": "Array + varredura",
+      "teorica": "O(n)",
+      "inclinacaoEsperada": 1,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.00334699999999998,
+          "msTotal": 0.669399999999996,
+          "operacoes": 200
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.020455000000000043,
+          "msTotal": 4.091000000000008,
+          "operacoes": 200
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.2104490000000004,
+          "msTotal": 42.08980000000008,
+          "operacoes": 200
+        }
+      ],
+      "inclinacaoMedida": 0.8992455770372517
+    },
+    {
+      "id": "busca-binaria",
+      "titulo": "Busca binária em array ordenado",
+      "estrutura": "Array ordenado",
+      "teorica": "O(log n)",
+      "inclinacaoEsperada": 0.1,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.00028894999999999984,
+          "msTotal": 0.5778999999999996,
+          "operacoes": 2000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.00034994999999997845,
+          "msTotal": 0.6998999999999569,
+          "operacoes": 2000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.0005459999999999922,
+          "msTotal": 1.0919999999999845,
+          "operacoes": 2000
+        },
+        {
+          "n": 1000000,
+          "msPorOperacao": 0.0009550499999999715,
+          "msTotal": 1.910099999999943,
+          "operacoes": 2000
+        }
+      ],
+      "inclinacaoMedida": 0.1750796875206648
+    },
+    {
+      "id": "indice-hash-obter",
+      "titulo": "Busca por índice hash (código do produto)",
+      "estrutura": "IndiceHash",
+      "teorica": "O(1)",
+      "inclinacaoEsperada": 0,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.000196550000000002,
+          "msTotal": 0.393100000000004,
+          "operacoes": 2000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.00017315000000002101,
+          "msTotal": 0.346300000000042,
+          "operacoes": 2000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.0003160500000000184,
+          "msTotal": 0.6321000000000367,
+          "operacoes": 2000
+        },
+        {
+          "n": 1000000,
+          "msPorOperacao": 0.0006224999999999455,
+          "msTotal": 1.2449999999998909,
+          "operacoes": 2000
+        }
+      ],
+      "inclinacaoMedida": 0.17633322216131453
+    },
+    {
+      "id": "bst-buscar-aleatoria",
+      "titulo": "Busca em BST (chaves em ordem aleatória)",
+      "estrutura": "ArvoreBinariaBusca",
+      "teorica": "O(log n)",
+      "inclinacaoEsperada": 0.1,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.00012619999999992614,
+          "msTotal": 0.2523999999998523,
+          "operacoes": 2000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.00020239999999989777,
+          "msTotal": 0.40479999999979555,
+          "operacoes": 2000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.0002554999999999836,
+          "msTotal": 0.5109999999999673,
+          "operacoes": 2000
+        }
+      ],
+      "inclinacaoMedida": 0.1531657747814211
+    },
+    {
+      "id": "bst-buscar-degenerada",
+      "titulo": "Busca em BST (chaves inseridas em ordem: árvore vira lista)",
+      "estrutura": "ArvoreBinariaBusca",
+      "teorica": "O(n)",
+      "inclinacaoEsperada": 1,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0010905999999995402,
+          "msTotal": 0.5452999999997701,
+          "operacoes": 500
+        },
+        {
+          "n": 2000,
+          "msPorOperacao": 0.0022460000000000947,
+          "msTotal": 1.1230000000000473,
+          "operacoes": 500
+        },
+        {
+          "n": 4000,
+          "msPorOperacao": 0.005680600000000595,
+          "msTotal": 2.8403000000002976,
+          "operacoes": 500
+        },
+        {
+          "n": 8000,
+          "msPorOperacao": 0.012243599999999787,
+          "msTotal": 6.121799999999894,
+          "operacoes": 500
+        },
+        {
+          "n": 16000,
+          "msPorOperacao": 0.01905079999999907,
+          "msTotal": 9.525399999999536,
+          "operacoes": 500
+        }
+      ],
+      "inclinacaoMedida": 1.0699913217628272
+    },
+    {
+      "id": "hash-inserir",
+      "titulo": "Inserção no índice hash (média amortizada)",
+      "estrutura": "IndiceHash",
+      "teorica": "O(1)",
+      "inclinacaoEsperada": 0,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0003263999999999214,
+          "msTotal": 0.3263999999999214,
+          "operacoes": 1000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.0003805500000000393,
+          "msTotal": 3.805500000000393,
+          "operacoes": 10000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.0018002549999999974,
+          "msTotal": 180.02549999999974,
+          "operacoes": 100000
+        }
+      ],
+      "inclinacaoMedida": 0.3707919378577882
+    },
+    {
+      "id": "bst-inserir-aleatoria",
+      "titulo": "Inserção na BST (ordem aleatória)",
+      "estrutura": "ArvoreBinariaBusca",
+      "teorica": "O(log n)",
+      "inclinacaoEsperada": 0.1,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0002762000000002445,
+          "msTotal": 0.27620000000024447,
+          "operacoes": 1000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.0003944999999999709,
+          "msTotal": 3.944999999999709,
+          "operacoes": 10000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.0005272119999999996,
+          "msTotal": 52.72119999999995,
+          "operacoes": 100000
+        }
+      ],
+      "inclinacaoMedida": 0.14038080626866328
+    },
+    {
+      "id": "lista-inserir-ordenado-aleatorio",
+      "titulo": "Inserção ordenada na lista (ordem aleatória)",
+      "estrutura": "ListaEncadeada",
+      "teorica": "O(n)",
+      "inclinacaoEsperada": 1,
+      "medicoes": [
+        {
+          "n": 500,
+          "msPorOperacao": 0.0003562000000019907,
+          "msTotal": 0.17810000000099535,
+          "operacoes": 500
+        },
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0006471999999994296,
+          "msTotal": 0.6471999999994296,
+          "operacoes": 1000
+        },
+        {
+          "n": 2000,
+          "msPorOperacao": 0.0018154999999997017,
+          "msTotal": 3.6309999999994034,
+          "operacoes": 2000
+        },
+        {
+          "n": 4000,
+          "msPorOperacao": 0.0036397999999999227,
+          "msTotal": 14.559199999999691,
+          "operacoes": 4000
+        },
+        {
+          "n": 8000,
+          "msPorOperacao": 0.012486300000000028,
+          "msTotal": 99.89040000000023,
+          "operacoes": 8000
+        },
+        {
+          "n": 16000,
+          "msPorOperacao": 0.03163219374999994,
+          "msTotal": 506.1150999999991,
+          "operacoes": 16000
+        }
+      ],
+      "inclinacaoMedida": 1.319322157943011
+    },
+    {
+      "id": "lista-inserir-ordenado-crescente",
+      "titulo": "Inserção ordenada na lista (já em ordem: melhor caso)",
+      "estrutura": "ListaEncadeada",
+      "teorica": "O(1)",
+      "inclinacaoEsperada": 0,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.00007740000000012514,
+          "msTotal": 0.07740000000012515,
+          "operacoes": 1000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.000039579999999841677,
+          "msTotal": 0.39579999999841675,
+          "operacoes": 10000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.000009467999999997118,
+          "msTotal": 0.9467999999997119,
+          "operacoes": 100000
+        },
+        {
+          "n": 1000000,
+          "msPorOperacao": 0.00002924459999999999,
+          "msTotal": 29.24459999999999,
+          "operacoes": 1000000
+        }
+      ],
+      "inclinacaoMedida": -0.1889303365942069
+    },
+    {
+      "id": "fila-enfileirar-desenfileirar",
+      "titulo": "Fila circular: enfileirar + desenfileirar",
+      "estrutura": "Fila",
+      "teorica": "O(1)",
+      "inclinacaoEsperada": 0,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0000911500000001979,
+          "msTotal": 0.1823000000003958,
+          "operacoes": 2000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.00004264000000002852,
+          "msTotal": 0.8528000000005704,
+          "operacoes": 20000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.000021465000000007422,
+          "msTotal": 4.293000000001484,
+          "operacoes": 200000
+        },
+        {
+          "n": 1000000,
+          "msPorOperacao": 0.000017336499999999433,
+          "msTotal": 34.672999999998865,
+          "operacoes": 2000000
+        }
+      ],
+      "inclinacaoMedida": -0.2460472050390479
+    },
+    {
+      "id": "array-shift-como-fila",
+      "titulo": "Referência: Array.shift() usado como fila",
+      "estrutura": "Array",
+      "teorica": "O(n)",
+      "inclinacaoEsperada": 1,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.00008619999999973515,
+          "msTotal": 0.08619999999973516,
+          "operacoes": 1000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.00007009999999991123,
+          "msTotal": 0.14019999999982247,
+          "operacoes": 2000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.30927114999999866,
+          "msTotal": 618.5422999999973,
+          "operacoes": 2000
+        }
+      ],
+      "inclinacaoMedida": 1.7774160717064849
+    },
+    {
+      "id": "pilha-empilhar-desempilhar",
+      "titulo": "Pilha: empilhar + desempilhar",
+      "estrutura": "Pilha",
+      "teorica": "O(1)",
+      "inclinacaoEsperada": 0,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0000411999999996624,
+          "msTotal": 0.08239999999932479,
+          "operacoes": 2000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.000008470000000124856,
+          "msTotal": 0.1694000000024971,
+          "operacoes": 20000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.0000097400000000016,
+          "msTotal": 1.9480000000003201,
+          "operacoes": 200000
+        },
+        {
+          "n": 1000000,
+          "msPorOperacao": 0.000013857700000000477,
+          "msTotal": 27.715400000000955,
+          "operacoes": 2000000
+        }
+      ],
+      "inclinacaoMedida": -0.13589426358706008
+    },
+    {
+      "id": "estoque-saida-fefo",
+      "titulo": "Estoque FEFO: saída por código (n produtos, 5 lotes cada)",
+      "estrutura": "EstoqueFefo",
+      "teorica": "O(1)",
+      "inclinacaoEsperada": 0,
+      "medicoes": [
+        {
+          "n": 1000,
+          "msPorOperacao": 0.0016514999999999419,
+          "msTotal": 3.3029999999998836,
+          "operacoes": 2000
+        },
+        {
+          "n": 10000,
+          "msPorOperacao": 0.0025707499999989523,
+          "msTotal": 5.1414999999979045,
+          "operacoes": 2000
+        },
+        {
+          "n": 100000,
+          "msPorOperacao": 0.00360399999999936,
+          "msTotal": 7.207999999998719,
+          "operacoes": 2000
+        }
+      ],
+      "inclinacaoMedida": 0.16945310213976528
+    }
+  ]
+}
