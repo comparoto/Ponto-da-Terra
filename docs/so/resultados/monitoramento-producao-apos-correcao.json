@@ -1,0 +1,46 @@
+{
+  "geradoEm": "2026-11-26T11:54:44.593Z",
+  "rotulo": "producao-apos-correcao",
+  "alvo": "https://ponto-da-terra-api.vercel.app/api",
+  "ambienteInformadoPelaApi": "vercel (função serverless)",
+  "parametros": {
+    "leituras": 15,
+    "intervaloS": 3,
+    "sondasPorLeitura": 5
+  },
+  "instanciasDistintas": 1,
+  "falhasDaConsulta": 0,
+  "leiturasComPerdaNasSondas": 0,
+  "bancoRttMedianoMs": {
+    "min": 2.04,
+    "mediana": 2.13,
+    "max": 2.84
+  },
+  "bancoJitterMs": {
+    "min": 0.17,
+    "mediana": 0.31,
+    "max": 3.1
+  },
+  "redisRttMedianoMs": {
+    "min": 1.42,
+    "mediana": 1.6,
+    "max": 1.85
+  },
+  "redisJitterMs": {
+    "min": 0.1,
+    "mediana": 0.23,
+    "max": 3.36
+  },
+  "tempoDeRespostaDaConsultaAoPainelMs": {
+    "min": 217.58,
+    "mediana": 226.79,
+    "max": 354.56,
+    "p95": 354.56
+  },
+  "lacoDeEventosP99Ms": {
+    "min": 0,
+    "mediana": 0,
+    "max": 0
+  },
+  "eventosPendentesNaUltimaLeitura": 0
+}

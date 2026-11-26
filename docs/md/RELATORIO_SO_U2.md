@@ -144,14 +144,14 @@ Cada requisito de rede abaixo vem de um requisito funcional ou regra de negócio
 | Gráficos de latência p95 e de requisições por intervalo | Série temporal calculada das mesmas amostras |
 | Rotas mais lentas (p95) | Amostras agrupadas pela rota normalizada (`/api/produtos/:id`, sem uma série por identificador) |
 | PostgreSQL e Redis: RTT mediano e p95, jitter, perda | **Sonda ativa**: 5 idas e voltas (`SELECT 1` e `PING`) a cada consulta ao painel |
-| Laço de eventos, memória, fila de eventos pendentes | `monitorEventLoopDelay`, `process.memoryUsage`, contagem da tabela de outbox |
+| Laço de eventos (só fora de serverless), memória, fila de eventos pendentes | `monitorEventLoopDelay`, `process.memoryUsage`, contagem da tabela de outbox |
 | Sua conexão com a API | O **navegador do administrador** faz 10 chamadas a `/health` e calcula RTT, jitter e perda: a rede real entre quem olha e a API |
 
 ### Em produção (Vercel), 26/11/2026
 
 ![Painel de monitoramento em produção](../so/evidencias/monitoramento-painel-producao.png)
 
-*Captura de `ponto-da-terra-eight.vercel.app/admin/monitoramento`, logado como administrador, depois de tráfego real de leitura. Os números são da instância da função que respondeu.*
+*Captura de `ponto-da-terra-eight.vercel.app/admin/monitoramento`, logado como administrador, depois de tráfego real de leitura e **já com a correção do cartão "Laço de eventos" no ar** (mostra "n/d"; ver abaixo). Os números são da instância da função que respondeu.*
 
 Verificado **em produção** por [`e2e/so-evidencias-monitoramento.cjs`](../../e2e/so-evidencias-monitoramento.cjs) (8 de 8; resultado em [`monitoramento-resultado-producao.json`](../so/evidencias/monitoramento-resultado-producao.json)): sem token 401, comprador 403, artesão 403, comprador redirecionado, administrador vê o painel, a sondagem do navegador funciona e o celular não tem rolagem horizontal ([captura no celular](../so/evidencias/monitoramento-painel-celular-producao.png)).
 
@@ -165,7 +165,9 @@ Coleta de 15 leituras (`npm run monitoramento:coletar`, 3 s entre elas; [`monito
 | Fila de eventos pendentes | 0 |
 | Instâncias distintas que responderam | 1 (as 15 leituras caíram na mesma instância) |
 
-**Defeito conhecido do painel em serverless: o cartão "Laço de eventos".** Na captura de produção ele mostra **23.270 ms** e o aviso "processo saturado". **Isso não é saturação.** Em função serverless o processo fica **congelado entre as requisições**, e o medidor de atraso do laço de eventos conta o tempo congelado como atraso. Evidências: na coleta, com 3 s de pausa entre as leituras, o máximo foi 3.202 ms, que coincide com a pausa; nas demais leituras o p99 ficou em ~20 ms; o valor da captura é compatível com o intervalo ocioso da instância (explicação provável, não testada isoladamente). Esse cartão só é confiável em **servidor tradicional ou contêiner**; **na Vercel, ignore-o**. A correção seria não exibi-lo (ou mostrá-lo como "n/d") quando o ambiente for serverless; **não foi feita** nesta entrega.
+Depois da correção do cartão (mesmo dia), repeti a coleta ([`monitoramento-producao-apos-correcao.json`](../so/resultados/monitoramento-producao-apos-correcao.json)): banco **2,1 ms** (medianas por leitura de 2,0 a 2,8 ms), Redis **1,6 ms** (1,4 a 1,9 ms), perda 0%, consulta ao painel **227 ms** de mediana (p95 355 ms), 1 instância. A diferença para a primeira coleta (2,7 e 1,2 ms) é a variação normal entre momentos e instâncias, na mesma ordem de grandeza; a conclusão (banco e Redis a poucos milissegundos da função) não muda. Nessa coleta a API devolveu o laço de eventos como indisponível, e por isso o campo `lacoDeEventosP99Ms` do arquivo ficou com zeros: o script não registrou nenhum valor, não é medição de zero.
+
+**Defeito encontrado em produção e corrigido: o cartão "Laço de eventos".** Na primeira captura de produção (antes da correção) ele mostrava **23.270 ms** e o aviso "processo saturado". **Isso não era saturação.** Em função serverless o processo fica **congelado entre as requisições**, e o medidor de atraso do laço de eventos conta o tempo congelado como atraso. Evidências: na coleta, com 3 s de pausa entre as leituras, o máximo foi 3.202 ms, que coincide com a pausa; nas demais leituras o p99 ficou em ~20 ms; o valor da captura é compatível com o intervalo ocioso da instância (explicação provável, não testada isoladamente). Essa métrica só é confiável em **servidor tradicional ou contêiner**. **Correção:** quando o ambiente é serverless (variável `VERCEL`), a API devolve `lacoDeEventos: null` e a tela mostra **"n/d"** com a explicação, em vez de um número enganoso; fora de serverless nada muda. Há teste automatizado para os dois ambientes, e a correção foi conferida em produção (a API devolve `null` e a captura acima mostra "n/d"). A causa continua sendo a explicação provável descrita acima, não isolada em experimento.
 
 ### Em desenvolvimento (local)
 
@@ -179,11 +181,11 @@ Versão em celular (390 px, sem rolagem horizontal): [`monitoramento-painel-celu
 
 - A rota exige JWT de ADMIN **no servidor**; a tela também redireciona, mas quem vale é o servidor.
 - Verificado por script de navegador ([`e2e/so-evidencias-monitoramento.cjs`](../../e2e/so-evidencias-monitoramento.cjs), resultado em [`monitoramento-resultado.json`](../so/evidencias/monitoramento-resultado.json)): **sem token → 401; comprador → 403; artesão → 403; comprador abrindo a tela é redirecionado para a vitrine; o administrador vê o painel; no celular não há rolagem horizontal** (8 de 8).
-- 14 testes automatizados em `backend/tests/monitoramento.test.ts`: percentil, jitter, resumo (vazão, erros, interrompidas, taxa de falha), série temporal, buffer circular, rotas mais lentas, sonda (perda e indisponibilidade), 401/403/200, janela inválida (400) e a regra de que **a consulta ao próprio painel não entra nas amostras** (para não medir o medidor).
+- 15 testes automatizados em `backend/tests/monitoramento.test.ts`: percentil, jitter, resumo (vazão, erros, interrompidas, taxa de falha), série temporal, buffer circular, rotas mais lentas, sonda (perda e indisponibilidade), 401/403/200, janela inválida (400) o laço de eventos medido em servidor tradicional e indisponível em serverless, e a regra de que **a consulta ao próprio painel não entra nas amostras** (para não medir o medidor).
 
 ### Limites conhecidos (importante)
 
-- **Visto na prática em produção:** as 15 leituras da coleta caíram em uma única instância, e a captura mostra 25 requisições medidas em ~8 min de vida da instância. É a limitação descrita a seguir, observada de verdade. O efeito mais enganoso é o cartão do laço de eventos (ver acima).
+- **Visto na prática em produção:** as 15 leituras da coleta caíram em uma única instância, e a captura anterior mostrava 25 requisições medidas em ~8 min de vida da instância e a atual, 16 em 65 s (outra instância, ou a mesma reciclada). É a limitação descrita a seguir, observada de verdade. O efeito mais enganoso era o cartão do laço de eventos, já corrigido (ver acima).
 - As **amostras de requisição ficam na memória da instância**. Em servidor tradicional ou contêiner há uma só instância, e o painel é completo. Em **função serverless (Vercel)**, cada instância tem as suas amostras e elas zeram quando a instância é reciclada: o painel mostra só o que a instância que respondeu viu, e o cartão "Instância" informa o ambiente e o tempo de vida. As **sondas ao banco e ao Redis** e a **fila de eventos** são consultadas na hora e valem em qualquer ambiente.
 - Para ter histórico entre instâncias seria preciso gravar as amostras em um serviço compartilhado (Redis ou banco), o que não foi feito para não alterar o produto além do pedido. É a evolução natural no cenário alto.
 - A latência medida é a **do servidor** (do recebimento ao fim da resposta); a do navegador inclui a rede e é medida pelo bloco "Sua conexão com a API".
@@ -302,7 +304,7 @@ Vercel Hobby, site e API em projetos separados, deploy manual por linha de coman
 - **Cliente HTTP/1.1** (o `fetch` do Node): o navegador real usaria HTTP/2 (negociado nos dois hosts), o que reduz o custo de várias requisições, então a vazão do navegador pode ser melhor que a medida.
 - A função em `iad1` vem do cabeçalho `X-Vercel-Id`; que o banco está junto dela vem do RTT de 2,7 ms medido pelo painel. **Não consultei os painéis da Vercel e do Neon** para confirmar as regiões.
 - Os dados do painel em produção são de **uma única instância** (15 leituras, em 26/11/2026); os benchmarks de rede e de enlaces são de 25/11/2026.
-- O cartão "Laço de eventos" do painel **induz a erro em serverless** (Seção 6); a correção não foi feita.
+- O cartão "Laço de eventos" induzia a erro em serverless; foi corrigido para mostrar "n/d" nesse ambiente (Seção 6). A causa não foi isolada em experimento.
 - O RR2 (webhook < 2 s) **não foi medido em produção**.
 - A **decomposição dos enlaces** vem de um único cliente e de 30 conexões por caminho; o handshake TLS de ~117 ms **não foi explicado**; a banda de subida do artesão (1 Mbps) é premissa; o tamanho de ~1 KB por evento de telemetria é estimativa.
 - O **reenvio com *backoff*** e o envio em lote de ajustes de estoque são **proposta**, não código.
@@ -315,7 +317,7 @@ cd backend
 npm run benchmark:rede -- --alvo=http://localhost:3333/api --rotulo=local
 npm run benchmark:rede -- --alvo=https://ponto-da-terra-api.vercel.app/api --producao --rotulo=producao --amostras=40 --duracao=5 --concorrencias=1,5,10
 npm run benchmark:enlaces -- --alvo=https://ponto-da-terra-api.vercel.app/api   # decomposição DNS/TCP/TLS/espera
-npx jest tests/monitoramento              # 14 testes do painel
+npx jest tests/monitoramento              # 15 testes do painel
 cd ../e2e
 node gerar-graficos-aed-so.cjs            # gráficos
 FRONT_URL=http://localhost:3000 API_URL=http://localhost:3333/api node so-evidencias-monitoramento.cjs   # evidências do painel

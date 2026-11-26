@@ -534,13 +534,13 @@ Perda de **0%** em todas as baterias (amostras pequenas: o resultado é "sem per
 
 Somente o **administrador**: link *Monitoramento* no painel administrativo → `/admin/monitoramento`, dados de `GET /api/admin/monitoramento` (Swagger em `/api/docs`).
 
-- **Medido de verdade:** vazão, latência p50/p95/p99, jitter, falhas e conexões interrompidas (middleware que mede cada requisição em um buffer circular), RTT/jitter/perda de sondas ao PostgreSQL e ao Redis, atraso do laço de eventos, memória, fila de eventos pendentes e, no navegador, RTT/jitter/perda até a API.
-- **Acesso:** sem token → 401; comprador e artesão → 403; a tela redireciona quem não é administrador. Verificado por script de navegador (8/8, **em desenvolvimento e em produção**) e 14 testes automatizados.
+- **Medido de verdade:** vazão, latência p50/p95/p99, jitter, falhas e conexões interrompidas (middleware que mede cada requisição em um buffer circular), RTT/jitter/perda de sondas ao PostgreSQL e ao Redis, atraso do laço de eventos ("n/d" em serverless, onde não é confiável), memória, fila de eventos pendentes e, no navegador, RTT/jitter/perda até a API.
+- **Acesso:** sem token → 401; comprador e artesão → 403; a tela redireciona quem não é administrador. Verificado por script de navegador (8/8, **em desenvolvimento e em produção**) e 15 testes automatizados.
 - **Limite:** as amostras ficam na memória da instância; em serverless cada instância tem as suas. As sondas ao banco e ao Redis valem em qualquer ambiente.
 
 ![Painel de monitoramento em produção](docs/so/evidencias/monitoramento-painel-producao.png)
 
-*Captura da **produção** (26/11/2026). Medido de dentro da função na Vercel: **banco a 2,7 ms e Redis a 1,2 ms** (15 leituras, perda 0%), e a consulta ao painel leva ~230 ms. O cartão "Laço de eventos" **não é confiável em serverless** (a função é congelada entre requisições e o tempo parado aparece como atraso): ignore-o na Vercel; o defeito está documentado no relatório e a correção não foi feita. As capturas de desenvolvimento local continuam em [`docs/so/evidencias/`](docs/so/evidencias).*
+*Captura da **produção** (26/11/2026). Medido de dentro da função na Vercel: **banco a 2,7 ms e Redis a 1,2 ms** (15 leituras, perda 0%), e a consulta ao painel leva ~230 ms. Um defeito encontrado nessa captura (o cartão "Laço de eventos" mostrava 23.270 ms porque a função é congelada entre requisições) foi **corrigido**: em serverless o cartão agora mostra "n/d", como na imagem. As capturas de desenvolvimento local continuam em [`docs/so/evidencias/`](docs/so/evidencias).*
 
 </details>
 
