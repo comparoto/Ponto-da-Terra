@@ -1,0 +1,104 @@
+{
+  "geradoEm": "2026-11-26T02:58:18.511Z",
+  "alvo": "https://ponto-da-terra-api.vercel.app/api",
+  "cliente": {
+    "node": "v24.22.0",
+    "plataforma": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U"
+  },
+  "parametros": {
+    "amostras": 30,
+    "conexaoNovaPorRequisicao": true,
+    "descartadaPrimeira": true
+  },
+  "resultados": [
+    {
+      "caminho": "health",
+      "amostras": 30,
+      "falhas": 0,
+      "regioes": [
+        "gru1→iad1"
+      ],
+      "dnsMs": {
+        "min": 1.8,
+        "mediana": 3.6,
+        "p95": 4.9,
+        "max": 14.2
+      },
+      "tcpMs": {
+        "min": 16.3,
+        "mediana": 18.7,
+        "p95": 28.8,
+        "max": 33.1
+      },
+      "tlsMs": {
+        "min": 111,
+        "mediana": 116.4,
+        "p95": 126.4,
+        "max": 126.7
+      },
+      "esperaMs": {
+        "min": 202.3,
+        "mediana": 212.1,
+        "p95": 287.9,
+        "max": 479.6
+      },
+      "downloadMs": {
+        "min": 0.2,
+        "mediana": 0.6,
+        "p95": 1.2,
+        "max": 1.3
+      },
+      "totalMs": {
+        "min": 338.1,
+        "mediana": 355.2,
+        "p95": 422.3,
+        "max": 625.8
+      }
+    },
+    {
+      "caminho": "frete",
+      "amostras": 30,
+      "falhas": 0,
+      "regioes": [
+        "gru1→iad1"
+      ],
+      "dnsMs": {
+        "min": 1.8,
+        "mediana": 3.4,
+        "p95": 12.5,
+        "max": 13.7
+      },
+      "tcpMs": {
+        "min": 15.6,
+        "mediana": 19.7,
+        "p95": 28.4,
+        "max": 31.3
+      },
+      "tlsMs": {
+        "min": 109.3,
+        "mediana": 116.7,
+        "p95": 129.3,
+        "max": 242.7
+      },
+      "esperaMs": {
+        "min": 193,
+        "mediana": 206.7,
+        "p95": 246.4,
+        "max": 1943.2
+      },
+      "downloadMs": {
+        "min": 0.2,
+        "mediana": 0.5,
+        "p95": 1.4,
+        "max": 1.6
+      },
+      "totalMs": {
+        "min": 327.1,
+        "mediana": 348.7,
+        "p95": 467.9,
+        "max": 2089.7
+      }
+    }
+  ]
+}

@@ -34,7 +34,40 @@ A topologia segue o **fluxo do negócio** (coleta → curadoria → vitrine → 
 | 5. Pagamento | gateway (simulado) → API por webhook | **Entrada** de rede: resposta rápida e idempotente; assinatura HMAC |
 | 6. Entrega e notificações | API → QStash → API (webhook) → SMTP | Tolerante a atraso, **não pode perder** mensagem (Transactional Outbox) |
 
-Observação sobre a localização (medida, ver [Seção 8](#8-interpretação-e-gargalos)): o tráfego do comprador **entra** no ponto de presença de São Paulo (`gru1`), mas a **função da API executa em `iad1`** (Virgínia, EUA), como mostra o cabeçalho `X-Vercel-Id: gru1::iad1::...` das respostas de produção. A topologia-alvo da [Seção 9](#9-plano-de-implantação-e-migração) aproxima API e banco dos usuários.
+### 2.1 Topologia de rede: enlaces, meios e medidas
+
+O diagrama acima mostra **componentes de software**. Este mostra a **rede por onde os dados viajam**: os pontos de acesso (campo), a internet, a borda em São Paulo, a região onde a função executa e os serviços de dados, com o tipo de enlace e o que **foi medido** em cada trecho. Linhas tracejadas são os fluxos de **telemetria** (Seção 2.2).
+
+![Topologia de rede](../so/topologia-rede.png)
+
+*Fonte: [`docs/so/topologia-rede.mmd`](../so/topologia-rede.mmd). Versão vetorial: [`topologia-rede.svg`](../so/topologia-rede.svg).*
+
+Para separar o que é rede de acesso do que é caminho interno do provedor, `npm run benchmark:enlaces` decompõe cada requisição em **conexão nova** (DNS, TCP, TLS, espera pelo servidor, download). Resultado (mediana de 30 conexões por caminho, 25/11/2026, notebook em rede doméstica, somente leitura):
+
+![Decomposição de uma requisição em produção](../so/resultados/grafico-9-decomposicao-da-requisicao.png)
+
+| # | Enlace | Meio e tecnologia | O que foi medido | O que não foi medido |
+|---|---|---|---|---|
+| 1 | Artesão, comprador e admin → internet | Acesso móvel (4G ou 5G) ou banda larga e Wi-Fi; no ateliê, muitas vezes rural | DNS: 3,4 a 3,6 ms | Banda e latência do acesso de cada usuário (cada um tem o seu). A banda de subida de 1 Mbps usada em RR4 é **premissa**. |
+| 2 | Internet → ponto de presença em São Paulo (`gru1`) | Internet pública das operadoras | **Conexão TCP: 18,7 a 19,7 ms** (≈ 1 RTT até o ponto de presença) | Perda de pacotes no trecho |
+| 3 | Handshake TLS 1.3 com o ponto de presença | Criptografia do canal | **116 a 117 ms** | Causa. TLS 1.3 gasta 1 RTT (≈ 19 ms aqui), então 117 ms é mais do que o esperado; **não sei explicar** (pode ser o cliente Node no Windows ou a borda). Em HTTP/2 com a conexão reaproveitada, paga-se uma vez por sessão. |
+| 4 | Ponto de presença `gru1` → função em `iad1` → de volta | Backbone do provedor | **Espera pelo servidor: 207 a 212 ms**. Descontado 1 RTT de acesso (≈ 19 ms), sobram **~190 ms** de caminho interno | O trecho isolado. É um resultado por subtração. |
+| 5 | Função ↔ PostgreSQL, Redis, QStash, Blob, SMTP | TCP com TLS (RESP, SQL), HTTPS, SMTP | Em produção, nada. O painel (Seção 6) passa a medir o RTT ao banco e ao Redis depois do deploy. | Todos os RTTs em produção |
+
+**Leitura.** (a) O **acesso do usuário não é o problema**: 19 ms até o ponto de presença. (b) O tempo de espera é praticamente **igual em `/health` e `/frete`** (212 contra 207 ms), embora `/health` consulte o banco e o Redis e `/frete` não; logo, o banco, **por si só**, não explica esse tempo. (c) O dado é **compatível** com função e banco em outra região (o cabeçalho `X-Vercel-Id: gru1::iad1::…` indica a função em Virgínia), o que **não foi isolado**. (d) Uma conexão nova custa ~350 ms no total; por isso o reaproveitamento de conexões (HTTP/2 e `keep-alive`) importa: a vitrine medida na Seção 7 já usa conexões reaproveitadas e leva 434 ms de mediana.
+
+### 2.2 Fluxo de telemetria
+
+Telemetria aqui é o dado que sai dos **pontos de campo** (ateliês) e da **própria operação** rumo ao sistema, em um enlace que pode ser instável. Está separado entre o que **já existe** e o que é **proposta**:
+
+| Fluxo | Origem → destino | Situação | Protocolo e tamanho | Observação |
+|---|---|---|---|---|
+| Ajuste de estoque pelo artesão | Ateliê → API (`PATCH /api/produtos/:id/estoque`, só artesão) | **Existe** | HTTPS, JSON `{ quantidade }`; ~1 KB com cabeçalhos e JWT (**estimativa**, não medida) | A rota **define** a quantidade (valor absoluto), então refazer a chamada tem o mesmo efeito: é **idempotente** |
+| Eventos de pedido, pagamento e expiração | API → fila (QStash) → API (webhook) → notificação ao artesão e e-mail | **Existe** | HTTPS; gravados na Outbox na mesma transação do pedido | Entrega *at-least-once* com consumo idempotente |
+| Métricas de operação | API → painel do administrador (`GET /api/admin/monitoramento`) | **Existe** (novo nesta entrega) | HTTPS; consulta a cada 10 s enquanto a página está aberta | Telemetria da própria rede e do processo (Seção 6) |
+| Reenvio com espera crescente (*backoff*) e envio em lote de ajustes | Ateliê → API | **Proposta, não implementada** | — | Para enlaces móveis instáveis; faz sentido porque o ajuste é idempotente |
+
+**Localização do fluxo de campo na topologia:** o ateliê entra pelo enlace de acesso, atravessa a internet e o ponto de presença de São Paulo e chega à função; a confirmação volta pelo mesmo caminho. Cada tentativa custa, no mínimo, o RTT de acesso mais o caminho interno de ~190 ms (Seção 2.1), então o cliente do artesão deve tolerar respostas de ~0,3 a 0,5 s por tentativa sem tratá-las como falha.
 
 ## 3. Requisitos de rede derivados do negócio
 
@@ -51,6 +84,10 @@ Cada requisito de rede abaixo vem de um requisito funcional ou regra de negócio
 | RR7 | **Perda de requisições ≤ 1%** (o cliente refaz; o servidor é idempotente onde importa) | Meta **proposta pela equipe**; eventos (pedido, notificação) **não podem se perder**, o que a Outbox garante independentemente da rede | Disponibilidade-alvo de 99,5% = até 3,65 h de indisponibilidade por mês (0,5% de 730 h) | 0% nas 3 baterias | Sim (amostra pequena, ver limites) |
 | RR8 | **Jitter da vitrine ≤ 100 ms** | Meta **proposta pela equipe**: variação alta de latência causa "engasgos" na rolagem e na busca | Ordem de grandeza do tempo de uma interação percebida como instantânea | **123 ms** na vitrine (5 ms no frete) | **Não atende** na vitrine |
 | RR9 | **Canal seguro** (TLS) em todo o tráfego e HSTS | Segurança: JWT e senhas trafegam na rede | Sem TLS o token vaza em redes abertas | TLS 1.3 + HTTP/2 negociados; `Strict-Transport-Security: max-age=31536000; includeSubDomains` | Sim |
+| RR10 | **Ajuste de estoque reenviável sem efeito colateral** (telemetria de campo em enlace instável) | Enlace de acesso do ateliê (premissa, Seção 2.1) e a rota `PATCH /produtos/:id/estoque` | A rota define a quantidade absoluta; repetir N vezes dá o mesmo resultado. O cliente pode reenviar com *backoff* (1, 2, 4, 8 s…) até receber 200, sem chave de idempotência | Por desenho da rota; o reenvio automático no cliente é proposta | Parcial (servidor pronto, cliente não) |
+| RR11 | **Defasagem do estoque na vitrine ≤ 60 s**, com exatidão garantida no momento da compra | TTL do cache da vitrine (60 s, [ADR-001](../adr/adr-001-adotar-cache-no-redis-com-fallback-para-o-postgresql-na-camada-de-servicos-da-vitrine.md)) e reserva atômica no servidor ([ADR-002](../adr/adr-002-centralizar-a-reserva-de-estoque-no-servidor-com-transacao-atomica.md), TC14) | A vitrine pode mostrar a quantidade com até 60 s de atraso; o carrinho e o checkout conferem o saldo real no banco, então o atraso nunca causa venda acima do estoque | Por desenho; testado pelo TC14 e pelo teste de concorrência do checkout | Sim |
+| RR12 | **Banda de telemetria de estoque e eventos desprezível** | Cenários da [Unidade 1](RELATORIO_SO_U1.md#4-cenários-de-carga-e-orçamento) | ~1 KB por evento (estimativa). No cenário alto, 600 mil eventos por mês = 600.000 ÷ (30 × 86.400 s) = **0,23 evento/s ≈ 0,23 KB/s**. Não exige enlace dedicado | Não medido; conta a partir de premissas | Sim (conta) |
+| RR13 | **O painel de monitoramento não pode pesar na API** | O painel consulta a cada 10 s | Cada consulta faz 5 idas e voltas ao banco, 5 ao Redis e 2 consultas de fila: ~12 operações. A 0,1 consulta/s, é pequena frente a 25 req/s (moderado) ou 300 req/s (alto), mas pode chegar a ~5% das requisições no cenário baixo (2 req/s), **só enquanto a página estiver aberta** | Não medido o custo por consulta em produção | Aceitável, a medir |
 
 ## 4. Protocolos e APIs
 
@@ -165,7 +202,7 @@ Dados completos: `docs/so/resultados/benchmark-rede-{local,conteiner,producao}.j
 
 ## 8. Interpretação e gargalos
 
-1. **O custo dominante em produção é a distância, não o processamento.** O `/frete` leva 1,2 ms de processamento local e **197 ms** em produção: ~195 ms de diferença que não são CPU. O cabeçalho `X-Vercel-Id: gru1::iad1::…` mostra que a **função executa em `iad1` (EUA)** enquanto o usuário entra por São Paulo; a viagem de ida e volta ao Brasil explica a ordem de grandeza. Isso é uma **inferência** (a região do banco Neon não foi verificada); o teste que a confirma está na Seção 9.
+1. **O custo dominante em produção está no caminho interno do provedor, não no acesso do usuário.** O `/frete` leva 1,2 ms de processamento local e **197 ms** em produção. A decomposição por conexão nova (Seção 2.1) mostra que o TCP até o ponto de presença de São Paulo leva só **~19 ms** e que a **espera pelo servidor é de 207 a 212 ms**, **igual em `/health` e `/frete`**, embora só o primeiro consulte banco e Redis. Sobram ~190 ms entre o ponto de presença e a função. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa em Virgínia, o que é **compatível** com esse valor, mas o trecho não foi isolado; a região do banco Neon também não foi verificada. A hipótese foi **reforçada, não provada**; o teste final está na Seção 9.
 2. **O requisito do frete passa, mas com pouca folga:** p95 205 ms contra 300 ms (RR1). Qualquer acréscimo (banco em outra região, cache frio) consome essa folga. Em local e contêiner a latência é de 3 a 6 ms, ou seja, **o software está longe de ser o limite**.
 3. **A vitrine é o ponto fraco:** p50 434 ms, p99 925 ms e **jitter 123 ms**, bem acima dos ~5 a 13 ms do `/frete` e `/categorias` no mesmo ambiente. A diferença de custo para esses dois endpoints é a **consulta ao banco** (e ao cache): a vitrine paga a ida e volta até o banco **além** da viagem até a função. O jitter alto indica variação entre acerto de cache (Redis, TTL 60 s) e falha, e talvez compute do Neon dormindo no plano gratuito (hipótese, não medida). **RR8 não atende** (123 ms > 100 ms).
 4. **A vazão em produção foi limitada pela latência por requisição, não por saturação:** com 1 conexão, 2,4 req/s (≈ 1 s ÷ 0,43 s); com 5, 10,6; com 10, 23,9: cresce quase proporcionalmente às conexões, sinal de que o limite ainda não apareceu. **Não medimos o teto da produção** (decisão deliberada de limitar a carga no ambiente de demonstração). O pico de 1.058 ms no p95 com 5 conexões é compatível com a Vercel criando instâncias novas sob concorrência (partidas a frio), mas não foi investigado.
@@ -227,6 +264,8 @@ Vercel Hobby, site e API em projetos separados, deploy manual por linha de coman
 - **Cliente HTTP/1.1** (o `fetch` do Node): o navegador real usaria HTTP/2 (negociado nos dois hosts), o que reduz o custo de várias requisições, então a vazão do navegador pode ser melhor que a medida.
 - A região do banco Neon e a função fixa em `iad1` são inferências a verificar nos painéis dos provedores.
 - O RR2 (webhook < 2 s) **não foi medido em produção**.
+- A **decomposição dos enlaces** vem de um único cliente e de 30 conexões por caminho; o handshake TLS de ~117 ms **não foi explicado**; a banda de subida do artesão (1 Mbps) é premissa; o tamanho de ~1 KB por evento de telemetria é estimativa.
+- O **reenvio com *backoff*** e o envio em lote de ajustes de estoque são **proposta**, não código.
 - O orçamento e os cenários partem de hipóteses de uso.
 
 ## 11. Reprodução
@@ -235,9 +274,11 @@ Vercel Hobby, site e API em projetos separados, deploy manual por linha de coman
 cd backend
 npm run benchmark:rede -- --alvo=http://localhost:3333/api --rotulo=local
 npm run benchmark:rede -- --alvo=https://ponto-da-terra-api.vercel.app/api --producao --rotulo=producao --amostras=40 --duracao=5 --concorrencias=1,5,10
+npm run benchmark:enlaces -- --alvo=https://ponto-da-terra-api.vercel.app/api   # decomposição DNS/TCP/TLS/espera
 npx jest tests/monitoramento              # 14 testes do painel
 cd ../e2e
 node gerar-graficos-aed-so.cjs            # gráficos
 FRONT_URL=http://localhost:3000 API_URL=http://localhost:3333/api node so-evidencias-monitoramento.cjs   # evidências do painel
 node renderizar-mermaid.cjs ../docs/so/topologia.mmd ../docs/so/topologia
+node renderizar-mermaid.cjs ../docs/so/topologia-rede.mmd ../docs/so/topologia-rede
 ```

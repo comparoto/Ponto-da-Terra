@@ -489,7 +489,11 @@ O plano Hobby da Vercel **não permite uso comercial**; no cenário alto, faltam
 
 ![Topologia por fluxo de negócio](docs/so/topologia.png)
 
-A topologia segue o fluxo coleta → curadoria → vitrine → pedido → pagamento → entrega ([`topologia.mmd`](docs/so/topologia.mmd)). Requisitos de rede **derivados** das regras de negócio:
+A topologia segue o fluxo coleta → curadoria → vitrine → pedido → pagamento → entrega ([`topologia.mmd`](docs/so/topologia.mmd)). Além dela, a **topologia de rede** mostra os pontos de acesso, a internet, a borda em São Paulo, a região da função e os serviços de dados, com o tipo de enlace, o que foi medido em cada trecho e os fluxos de **telemetria** (ajuste de estoque do ateliê, eventos de pedido e métricas do painel):
+
+![Topologia de rede](docs/so/topologia-rede.png)
+
+Fonte: [`topologia-rede.mmd`](docs/so/topologia-rede.mmd). `npm run benchmark:enlaces` decompõe uma requisição em produção: **TCP até São Paulo ≈ 19 ms**, TLS ≈ 117 ms (não explicado) e **espera pelo servidor ≈ 207 a 212 ms**. Requisitos de rede **derivados** das regras de negócio:
 
 | Requisito | Origem | Medido em produção |
 |---|---|---|
@@ -498,6 +502,9 @@ A topologia segue o fluxo coleta → curadoria → vitrine → pedido → pagame
 | Vitrine ≤ 100 KB por página e p95 ≤ 800 ms | meta proposta pela equipe | 90,6 KB · 500 ms |
 | Jitter da vitrine ≤ 100 ms | meta proposta pela equipe | **123 ms (não atende)** |
 | TLS e HSTS em todo o tráfego | segurança | TLS 1.3 + HTTP/2 (ALPN `h2`) |
+| Ajuste de estoque do ateliê reenviável sem efeito colateral | rota `PATCH /produtos/:id/estoque` define a quantidade absoluta | por desenho (reenvio automático no cliente é proposta) |
+| Estoque na vitrine com defasagem ≤ 60 s e exatidão no checkout | TTL do cache (ADR-001) e reserva atômica (ADR-002) | por desenho |
+| Telemetria de estoque e eventos: banda desprezível | 600 mil eventos/mês = 0,23 evento/s | conta a partir de premissas |
 
 Protocolos justificados no [relatório](docs/md/RELATORIO_SO_U2.md#4-protocolos-e-apis): HTTPS + REST/JSON e JWT, PostgreSQL sobre TCP+TLS, RESP (Redis), webhook assinado (QStash e gateway, HMAC), SMTP/TLS, OpenAPI 3.
 
@@ -516,7 +523,7 @@ Protocolos justificados no [relatório](docs/md/RELATORIO_SO_U2.md#4-protocolos-
 
 Perda de **0%** em todas as baterias (amostras pequenas: o resultado é "sem perda observável"). Vazão da vitrine: 568 req/s (Node direto), 193 req/s (contêiner) e 23,9 req/s em produção com apenas 10 conexões (limitado de propósito).
 
-**Interpretação:** o `/frete` leva 1,2 ms de processamento e 197 ms em produção. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa nos EUA enquanto o usuário entra por São Paulo; é uma **inferência** que o plano de migração testa. O ponto fraco é a vitrine (jitter e p99 de 925 ms).
+**Interpretação:** o `/frete` leva 1,2 ms de processamento e 197 ms em produção. O acesso do usuário não é o problema (TCP de ~19 ms até São Paulo); a espera de ~207 ms é igual com e sem banco. O cabeçalho `X-Vercel-Id: gru1::iad1::…` indica que a função executa nos EUA, o que é **compatível**, mas não isolado: a hipótese foi **reforçada, não provada**, e o plano de migração a testa. O ponto fraco é a vitrine (jitter e p99 de 925 ms).
 
 ![Latência p95](docs/so/resultados/grafico-6-latencia-p95.png)
 

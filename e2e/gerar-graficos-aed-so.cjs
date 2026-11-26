@@ -184,6 +184,37 @@ if (ambientes.length) {
   });
 }
 
+
+// ───────────── SO: decomposição do caminho de rede (conexões novas) ─────────────
+const arqEnlaces = path.join(PASTA_SO, 'benchmark-enlaces-producao.json');
+if (fs.existsSync(arqEnlaces)) {
+  const enl = ler(PASTA_SO, 'benchmark-enlaces-producao.json');
+  const segmentos = [['dnsMs', 'DNS', '#b8c0cc'], ['tcpMs', 'TCP (≈ 1 RTT até o ponto de presença)', '#3c6fb0'], ['tlsMs', 'TLS', '#8a6fb0'], ['esperaMs', 'Espera pelo servidor', '#c2703d'], ['downloadMs', 'Download', '#2b7a4b']];
+  const L = 1000, A = 430, m = { e: 120, d: 40, t: 90 };
+  const maxTotal = Math.max(...enl.resultados.map(r => segmentos.reduce((s, [k]) => s + r[k].mediana, 0))) * 1.08;
+  const x = v => m.e + (v / maxTotal) * (L - m.e - m.d);
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${L}" height="${A}" viewBox="0 0 ${L} ${A}" font-family="Segoe UI, Arial, sans-serif"><rect width="100%" height="100%" fill="white"/>`;
+  svg += `<text x="${L / 2}" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#1b1b3a">Para onde vai o tempo de uma requisição em produção</text>`;
+  svg += `<text x="${L / 2}" y="52" text-anchor="middle" font-size="13" fill="#555">Mediana de ${enl.parametros.amostras} conexões novas por caminho, medidas de um notebook em rede doméstica (ms)</text>`;
+  enl.resultados.forEach((r, i) => {
+    const y = m.t + i * 110;
+    let acc = 0;
+    segmentos.forEach(([k, , cor]) => {
+      const v = r[k].mediana;
+      svg += `<rect x="${x(acc)}" y="${y}" width="${Math.max(1, x(acc + v) - x(acc))}" height="46" fill="${cor}"/>`;
+      if (v > 25) svg += `<text x="${(x(acc) + x(acc + v)) / 2}" y="${y + 28}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${fmt(v)}</text>`;
+      acc += v;
+    });
+    svg += `<text x="${m.e - 10}" y="${y + 28}" text-anchor="end" font-size="14" font-weight="600" fill="#222">/${esc(r.caminho)}</text>`;
+    svg += `<text x="${x(acc) + 8}" y="${y + 28}" font-size="13" font-weight="700" fill="#222">${fmt(acc)} ms</text>`;
+  });
+  segmentos.forEach(([, nome, cor], i) => {
+    const lx = m.e + (i % 3) * 270, ly = A - 60 + Math.floor(i / 3) * 24;
+    svg += `<rect x="${lx}" y="${ly}" width="14" height="14" fill="${cor}" rx="2"/><text x="${lx + 20}" y="${ly + 12}" font-size="12" fill="#333">${esc(nome)}</text>`;
+  });
+  graficos.push({ arquivo: 'grafico-9-decomposicao-da-requisicao.png', svg: svg + '</svg>' });
+}
+
 (async () => {
   const browser = await chromium.launch({ channel: process.env.BROWSER ?? 'msedge', headless: true });
   for (const g of graficos) {

@@ -1,0 +1,42 @@
+flowchart LR
+  subgraph CAMPO["Pontos de acesso (campo)"]
+    direction TB
+    ATE["Ateliê do artesão<br/>celular ou PC<br/>Wi-Fi ou 4G, muitas vezes rural"]
+    COMP["Comprador<br/>celular 4G ou 5G, ou Wi-Fi"]
+    ADMIN["Administrador<br/>Wi-Fi ou rede fixa"]
+  end
+
+  NET(("Internet pública<br/>operadoras"))
+
+  subgraph SP["Borda em São Paulo (gru1)"]
+    POP["Ponto de presença da Vercel<br/>termina TCP e TLS 1.3<br/>HTTP/2 · CDN"]
+  end
+
+  subgraph EUA["Região de execução em Virgínia, EUA (iad1)"]
+    FN["Função da API Express<br/>REST · JWT · medirRequisicoes"]
+  end
+
+  subgraph DADOS["Dados e mensagens"]
+    direction TB
+    PG[("PostgreSQL Neon<br/>região a confirmar")]
+    RD[("Redis<br/>Upstash")]
+    QS["Fila QStash"]
+    BL[("Vercel Blob")]
+    SM["SMTP"]
+  end
+
+  ATE -- "acesso móvel ou banda larga<br/>banda de subida: não medida" --> NET
+  COMP -- "acesso móvel ou banda larga" --> NET
+  ADMIN -- "acesso fixo" --> NET
+  NET -- "TCP: 19 ms medido (1 RTT)<br/>TLS: 117 ms medido" --> POP
+  POP -- "backbone do provedor<br/>cerca de 190 ms ida e volta<br/>por subtração, não isolado" --> FN
+  FN -- "TCP + TLS · SQL<br/>RTT em produção: a medir pelo painel" --> PG
+  FN -- "TCP + TLS · RESP" --> RD
+  FN -- "HTTPS" --> QS
+  QS -- "HTTPS webhook assinado" --> FN
+  FN -- "HTTPS" --> BL
+  FN -- "SMTP com TLS" --> SM
+
+  ATE -. "TELEMETRIA DE ESTOQUE<br/>PATCH /produtos/:id/estoque<br/>cerca de 1 KB, idempotente" .-> POP
+  FN -. "TELEMETRIA DE OPERAÇÃO<br/>GET /admin/monitoramento<br/>a cada 10 s, só admin" .-> ADMIN
+  QS -. "EVENTOS DE PEDIDO<br/>notificação ao artesão" .-> ATE
