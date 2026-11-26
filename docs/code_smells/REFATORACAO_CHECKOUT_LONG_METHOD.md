@@ -227,14 +227,3 @@ Esta intervenção foi feita com o apoio do **Claude Code** (IA da Anthropic).
 | Testes de caracterização, refatoração e este relatório | IA |
 | Execução dos testes, conferência do antes e depois, commit | Pedro Henrique da Silva Marrocos |
 | Apresentação e defesa das decisões | Pedro Henrique da Silva Marrocos |
-
----
-
-## 7. Roteiro para a apresentação (3 a 5 minutos)
-
-1. **Smell:** abrir a versão antiga do `checkout` (`git show 171d273:backend/src/modules/compras/compras.service.ts`, linhas 161–262). Rolar a tela inteira para mostrar o tamanho e apontar os três comentários que separavam os blocos.
-2. **Impacto:** perguntar "onde eu mudo o frete?" e mostrar que a resposta está no meio de uma transação, entre o SQL de reserva e o `create` da compra.
-3. **Decisão:** refatorar, porque é o método mais crítico do sistema e o corte já estava marcado pelos comentários. Explicar os testes de caracterização escritos antes.
-4. **Antes e depois:** mostrar o `checkout` novo (17 linhas) e a tabela de métricas.
-5. **Validação:** rodar `npx jest --runInBand tests/checkout-etapas.test.ts tests/checkout-pagamentos.test.ts`.
-6. **Limites:** o que ficou de fora (seção 3) e a observação sobre o CEP validado depois da reserva (seção 5).
