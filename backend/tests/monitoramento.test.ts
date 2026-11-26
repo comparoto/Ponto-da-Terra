@@ -140,6 +140,25 @@ describe('GET /api/admin/monitoramento (somente administrador)', () => {
     expect(d.serie.length).toBeGreaterThan(0);
   });
 
+  it('laço de eventos: medido em servidor tradicional e indisponível (null) em serverless', async () => {
+    const { token } = await login('admin');
+    const antes = process.env.VERCEL;
+    try {
+      delete process.env.VERCEL;
+      const tradicional = await api().get('/api/admin/monitoramento').set(bearer(token));
+      expect(tradicional.body.data.instancia.ambiente).toBe('servidor tradicional');
+      expect(tradicional.body.data.processo.lacoDeEventos).toMatchObject({ p99Ms: expect.any(Number), maxMs: expect.any(Number) });
+
+      process.env.VERCEL = '1';
+      const serverless = await api().get('/api/admin/monitoramento').set(bearer(token));
+      expect(serverless.body.data.instancia.ambiente).toBe('vercel (função serverless)');
+      expect(serverless.body.data.processo.lacoDeEventos).toBeNull();
+    } finally {
+      if (antes === undefined) delete process.env.VERCEL;
+      else process.env.VERCEL = antes;
+    }
+  });
+
   it('a própria consulta ao painel não entra nas amostras', async () => {
     coletor.reiniciar();
     const { token } = await login('admin');

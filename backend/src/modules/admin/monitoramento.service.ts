@@ -1,7 +1,7 @@
 import { loadavg } from 'node:os';
 import { prisma } from '../../config/prisma';
 import { getRedis, waitRedisReady } from '../../config/redis';
-import { coletor, jitter, lagDoLacoDeEventos, percentil, resumir, serieTemporal, type PontoDaSerie, type ResumoDeLatencia, type RotaResumo } from '../../shared/metricas';
+import { coletor, emServerless, jitter, lagDoLacoDeEventos, percentil, resumir, serieTemporal, type PontoDaSerie, type ResumoDeLatencia, type RotaResumo } from '../../shared/metricas';
 
 export interface ResultadoDeSonda {
   alvo: 'banco' | 'redis';
@@ -22,7 +22,7 @@ export interface Monitoramento {
   serie: PontoDaSerie[];
   rotasMaisLentas: RotaResumo[];
   dependencias: ResultadoDeSonda[];
-  processo: { memoriaRssMb: number; memoriaHeapMb: number; cpuUsuarioMs: number; cpuSistemaMs: number; cargaMedia1min: number; lacoDeEventos: { p50Ms: number; p99Ms: number; maxMs: number } };
+  processo: { memoriaRssMb: number; memoriaHeapMb: number; cpuUsuarioMs: number; cpuSistemaMs: number; cargaMedia1min: number; lacoDeEventos: { p50Ms: number; p99Ms: number; maxMs: number } | null };
   filaDeEventos: { pendentes: number; maisAntigoHaSegundos: number | null };
 }
 
@@ -90,7 +90,7 @@ export const monitoramentoService = {
       instancia: {
         pid: process.pid,
         ativaHaSegundos: Math.round((agora - coletor.iniciadoEm) / 1000),
-        ambiente: process.env.VERCEL ? 'vercel (função serverless)' : 'servidor tradicional',
+        ambiente: emServerless() ? 'vercel (função serverless)' : 'servidor tradicional',
         requisicoesMedidasDesdeOInicio: coletor.totalDesdeOInicio,
       },
       rede: resumir(amostras, Math.min(janelaMs, Math.max(1000, agora - coletor.iniciadoEm))),
@@ -103,7 +103,7 @@ export const monitoramentoService = {
         cpuUsuarioMs: Math.round(cpu.user / 1000),
         cpuSistemaMs: Math.round(cpu.system / 1000),
         cargaMedia1min: arredondar(loadavg()[0]),
-        lacoDeEventos: lagDoLacoDeEventos(),
+        lacoDeEventos: emServerless() ? null : lagDoLacoDeEventos(), // serverless: o processo congela entre requisições, a métrica enganaria
       },
       filaDeEventos: { pendentes, maisAntigoHaSegundos: maisAntigo ? Math.round((agora - maisAntigo.criadoEm.getTime()) / 1000) : null },
     };

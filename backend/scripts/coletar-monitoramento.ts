@@ -33,7 +33,7 @@ interface RespostaPainel {
   data: {
     instancia: { pid: number; ativaHaSegundos: number; ambiente: string };
     dependencias: Sonda[];
-    processo: { lacoDeEventos: { p99Ms: number }; memoriaRssMb: number };
+    processo: { lacoDeEventos: { p99Ms: number } | null; memoriaRssMb: number };
     filaDeEventos: { pendentes: number };
   } | null;
 }
@@ -79,7 +79,7 @@ async function principal() {
         ambiente = d.instancia.ambiente;
         instancias.add(String(d.instancia.pid));
         filaPendentes = d.filaDeEventos.pendentes;
-        lacoP99.push(d.processo.lacoDeEventos.p99Ms);
+        if (d.processo.lacoDeEventos) lacoP99.push(d.processo.lacoDeEventos.p99Ms);
         for (const s of d.dependencias) {
           if (s.alvo === 'banco') (banco.push(s.rttMs.mediana), jitterBanco.push(s.jitterMs));
           else (redis.push(s.rttMs.mediana), jitterRedis.push(s.jitterMs));
