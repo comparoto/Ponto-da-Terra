@@ -44,7 +44,7 @@
 | Documento | O que traz |
 |---|---|
 | [REFATORACAO_MODERACAO_CONTAS.md](../code_smells/REFATORACAO_MODERACAO_CONTAS.md) | Atividade individual de code smells: refatoração da moderação de contas |
-| [REFATORACAO_CHECKOUT_LONG_METHOD.md](REFATORACAO_CHECKOUT_LONG_METHOD.md) | Atividade individual de code smells: refatoração do checkout (*Long Method*) |
+| [REFATORACAO_CHECKOUT_LONG_METHOD.md](../code_smells/REFATORACAO_CHECKOUT_LONG_METHOD.md) | Atividade individual de code smells: refatoração do checkout (*Long Method*) |
 | [ANALISE_CODE_SMELLS.md](ANALISE_CODE_SMELLS.md) | Análise de code smells do código |
 | [USO_DE_IA_2A_UNIDADE.md](USO_DE_IA_2A_UNIDADE.md) | Declaração de uso de IA na 2ª unidade: onde foi usada, como foi verificada e erros corrigidos |
 

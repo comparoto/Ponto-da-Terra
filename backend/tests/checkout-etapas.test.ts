@@ -6,7 +6,7 @@ import { api, bearer, checkout, ciclo, ENDERECO, estoqueDe, novoComprador, pecaA
  * Testes de CARACTERIZAÇÃO do checkout (HU11), escritos ANTES da refatoração de `comprasService.checkout`
  * (Long Method → Extract Function). Eles fixam o comportamento observável de cada etapa do método:
  * consolidação dos itens, validação, reserva, agrupamento por artesão, frete, persistência e eventos.
- * Ver docs/md/REFATORACAO_CHECKOUT_LONG_METHOD.md.
+ * Ver docs/code_smells/REFATORACAO_CHECKOUT_LONG_METHOD.md.
  */
 ciclo();
 
